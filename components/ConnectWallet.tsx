@@ -8,11 +8,13 @@ import Link from "next/link";
 import { getAccount } from "@wagmi/core";
 import { config } from "./../config";
 import { FaWallet } from "react-icons/fa";
+import {FaCog, FaUser, FaSignOutAlt } from "react-icons/fa";
+
 
 export const ConnectWallet = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [profileMenuOpen, setProfileMenuOpen] = useState(false);
-    //const { disconnect } = useDisconnect();
+    const { disconnect } = useDisconnect();
     const [currentVanity, setCurrentVanity] = React.useState("");
     const [currentProfileImage, setCurrentProfileImage] = useState<string>("");
     const addr = getAccount(config).address;
@@ -116,7 +118,7 @@ export const ConnectWallet = () => {
                   </button>
                   </div>
               
-                <div className="group  relative z-20" onMouseEnter={()=>{setProfileMenuOpen(true);}} onMouseLeave={()=>{setProfileMenuOpen(false)}}>
+                <div className="group  relative z-20" onMouseEnter={()=>{setProfileMenuOpen(true);}} >
                   <button
                     type="button"
                     onClick={openAccountModal}
@@ -124,8 +126,32 @@ export const ConnectWallet = () => {
                   >
                     
                     <div className="truncate text-yellow-400">{account.displayName}</div>
+                    
                   </button>
-                  
+                  <div onMouseLeave={()=>{setProfileMenuOpen(false)}} className={`z-50 dropdown-content absolute left-0 translate-x-[-65px] w-[calc(100%+65px)] bg-black border border-dark-gray-all rounded-sm shadow-lg transition-opacity duration-300 ${profileMenuOpen? "block" : " hidden  hover:block hover:visible hover:opacity-100"} z-20 uppercase`}>
+                    <Link
+                      href="/profile"
+                      className="block px-4 py-3 text-sm text-light-green border-b border-dark-gray hover:bg-gray-900 hover:text-white flex flex-row"
+                    >
+                      <FaUser className="mr-2"/>Profile
+                    </Link>
+                    <Link
+                      href="/settings"
+                      className="block px-4 py-3 text-sm text-light-green border-b border-dark-gray hover:bg-gray-900 hover:text-white flex flex-row"
+                    >
+                      <FaCog className="mr-2"/>Settings
+                    </Link>
+                    {/* <a href="#" className="block px-4 py-3 text-sm text-light-green border-b border-dark-gray hover:bg-gray-900 hover:text-white"><i className="fal fa-eye text-gray mr-2"></i>Watchlist</a> */}
+                    {/* <a href="settings.html" className="block px-4 py-3 text-sm text-light-green border-b border-dark-gray hover:bg-gray-900 hover:text-white"><i className="far fa-cog text-gray mr-2"></i>Settings</a> */}
+                    <div
+                      onClick={() => {
+                        disconnect();
+                      }}
+                      className="hover:cursor-pointer block px-4 py-3 text-sm text-light-green hover:bg-gray-900 hover:text-white flex flex-row"
+                    >
+                      <FaSignOutAlt className="mr-2"/>Log Out
+                    </div>
+                  </div>
                 </div>
               </div>
 

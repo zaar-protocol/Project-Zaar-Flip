@@ -16,7 +16,8 @@ import {
 } from '../components/zaarFlipUtils';
 import { ConnectWallet} from "../components/ConnectWallet";
 import toast, {Toaster} from "react-hot-toast";
-
+import { StarField } from '@/components/star-field';
+import {Header} from '@/components/header';
 export default function Home() {
   const [currentSide, setCurrentSide] = useState('heads');
   const [coinsAmount, setCoinsAmount] = useState(1);
@@ -24,65 +25,9 @@ export default function Home() {
   const [wager, setWager] = useState(1.00);
   const [potentialWin, setPotentialWin] = useState(1.96);
   const [winChance, setWinChance] = useState<WinChanceType>({ toWin: 1, chance: 50.00 });
-  const starfieldRef = useRef<HTMLDivElement>(null!);
-  const shootingStarsRef = useRef<HTMLDivElement>(null!);
   const coinsDisplayRef = useRef(null);
   const [tooltipOpen, setTooltipOpen] = useState(false);
-  useEffect(() => {
-    const starfield = starfieldRef.current;
-    const shootingStars = shootingStarsRef.current;
-    const stars: { x: number; y: number; }[] = [];
   
-    for (let i = 0; i < 50; i++) {
-      const star = document.createElement('div');
-      star.className = 'star';
-      
-      let x: number, y: number;
-      do {
-        x = Math.random() * 100;
-        y = Math.random() * 100;
-      } while (stars.some(s => Math.abs(s.x - x) < 10 && Math.abs(s.y - y) < 10));
-  
-      const size = Math.random() * 2 + 1; // Smaller size range
-      star.style.width = star.style.height = `${size}px`;
-      star.style.left = `${x}%`;
-      star.style.top = `${y}%`;
-      
-      // Create star shape and glow effect
-      star.style.boxShadow = `
-        0 0 ${size}px ${size/2}px rgba(255, 255, 255, 0.5),
-        0 0 ${size/2}px ${size/4}px #fff,
-        ${size/2}px 0 ${size/4}px #fff,
-        ${-size/2}px 0 ${size/4}px #fff,
-        0 ${size/2}px ${size/4}px #fff,
-        0 ${-size/2}px ${size/4}px #fff
-      `;
-      
-      star.style.animation = `twinkle ${Math.random() * 4 + 3}s infinite alternate`;
-      
-      starfield?.appendChild(star);
-      stars.push({ x, y });
-    }
-  
-    function createShootingStar() {
-      const shootingStar = document.createElement('div');
-      shootingStar.className = 'shooting-star';
-      shootingStar.style.width = `${Math.random() * 100 + 50}px`;
-      shootingStar.style.left = `${Math.random() * 100}%`;
-      shootingStar.style.top = `${Math.random() * 70}%`;
-      shootingStars?.appendChild(shootingStar);
-  
-      setTimeout(() => {
-        shootingStar.remove();
-      }, 1000);
-    }
-  
-    const intervalId = setInterval(createShootingStar, Math.random() * 3000 + 2000);
-  
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, []);
 
   useEffect(() => {
     updateAll();
@@ -150,20 +95,14 @@ export default function Home() {
       </Head>
       <Toaster/>
 
-      <div id="starfield" ref={starfieldRef} className="absolute inset-0"></div>
-      <div id="shooting-stars" ref={shootingStarsRef} className="absolute inset-0"></div>
+      <StarField/>
 
       <div id="planet" className="hidden absolute bottom-0 left-0 w-64 h-64 rounded-full bg-yellow-300 opacity-20"></div>
       <div className="hidden absolute bottom-0 left-0 w-64 h-64 flex items-center justify-center">
         <Image src="/logo-3d.png" alt="Logo" width={160} height={160} className="hidden object-contain z-10 opacity-40" />
       </div>
 
-      <header className="flex justify-between items-center mb-0 relative z-20">
-        <div className="text-white text-xl uppercase text-light-green font-bold">zaar flip</div>
-        <div className="flex space-x-4">
-          <ConnectWallet/>
-        </div>
-      </header>
+      <Header/>
 
       <main className="flex-grow flex flex-col justify-between relative z-20">
         <div className="flex-grow flex flex-col items-center justify-center">
