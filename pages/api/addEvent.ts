@@ -23,9 +23,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     // Query your Prisma database based on the user's address
     const ownerAddress = req.query.ownerAddress?.toString() || ""; // Assuming the address is passed as a query parameter
-    const newCoins = req.query.coins?.toString() || ""; // Assuming the address is passed as a query parameter
-    const newWinnings = req.query.winnings?.toString() || ""; // Assuming the address is passed as a query parameter
-    const newWager = req.query.wager?.toString() || ""; // Assuming the address is passed as a query parameter
+    const newCoins = Number(req.query.coins) || 0; // Assuming the address is passed as a query parameter
+    const newWinnings = Number(req.query.winnings) || 0; // Assuming the address is passed as a query parameter
+    const newWager = Number(req.query.wager) || 0; // Assuming the address is passed as a query parameter
     const newOutcome = Boolean(req.query.outcome) || false; // Assuming the address is passed as a query parameter
     
     //create an event
