@@ -6,9 +6,11 @@ import Image from "next/image";
 import { Header } from "@/components/header";
 import { FaUser } from "react-icons/fa";
 import { getAccount } from "@wagmi/core";
-import { config } from "./../../config";
+import { config } from "@/config";
 import toast, { Toaster } from 'react-hot-toast';
 import { StarField } from "@/components/star-field";
+import { type PutBlobResult } from '@vercel/blob';
+
 export const Settings = () => {
   const [newVanity, setNewVanity] = React.useState("");
   const [currentVanity, setCurrentVanity] = React.useState("Set New Vanity");
@@ -26,7 +28,10 @@ export const Settings = () => {
   //const inputFileRef = useRef(null);
 
   useEffect(() => {
-    fetch(`./api/getProfile?ownerAddress=${addr}`)
+    console.log(getAccount(config).address);
+
+    if(addr){
+      fetch(`./api/getProfile?ownerAddress=${addr}`)
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
@@ -46,7 +51,7 @@ export const Settings = () => {
             data?.bannerPicUrl ? setCurrentProfileBanner(data.bannerPicUrl) : null;
         }
         console.log(data);
-      });
+      });}
   }, []);
   function updateProfile() {
     fetch(
@@ -162,7 +167,7 @@ export const Settings = () => {
                 </ul>
               </div>
               {/* Profile Content */}
-              <div className="w-full lg:w-3/4 px-4">
+              <div className="w-full lg:w-3/4 px-4 z-10">
                 <div className="bg-black p-2 sm:p-6 py-3 rounded-sm">
                   <h1 className="font-semibold text-3xl text-yellow uppercase mb-8">
                     Profile details
@@ -207,7 +212,7 @@ export const Settings = () => {
                         />
                       </div>
                       <button
-                        className="hidden md:block bg-yellow border-2 border-yellow p-2 rounded-sm uppercase  text-center text-black  hover:bg-hoveryellow "
+                        className="hidden md:block bg-yellow border-2 border-yellow p-2 rounded-sm uppercase  text-center text-black  hover:bg-hoveryellow"
                         onClick={() => {
                           updateProfile();
                         }}

@@ -7,25 +7,30 @@ datasource db {
   url       = env("POSTGRES_PRISMA_URL")
   directUrl = env("POSTGRES_URL_NON_POOLING")
 }
+model Xp {
+  rewards       Int
+  authorAddress String @id
+}
 
 model Event {
-  id            Int @id
-  user          Profile @relation(fields: [authorAddress], references: [authorAddress])
+  id            Int      @id @default(autoincrement())
+  user          Profile  @relation(fields: [authorAddress], references: [authorAddress])
   authorAddress String
-  createdAt     DateTime
+  createdAt     DateTime @default(now())
   coins         Int
   wager         Int
+  winnings      Int
   outcome       Boolean
 }
 
 model Profile {
   bio           String
   uName         String
-  authorAddress String @id
-  email         String 
-  profPicUrl    String 
+  authorAddress String  @id
+  email         String
+  profPicUrl    String
   bannerPicUrl  String
   winnings      Int
-  history       Event[]
+  waged         Int
+  Event         Event[]
 }
-

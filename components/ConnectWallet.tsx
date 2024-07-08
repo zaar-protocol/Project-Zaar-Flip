@@ -118,7 +118,7 @@ export const ConnectWallet = () => {
                   </button>
                   </div>
               
-                <div className="group  relative z-20" onMouseEnter={()=>{setProfileMenuOpen(true);}} >
+                <div className="group  relative z-50" onMouseEnter={()=>{setProfileMenuOpen(true);}} >
                   <button
                     type="button"
                     onClick={openAccountModal}
@@ -128,16 +128,16 @@ export const ConnectWallet = () => {
                     <div className="truncate text-yellow-400">{account.displayName}</div>
                     
                   </button>
-                  <div onMouseLeave={()=>{setProfileMenuOpen(false)}} className={`z-50 dropdown-content absolute left-0 translate-x-[-65px] w-[calc(100%+65px)] bg-black border border-dark-gray-all rounded-sm shadow-lg transition-opacity duration-300 ${profileMenuOpen? "block" : " hidden  hover:block hover:visible hover:opacity-100"} z-20 uppercase`}>
+                  <div onMouseLeave={()=>{setProfileMenuOpen(false)}} className={`z-50 dropdown-content absolute left-0 translate-x-[-65px] w-[calc(100%+65px)] bg-black border border-dark-gray-all rounded-sm shadow-lg transition-opacity duration-300 ${profileMenuOpen? "block" : " hidden  hover:block hover:visible hover:opacity-100"} z-50 uppercase`}>
                     <Link
                       href="/profile"
-                      className="block px-4 py-3 text-sm text-light-green border-b border-dark-gray hover:bg-gray-900 hover:text-white flex flex-row"
+                      className="block px-4 py-3 text-sm text-light-green border-b border-dark-gray hover:bg-gray-900 hover:text-white flex flex-row z-50"
                     >
                       <FaUser className="mr-2"/>Profile
                     </Link>
                     <Link
                       href="/settings"
-                      className="block px-4 py-3 text-sm text-light-green border-b border-dark-gray hover:bg-gray-900 hover:text-white flex flex-row"
+                      className="block px-4 py-3 text-sm text-light-green border-b border-dark-gray hover:bg-gray-900 hover:text-white flex flex-row z-50"
                     >
                       <FaCog className="mr-2"/>Settings
                     </Link>
@@ -147,7 +147,7 @@ export const ConnectWallet = () => {
                       onClick={() => {
                         disconnect();
                       }}
-                      className="hover:cursor-pointer block px-4 py-3 text-sm text-light-green hover:bg-gray-900 hover:text-white flex flex-row"
+                      className="hover:cursor-pointer block px-4 py-3 text-sm text-light-green hover:bg-gray-900 hover:text-white flex flex-row z-50"
                     >
                       <FaSignOutAlt className="mr-2"/>Log Out
                     </div>

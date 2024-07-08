@@ -1,7 +1,7 @@
 // pages/api/getWatchlist.ts
 import { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
-import prisma from '@/lib/prisma';
+import prisma from '../../lib/prisma';
 import initializeCors from 'nextjs-cors';
 const allowCors = (fn: (req: NextApiRequest, res: NextApiResponse) => Promise<void>) => async (req: NextApiRequest, res: NextApiResponse) => {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -23,16 +23,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
   try {
     // Query your Prisma database based on the user's address
-    const ownerAddress = req.query.ownerAddress?.toString() || ""; // Assuming the address is passed as a query parameter
-    const userName = req.query.uName?.toString() || ""; // Assuming the address is passed as a query parameter
-    const newBio = req.query.bio?.toString() || ""; // Assuming the address is passed as a query parameter
-    const newEmail = req.query.email?.toString() || ""; // Assuming the address is passed as a query parameter
-    const newProfPicURL = req.query.profPicUrl?.toString() || ""; // Assuming the address is passed as a query parameter
-    const newBannerPicURL = req.query.bannerPicUrl?.toString() || ""; // Assuming the address is passed as a query parameters
-    const userData = await prisma.profile.upsert({
+    const ownerAddress = req.query.ownerAddress?.toString(); // Assuming the address is passed as a query parameter
+    const userData = await prisma.event.findMany({
         where: { authorAddress: ownerAddress },
-        update: { uName: userName, bio: newBio, email: newEmail, profPicUrl: newProfPicURL, bannerPicUrl: newBannerPicURL},
-        create: {uName: userName, bio: newBio, authorAddress: ownerAddress, email: newEmail, profPicUrl: newProfPicURL, bannerPicUrl: newBannerPicURL, winnings:0, waged:0} ,
         });
     res.status(200).json(userData);
   } catch (error) {

@@ -18,6 +18,8 @@ import { ConnectWallet} from "../components/ConnectWallet";
 import toast, {Toaster} from "react-hot-toast";
 import { StarField } from '@/components/star-field';
 import {Header} from '@/components/header';
+import { config } from "@/config";
+import { getAccount } from "@wagmi/core";
 export default function Home() {
   const [currentSide, setCurrentSide] = useState('heads');
   const [coinsAmount, setCoinsAmount] = useState(1);
@@ -85,27 +87,39 @@ export default function Home() {
       setMinHeadsTails(coinsAmount);
     }
   }, [coinsAmount]);
+  function flipCoin() {
+    const addr = getAccount(config).address;
+    fetch(`./api/addEvent?ownerAddress=${addr}&coins=5&winnings=100&wager=50&outcome=false`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+      })
+      .then(() => {
+        toast.success('Congratulations you won!');
+      });
+  }
 
   return (
-    <div className="min-h-screen flex flex-col p-4 relative overflow-hidden">
+    <div className="min-h-screen w-screen p-4 relative overflow-hidden flex flex-col items-center ">
       <Head>
         <title>Zaar Flip</title>
         <meta name="description" content="A first-in-class NFT trading platform for traders of every caliber." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Toaster/>
+      <Header/>
 
       <StarField/>
 
+
       <div id="planet" className="hidden absolute bottom-0 left-0 w-64 h-64 rounded-full bg-yellow-300 opacity-20"></div>
-      <div className="hidden absolute bottom-0 left-0 w-64 h-64 flex items-center justify-center">
-        <Image src="/logo-3d.png" alt="Logo" width={160} height={160} className="hidden object-contain z-10 opacity-40" />
+      <div className=" hidden absolute bottom-0 left-0 w-64 h-64 flex items-center justify-center">
+        <Image src="/logo-3d.png" alt="Logo" width={160} height={160} className="w-[100px] h-[100px]  object-contain z-50 opacity-40 bg-red-400" />
       </div>
+    <div className="container container-fluid  w-screen h-full flex flex-grow items-center justify-center  ">
 
-      <Header/>
-
-      <main className="flex-grow flex flex-col justify-between relative z-20">
-        <div className="flex-grow flex flex-col items-center justify-center">
+      <main className="contiainer flex-grow flex flex-col justify-between relative z-20">
+        <div className=" flex-grow flex flex-col items-center justify-center">
           <div id="coins-display" ref={coinsDisplayRef} className="w-full h-[260px] flex items-center justify-center mb-2">
             {/* Coins will be dynamically added here */}
           </div>
@@ -335,13 +349,16 @@ export default function Home() {
 
         <button
 
-          onClick={() => {if(coinsDisplayRef.current){flipCoins(coinsDisplayRef.current, minHeadsTails, currentSide)};}}
+          onClick={() => {if(coinsDisplayRef.current){
+            flipCoins(coinsDisplayRef.current, minHeadsTails, currentSide);
+            flipCoin();
+          };}}
           className="hidden sm:block gradient-button text-black px-6 py-2 rounded-sm font-bold mt-3 mx-auto block text-sm uppercase"
         >
           FLIP COIN - ${wager.toFixed(2)}
         </button>
       </main>
-
+      </div>
     </div>
   );
 }
