@@ -15,6 +15,8 @@ import { StarField } from '@/components/star-field';
 import {Header} from '@/components/header';
 import { config } from "@/config";
 import { getAccount } from "@wagmi/core";
+import { createConfetti } from '@/components/confetti';
+
 export default function Home() {
   const [currentSide, setCurrentSide] = useState('heads');
   const [coinsAmount, setCoinsAmount] = useState(1);
@@ -80,6 +82,8 @@ export default function Home() {
     }
   }, [coinsAmount]);
   function flipCoin() {
+    const flipSound = new Audio('/coin-flip-sound.mp3'); // Make sure to add this sound file to your public folder
+    flipSound.play();
     const addr = getAccount(config).address;
     fetch(`./api/addEvent?ownerAddress=${addr}&coins=5&winnings=100&wager=50&outcome=false`)
       .then((response) => response.json())
@@ -88,11 +92,12 @@ export default function Home() {
       })
       .then(() => {
         toast.success('Congratulations you won!');
+        createConfetti();
       });
   }
 
   return (
-    <div className="min-h-screen w-screen  relative overflow-hidden flex flex-col items-center justify-start ">
+    <div className=" min-h-screen w-screen  relative overflow-hidden flex flex-col items-center justify-start ">
       <Head>
         <title>Zaar Flip</title>
         <meta name="description" content="A first-in-class NFT trading platform for traders of every caliber." />
