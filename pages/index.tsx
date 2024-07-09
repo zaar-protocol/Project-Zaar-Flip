@@ -99,7 +99,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Toaster/>
-      <Header/>
+      <div className="-mr-8"><Header/></div>
       <StarField/>
 
       <div id="planet" className="hidden absolute bottom-0 left-0 w-64 h-64 rounded-full bg-yellow-300 opacity-20"></div>
