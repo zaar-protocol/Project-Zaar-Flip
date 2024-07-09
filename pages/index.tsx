@@ -3,15 +3,10 @@ import Head from 'next/head';
 import Image from 'next/image';
 import { useEffect, useState, useRef } from 'react';
 import {
-  getLayoutClass,
-  getCoinSize,
-  calculateCombinations,
   updateCoinsDisplay,
   updateWinChance,
   updatePotentialWin,
   flipCoins,
-  getHeadsImage,
-  getTailsImage,
   WinChanceType,
 } from '../components/zaarFlipUtils';
 import { ConnectWallet} from "../components/ConnectWallet";
@@ -30,7 +25,6 @@ export default function Home() {
   const coinsDisplayRef = useRef(null);
   const [tooltipOpen, setTooltipOpen] = useState(false);
   
-
   useEffect(() => {
     updateAll();
   }, [coinsAmount, minHeadsTails, wager]);
@@ -45,12 +39,10 @@ export default function Home() {
 
   function handlePresetChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const [coins, minHeadsTails] = e.target.value.split(':');
+    setCoinsAmount(parseInt(coins));
     setMinHeadsTails(parseInt(minHeadsTails));
     if(parseInt(minHeadsTails) > parseInt(coins)) {
       setCoinsAmount(parseInt(minHeadsTails));
-    }
-    else{
-      setCoinsAmount(parseInt(coins));
     }
   }
 
@@ -108,15 +100,13 @@ export default function Home() {
       </Head>
       <Toaster/>
       <Header/>
-
       <StarField/>
 
-
       <div id="planet" className="hidden absolute bottom-0 left-0 w-64 h-64 rounded-full bg-yellow-300 opacity-20"></div>
-      <div className=" hidden absolute bottom-0 left-0 w-64 h-64 flex items-center justify-center">
-        <Image src="/logo-3d.png" alt="Logo" width={160} height={160} className="w-[100px] h-[100px]  object-contain z-50 opacity-40 bg-red-400" />
-      </div>
-    <div className="container container-fluid  w-screen h-full flex flex-grow items-center justify-center  ">
+        <div className=" hidden absolute bottom-0 left-0 w-64 h-64 flex items-center justify-center">
+          <Image src="/logo-3d.png" alt="Logo" width={160} height={160} className="w-[100px] h-[100px]  object-contain z-50 opacity-40 bg-red-400" />
+        </div>
+      <div className="container container-fluid  w-screen h-full flex flex-grow items-center justify-center  ">
 
       <main className="contiainer flex-grow flex flex-col justify-between relative z-20">
         <div className=" flex-grow flex flex-col items-center justify-center">

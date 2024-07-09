@@ -16,7 +16,6 @@ const client = new QueryClient();
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    
     <WagmiProvider config={config}>
       <QueryClientProvider client={client}>
         <RainbowKitProvider theme={darkTheme({accentColor:'#e3bf00', accentColorForeground:'black', overlayBlur:'small'})}>
@@ -27,8 +26,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           <Component {...pageProps} />
         </RainbowKitProvider>
       </QueryClientProvider>
-    </WagmiProvider>
-    
+    </WagmiProvider>    
   );
 }
 

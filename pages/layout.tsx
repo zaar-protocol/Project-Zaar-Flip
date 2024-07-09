@@ -12,7 +12,6 @@ export default function RootLayout({
     <html lang="en">
       <body className="">
         <div className="max-w-screen overflow-x-hidden no-scrollbar">
-      
           {children}
         </div>
       </body>

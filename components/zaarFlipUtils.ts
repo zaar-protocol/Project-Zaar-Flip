@@ -44,7 +44,8 @@ export function getLayoutClass(amount:number) {
         coin.style.backgroundImage = index < minHeadsTails ? getHeadsImage(currentSide) : getTailsImage(currentSide);
       } else {
         coin.classList.add('coin-exit');
-        setTimeout(() => coin.remove(), 300);
+        coin.remove();
+        //setTimeout(() => coin.remove(), 300);
       }
     });
 
