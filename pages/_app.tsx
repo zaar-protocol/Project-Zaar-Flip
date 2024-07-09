@@ -22,7 +22,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <RainbowKitProvider theme={darkTheme({accentColor:'#e3bf00', accentColorForeground:'black', overlayBlur:'small'})}>
         <Head>
           <title>Zaar</title>
-          <link rel="icon" href="/images/favicon.png"/>
+          <link rel="icon" href="/favicon.ico"/>
         </Head>
           <Component {...pageProps} />
         </RainbowKitProvider>

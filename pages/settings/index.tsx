@@ -10,7 +10,7 @@ import { config } from "@/config";
 import toast, { Toaster } from 'react-hot-toast';
 import { StarField } from "@/components/star-field";
 import { type PutBlobResult } from '@vercel/blob';
-
+import Head from 'next/head';
 export const Settings = () => {
   const [newVanity, setNewVanity] = React.useState("");
   const [currentVanity, setCurrentVanity] = React.useState("Set New Vanity");
@@ -119,7 +119,12 @@ export const Settings = () => {
 
 
   return (
-    <div className="no-scrollbar h-screen overflow-hidden ">
+    <div className="h-screen ">
+      <Head>
+        <title>Zaar Flip</title>
+        <meta name="description" content="A first-in-class NFT trading platform for traders of every caliber." />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <Toaster />
       <Header />
       <StarField/>

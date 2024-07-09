@@ -100,7 +100,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen w-screen p-4 relative overflow-hidden flex flex-col items-center ">
+    <div className="min-h-screen w-screen  relative overflow-hidden flex flex-col items-center justify-start ">
       <Head>
         <title>Zaar Flip</title>
         <meta name="description" content="A first-in-class NFT trading platform for traders of every caliber." />

@@ -71,7 +71,12 @@ export default function Profile() {
 
   }, [addr]); 
   return (
-    <div className="   h-screen overflow-hidden z-20">      
+    <div className=" h-screen overflow-hidden z-20 no-scrollbar">    
+      <Head>
+        <title>Zaar Flip</title>
+        <meta name="description" content="A first-in-class NFT trading platform for traders of every caliber." />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>  
       <Header/>
       <StarField/>
       <div className=" container container-fluid mt-[60px] container-fluid mx-auto py-6 pt-0">
