@@ -119,7 +119,7 @@ export const Settings = () => {
 
 
   return (
-    <div className="h-screen ">
+    <div className="h-screen pl-4">
       <Head>
         <title>Zaar Flip</title>
         <meta name="description" content="A first-in-class NFT trading platform for traders of every caliber." />
@@ -173,7 +173,7 @@ export const Settings = () => {
               </div>
               {/* Profile Content */}
               <div className="w-full lg:w-3/4 px-4 z-10">
-                <div className="bg-black p-2 sm:p-6 py-3 rounded-sm">
+                <div className="bg-transparent p-2 sm:p-6 py-3 rounded-sm">
                   <h1 className="font-semibold text-3xl text-yellow uppercase mb-8">
                     Profile details
                   </h1>

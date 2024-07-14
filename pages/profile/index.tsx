@@ -71,7 +71,7 @@ export default function Profile() {
 
   }, [addr]); 
   return (
-    <div className=" h-screen overflow-hidden z-20 no-scrollbar">    
+    <div className="pl-4 h-screen overflow-hidden z-20 no-scrollbar">    
       <Head>
         <title>Zaar Flip</title>
         <meta name="description" content="A first-in-class NFT trading platform for traders of every caliber." />
