@@ -9,9 +9,16 @@ import Head from 'next/head';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Zaar',
-  description: 'A first-in-class NFT trading platform for traders of every caliber.',
-}
+  title: {
+    default: 'Zaar',
+    template: '%s | Zaar',
+  },
+  description: 'Win big with Zaar - Crypto Coin Flip For The People',
+  twitter: {
+    card: 'summary_large_image',
+  },
+  }
+
 const client = new QueryClient();
 
 function MyApp({ Component, pageProps }: AppProps) {

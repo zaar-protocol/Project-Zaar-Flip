@@ -11,6 +11,10 @@ import toast, { Toaster } from 'react-hot-toast';
 import { StarField } from "@/components/star-field";
 import { type PutBlobResult } from '@vercel/blob';
 import Head from 'next/head';
+import { Metadata } from 'next';
+export const metadata: Metadata = {
+  title: "Settings",
+}
 export const Settings = () => {
   const [newVanity, setNewVanity] = React.useState("");
   const [currentVanity, setCurrentVanity] = React.useState("Set New Vanity");

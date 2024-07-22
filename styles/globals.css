@@ -5,11 +5,11 @@
 /* Add any custom styles here */
 @font-face {
   font-family: 'W95FA';
-  src: url(/assets/fonts/W95FA.woff2) format('woff2'),
-       url(/assets/fonts/W95FA.woff) format('woff');
+  src: url(/fonts/W95FA.woff2) format('woff2'),
+       url(/fonts/W95FA.woff) format('woff');
 }
 body {
-  font-family: 'W95FA', arial;
+  font-family: 'W95FA';
   letter-spacing: 1px;
   background-color: #000;
   color: #929292;
@@ -342,24 +342,34 @@ dialog[open] {
   transition: opacity .2s;
   border-radius: 4px;
 }
-
+.slider::-webkit-slider-thumb:hover {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 23px;
+  height: 23px;
+  cursor: pointer;
+  border-radius: 50%;
+}
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 20px;
   height: 20px;
-  background: #ecc94b;
+  background: radial-gradient(ellipse at center, #f1da2a, #7c6402);
   cursor: pointer;
   border-radius: 50%;
+  transition: all 0.3s ease-in-out;
+
 }
 
 .slider::-moz-range-thumb {
   width: 20px;
   height: 20px;
-  background: #ecc94b;
+  background: radial-gradient(ellipse at center, #f1da2a, #7c6402);
   cursor: pointer;
   border-radius: 50%;
 }
+
 
 .coin {
   width: 40px;
@@ -382,6 +392,9 @@ dialog[open] {
 .coin-exit {
   transform: scale(0) rotate(-720deg);
   opacity: 0;
+}
+.coin-side:hover{
+  transform: scale(1.1);
 }
 
 .coin-side {
@@ -463,6 +476,10 @@ dialog[open] {
   bottom: 0;
   background: radial-gradient(circle at 10% 90%, rgba(255,255,255,0.2) 0%, transparent 5%);
 }
+.gradient-button:hover{
+  transform: translateY(1);
+
+}
 .gradient-button {
   background: linear-gradient(to right, #ffe566, #e3bf00);
   border: none;
@@ -506,4 +523,10 @@ input[type=number] {
   height: 2rem; /* 8 * 0.25rem */
   font-size: 0.875rem; /* 14px, since 1rem = 16px */
   outline: none;
+}
+
+
+
+.options li:hover {
+  background-color: gray; /* hover effect */
 }

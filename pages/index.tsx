@@ -17,6 +17,7 @@ import { config } from "@/config";
 import { getAccount } from "@wagmi/core";
 import { createConfetti } from '@/components/confetti';
 import { Tooltip } from '@/components/tooltip';
+import { FaChevronUp, FaChevronDown } from 'react-icons/fa6';
 
 export default function Home() {
   const [currentSide, setCurrentSide] = useState('heads');
@@ -26,6 +27,8 @@ export default function Home() {
   const [potentialWin, setPotentialWin] = useState(1.96);
   const [winChance, setWinChance] = useState<WinChanceType>({ toWin: 1, chance: 50.00 });
   const coinsDisplayRef = useRef(null);
+  const [presetDropdown, setPresetDropdown] = useState(false);
+  const [presetSelection, setPresetSelection] = useState("1 : 1 (x1.96)");
   
   useEffect(() => {
     updateAll();
@@ -39,8 +42,8 @@ export default function Home() {
     setPotentialWin(Number(updatePotentialWin(coinsAmount, minHeadsTails, wager)));
   }
 
-  function handlePresetChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const [coins, minHeadsTails] = e.target.value.split(':');
+  function handlePresetChange(input:string) {
+    const [coins, minHeadsTails] = input.split(':');
     setCoinsAmount(parseInt(coins));
     setMinHeadsTails(parseInt(minHeadsTails));
     if(parseInt(minHeadsTails) > parseInt(coins)) {
@@ -111,11 +114,11 @@ export default function Home() {
         <div className=" hidden absolute bottom-0 left-0 w-64 h-64 flex items-center justify-center">
           <Image src="/logo-3d.png" alt="Logo" width={160} height={160} className="w-[100px] h-[100px]  object-contain z-50 opacity-40 bg-red-400" />
         </div>
-      <div className="container container-fluid  w-screen h-full flex flex-grow items-center justify-center  ">
+      <div className="container container-fluid  w-screen h-[800px] items-center justify-center  ">
 
-      <main className="contiainer flex-grow flex flex-col justify-between relative z-20">
-        <div className=" flex-grow flex flex-col items-center justify-center">
-          <div id="coins-display" ref={coinsDisplayRef} className="w-full h-[260px] flex items-center justify-center mb-2">
+      <main className="contiainer w-full  h-full flex flex-col justify-center relative z-20">
+        <div className="  flex flex-col h-[300px] items-center justify-center">
+          <div id="coins-display" ref={coinsDisplayRef} className="bg-white absolute top-200 bg-whitish w-full h-[360px] flex items-center justify-center mb-2">
             {/* Coins will be dynamically added here */}
           </div>
 
@@ -149,7 +152,7 @@ export default function Home() {
             <div className="w-1/2 pl-2">
             <button
               onClick={() => {if(coinsDisplayRef.current){flipCoins(coinsDisplayRef.current, minHeadsTails, currentSide)};}}
-              className="gradient-button text-black px-6 py-2 rounded-sm font-bold mt-3 mx-auto block text-sm uppercase"
+              className="gradient-button text-black px-6 py-2  hover:-translate-y-1 transition duration-700 ease-in-out rounded-sm font-bold mt-3 mx-auto block text-sm uppercase transition duration-700 ease-in-out"
             >
               FLIP COIN - ${wager.toFixed(2)}
             </button>
@@ -170,8 +173,8 @@ export default function Home() {
                 />
               </div>
               <div className="flex">
-                <button onClick={handleHalfWager} className="wager-button bg-gray px-2 py-1 rounded-sm h-8 text-sm mr-3">1/2</button>
-                <button onClick={handleDoubleWager} className="wager-button bg-gray px-2 py-1 rounded-sm h-8 text-sm">x2</button>
+                <button onClick={handleHalfWager} className="wager-button hover:bg-gray hover:bg-lightGray px-2 py-1 rounded-sm h-8 text-sm mr-3">1/2</button>
+                <button onClick={handleDoubleWager} className="wager-button hover:bg-gray hover:bg-lightGray px-2 py-1 rounded-sm h-8 text-sm">x2</button>
               </div>
             </div>
           </div>
@@ -228,19 +231,41 @@ export default function Home() {
           <div>
             <div className="text-light-green mb-1 text-sm  flex items-center ">PRESETS
             </div>
-            <select className="bg-dark-gray text-light-green rounded-sm p-2 w-full h-10 text-sm focus:outline-none focus:border focus:border-yellow-400" onChange={handlePresetChange}>
-              <option value="1:1:1.96">1 : 1 (x1.96)</option>
-              <option value="10:5:1.57">10 : 5 (x1.57)</option>
-              <option value="4:3:3.14">4 : 3 (x3.14)</option>
-              <option value="6:5:8.96">6 : 5 (x8.96)</option>
-              <option value="9:8:50.8">9 : 8 (x50.8)</option>
-              <option value="10:10:1003.52">10 : 10 (x1003.52)</option>
-            </select>
+            
+            <div className="z-40 relative flex flex-col flex-grow text-light-green rounded-sm w-full h-10 text-sm focus:outline-none focus:border focus:border-yellow-400">
+                <div className={`${presetDropdown? "border-light-gray-all":" "} flex flex-row justify-between bg-dark-gray items-center w-full text-light-green h-10 px-2`} onClick={()=>{setPresetDropdown(!presetDropdown);}}>
+                  {presetSelection} 
+                  {presetDropdown? <FaChevronDown/> : <FaChevronUp/>}
+                </div>
+                <div className="absolute flex flex-col w-full mt-10 flex flex-grow">
+                <div onClick={()=>{handlePresetChange("10:5:1.57"); setPresetSelection("10 : 5 (x1.57)"); setPresetDropdown(false);}} 
+                className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection=="10 : 5 (x1.57)" ? "text-white" : ""} ${presetDropdown? "block" : "hidden"}`}>
+                 10 : 5 (x1.57)
+                </div>
+                <div onClick={()=>{handlePresetChange("4:3:3.14"); setPresetSelection("4 : 3 (x3.14)"); setPresetDropdown(false);}} 
+                className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection=="4 : 3 (x3.14)" ? "text-white" : ""} ${presetDropdown? "block" : "hidden"}`}>
+                 4 : 3 (x3.14)
+                </div>
+                <div onClick={()=>{handlePresetChange("6:5:8.96"); setPresetSelection("6 : 5 (x8.96)"); setPresetDropdown(false);}} 
+                className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection=="6 : 5 (x8.96)" ? "text-white" : ""} ${presetDropdown? "block" : "hidden"}`}>
+                 6 : 5 (x8.96)
+                </div>
+                <div onClick={()=>{handlePresetChange("9:8:50.8"); setPresetSelection("9 : 8 (x50.8)"); setPresetDropdown(false);}} 
+                className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection=="9 : 8 (x50.8)" ? "text-white" : ""} ${presetDropdown? "block" : "hidden"}`}>
+                9 : 8 (x50.8)
+                </div>
+                <div onClick={()=>{handlePresetChange("10:10:1003.52"); setPresetSelection("10 : 10 (x1003.52)"); setPresetDropdown(false);}} 
+                className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection=="10 : 10 (x1003.52)" ? "text-white" : ""} ${presetDropdown? "block" : "hidden"}`}>
+                10 : 10 (x1003.52)
+                </div>
+                
+                </div>
+                </div>
           </div>
         </div>
 
         {/* Desktop layout */}
-        <div className="hidden md:grid grid-cols-3 gap-4 w-full max-w-4xl mx-auto mb-4">
+        <div className="hidden md:grid grid-cols-3 gap-4 w-full max-w-4xl mx-auto mb-4 h-50">
           <div className="space-y-3">
             <div>
             <div className="text-light-green mb-1 text-sm flex items-center">
@@ -297,8 +322,8 @@ export default function Home() {
                   />
                 </div>
                 <div className="flex">
-                  <button onClick={handleHalfWager} className="wager-button bg-gray px-2 py-1 rounded-sm h-8 text-sm mr-3">1/2</button>
-                  <button onClick={handleDoubleWager} className="wager-button bg-gray px-2 py-1 rounded-sm h-8 text-sm">x2</button>
+                  <button onClick={handleHalfWager} className="wager-button hover:bg-gray  px-2 py-1 rounded-sm h-8 text-sm mr-3">1/2</button>
+                  <button onClick={handleDoubleWager} className="mybutton hover:bg-gray hover:text-md px-2 py-1 rounded-sm h-8 text-sm">x2</button>
                 </div>
               </div>
             </div>
@@ -314,14 +339,47 @@ export default function Home() {
               <div className="text-light-green mb-1 text-sm">PRESETS
               <Tooltip text={"Presets offer quick selections of coin amounts and minimum wins. Each option shows the number of coins, required wins, and potential payout multiplier. Choose a preset to instantly set up your game configuration."}/>
               </div>
-              <select className="bg-dark-gray text-light-green rounded-sm p-2 w-full h-10 text-sm focus:outline-none focus:border focus:border-yellow-400" onChange={handlePresetChange}>
-                <option value="1:1:1.96">1 : 1 (x1.96)</option>
+              {/*<select className="bg-dark-gray text-light-green rounded-sm p-2 w-full h-10 text-sm focus:outline-none focus:border focus:border-yellow-400" onChange={()=>{handlePresetChange("")}}>
+                <option className="hover:bg-gray" value="1:1:1.96">1 : 1 (x1.96)</option>
                 <option value="10:5:1.57">10 : 5 (x1.57)</option>
                 <option value="4:3:3.14">4 : 3 (x3.14)</option>
                 <option value="6:5:8.96">6 : 5 (x8.96)</option>
                 <option value="9:8:50.8">9 : 8 (x50.8)</option>
                 <option value="10:10:1003.52">10 : 10 (x1003.52)</option>
-              </select>
+              </select>*/}
+              <div className="z-40 relative flex flex-col flex-grow text-light-green rounded-sm w-full h-10 text-sm focus:outline-none focus:border focus:border-yellow-400">
+                <div className={`${presetDropdown? "border-light-gray-all":" "} flex flex-row justify-between bg-dark-gray items-center w-full text-light-green h-10 px-2`} onClick={()=>{setPresetDropdown(!presetDropdown);}}>
+                  {presetSelection} 
+                  {presetDropdown? <FaChevronDown/> : <FaChevronUp/>}
+                </div>
+                <div className="absolute flex flex-col w-full mt-10 flex flex-grow">
+                <div onClick={()=>{handlePresetChange("10:5:1.57"); setPresetSelection("10 : 5 (x1.57)"); setPresetDropdown(false);}} 
+                className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection=="10 : 5 (x1.57)" ? "text-white" : ""} ${presetDropdown? "block" : "hidden"}`}>
+                 10 : 5 (x1.57)
+                </div>
+                <div onClick={()=>{handlePresetChange("4:3:3.14"); setPresetSelection("4 : 3 (x3.14)"); setPresetDropdown(false);}} 
+                className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection=="4 : 3 (x3.14)" ? "text-white" : ""} ${presetDropdown? "block" : "hidden"}`}>
+                 4 : 3 (x3.14)
+                </div>
+                <div onClick={()=>{handlePresetChange("6:5:8.96"); setPresetSelection("6 : 5 (x8.96)"); setPresetDropdown(false);}} 
+                className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection=="6 : 5 (x8.96)" ? "text-white" : ""} ${presetDropdown? "block" : "hidden"}`}>
+                 6 : 5 (x8.96)
+                </div>
+                <div onClick={()=>{handlePresetChange("9:8:50.8"); setPresetSelection("9 : 8 (x50.8)"); setPresetDropdown(false);}} 
+                className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection=="9 : 8 (x50.8)" ? "text-white" : ""} ${presetDropdown? "block" : "hidden"}`}>
+                9 : 8 (x50.8)
+                </div>
+                <div onClick={()=>{handlePresetChange("10:10:1003.52"); setPresetSelection("10 : 10 (x1003.52)"); setPresetDropdown(false);}} 
+                className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection=="10 : 10 (x1003.52)" ? "text-white" : ""} ${presetDropdown? "block" : "hidden"}`}>
+                10 : 10 (x1003.52)
+                </div>
+                
+                </div>
+                {/*<div onClick={()=>{handlePresetChange("10:5:1.57"); setPresetSelection("10 : 5 (x1.57)");}} className={`${presetDropdown? "block" : "hidden"} bg-dark-gray absolute w-full`}>
+                  <div onClick={()=>{handlePresetChange("10:5:1.57"); setPresetSelection("10 : 5 (x1.57)");}}>10 : 5 (x1.57)</div>
+                  <div className={`text-center hover:bg-gray w-full ${presetSelection=="10 : 5 (x1.57)"? " text-white " : "text-light-gray"}`} onClick={()=>{handlePresetChange("10:5:1.57"); setPresetSelection("10 : 5 (x1.57)");}}>4 : 3 (x3.14)</div>
+                </div>*/}
+            </div>
             </div>
             <div>
               <div className="text-light-green mb-1 text-sm mt-6">PICK SIDE:
@@ -351,7 +409,7 @@ export default function Home() {
             flipCoins(coinsDisplayRef.current, minHeadsTails, currentSide);
             flipCoin();
           };}}
-          className="hidden sm:block gradient-button text-black px-6 py-2 rounded-sm font-bold mt-3 mx-auto block text-sm uppercase"
+          className="hidden sm:block gradient-button hover:-translate-y-1 transition duration-700 ease-in-out text-black px-6 py-2 rounded-sm font-bold mt-3 mx-auto block text-sm uppercase"
         >
           FLIP COIN - ${wager.toFixed(2)}
         </button>

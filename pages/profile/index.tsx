@@ -13,6 +13,11 @@ import { config } from "./../../config";
 import { FaEthereum } from 'react-icons/fa';
 import { encode } from 'base64-arraybuffer';
 import {EventBox} from '@/components/profileComponents/event-box';
+import { Metadata } from 'next';
+export const metadata: Metadata = {
+  title: "Profile",
+}
+
 export default function Profile() {
   const [activeTab, setActiveTab] = useState('ALL');
   const account = useAccount();
@@ -72,11 +77,7 @@ export default function Profile() {
   }, [addr]); 
   return (
     <div className="pl-4 h-screen overflow-hidden z-20 no-scrollbar">    
-      <Head>
-        <title>Zaar Flip</title>
-        <meta name="description" content="A first-in-class NFT trading platform for traders of every caliber." />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>  
+      
       <Header/>
       <StarField/>
       <div className=" container container-fluid mt-[60px] container-fluid mx-auto py-6 pt-0">
