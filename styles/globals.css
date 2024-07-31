@@ -120,9 +120,20 @@ a:hover {
 .bg-yellow {
   background-color: #e3bf00 !important;
 }
+
 .bg-gray-yellow {
   background-color: #242420;
 }
+.text-red {
+  color: #fe749b;
+}
+.bg-red {
+  background-color: #fe749b;
+}
+.bg-purple {
+  background-color: #a695ff;
+}
+
 .text-lime-green {
   color: #ade252
 }

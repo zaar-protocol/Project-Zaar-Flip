@@ -18,6 +18,13 @@ import { getAccount } from "@wagmi/core";
 import { createConfetti } from '@/components/confetti';
 import { Tooltip } from '@/components/tooltip';
 import { FaChevronUp, FaChevronDown } from 'react-icons/fa6';
+import {
+  useSimulateZaarflipFlip
+} from "@/generated";
+import { writeContract } from '@wagmi/core'
+import { waitForTransactionReceipt } from '@wagmi/core'
+
+
 
 export default function Home() {
   const [currentSide, setCurrentSide] = useState('heads');
@@ -29,7 +36,13 @@ export default function Home() {
   const coinsDisplayRef = useRef(null);
   const [presetDropdown, setPresetDropdown] = useState(false);
   const [presetSelection, setPresetSelection] = useState("1 : 1 (x1.96)");
-  
+
+  const addr = "0x000000000000000000000000000000000000000000000";
+  //get prepared function to flip
+  const { data: flip}: {data: any} = useSimulateZaarflipFlip({
+    args: [BigInt(wager), BigInt(coinsAmount), BigInt(minHeadsTails), addr ],
+  });
+
   useEffect(() => {
     updateAll();
   }, [coinsAmount, minHeadsTails, wager]);
@@ -84,9 +97,25 @@ export default function Home() {
       setMinHeadsTails(coinsAmount);
     }
   }, [coinsAmount]);
-  function flipCoin() {
+
+
+  async function flipContract(){
+    try{
+      let myhash = await writeContract(config, flip!.request);
+      let receipt = await waitForTransactionReceipt(config, { hash: myhash });
+      console.log(receipt.status.toString())
+    }
+    catch (error){
+      console.log(error);
+      }
+  }
+ 
+
+
+ function flipCoin() {
     const flipSound = new Audio('/coin-flip-sound.mp3'); // Make sure to add this sound file to your public folder
     flipSound.play();
+    flipContract();
     const addr = getAccount(config).address;
     fetch(`./api/addEvent?ownerAddress=${addr}&coins=5&winnings=100&wager=50&outcome=false`)
       .then((response) => response.json())

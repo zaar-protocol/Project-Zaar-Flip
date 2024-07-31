@@ -278,45 +278,7 @@ export const Settings = () => {
 
                         {/* Additional content here */}
                       </div>
-                      <div className="flex flex-col ml-0 sm:ml-10 mt-3">
-                        {/* Profile Image Title */}
-                        <div className="mb-4">
-                          <h3 className="text-lg text-light-green uppercase">
-                            Profile Banner
-                          </h3>
-                        </div>
-                        <div className="mb-6">
-                          <div className="rounded-sm w-24 h-24 overflow-hidden border-1 border-dark-gray-all">
-                            {newProfileBanner? <Image
-                              width={100}
-                              height={100}
-                              src={newProfileBanner}
-                              alt="Profile Banner"
-                            />
-                            : currentProfileBanner?
-                            <Image
-                              width={100}
-                              height={100}
-                              src={currentProfileBanner}
-                              alt="Profile Banner"
-                            /> :
-                            <Image
-                              width={100}
-                              height={100}
-                              src="/banner.png"
-                              alt="Profile Banner "
-                            />
-                            }
-                          </div>
-                        </div>
-                        <input
-                          name="file"
-                          ref={inputFileRef}
-                          type="file"
-                          required
-                          onChange={handleBannerFileChange}
-                        />
-                      </div>
+                      
                       <button
                         className="block md:hidden bg-yellow mt-[25px] w-full border-2 border-yellow p-2 rounded-sm uppercase  text-center text-black  hover:bg-hoveryellow "
                         onClick={() => {
