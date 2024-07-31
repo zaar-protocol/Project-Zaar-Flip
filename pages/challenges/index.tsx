@@ -15,7 +15,7 @@ import { EventBox } from "@/components/profileComponents/event-box";
 import { Metadata } from "next";
 import ChallengeBox from "@/components/challengeComponents/challengeBox";
 import { challenge, userChallenge } from "@/types/challenge";
-import toast, {Toaster} from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { getAccount } from "@wagmi/core";
 
 export const metadata: Metadata = {
@@ -29,20 +29,22 @@ const calculateTimeRemaining = () => {
 
   const difference = Number(midnight) - Number(now);
 
-  const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const hours = Math.floor(
+    (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+  );
   const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
   const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
   return { hours, minutes, seconds };
 };
 
-
 export default function Profile() {
   const [dailyChallenges, setDailyChallenges] = useState<challenge[]>([
     {
       id: 1,
       title: "Seed to Whale",
-      description: "Achieve 2,000x account growth starting from a minimum $1 bet",
+      description:
+        "Achieve 2,000x account growth starting from a minimum $1 bet",
       reward: "$1,000 in stablecoins",
       difficulty: "Hard",
       steps: 1,
@@ -50,7 +52,8 @@ export default function Profile() {
     {
       id: 2,
       title: "Lucky 7",
-      description: "Win 7 consecutive coin flips with a minimum $1 bet each flip",
+      description:
+        "Win 7 consecutive coin flips with a minimum $1 bet each flip",
       reward: "$500 in stablecoins",
       difficulty: "Hard",
       steps: 7,
@@ -58,7 +61,8 @@ export default function Profile() {
     {
       id: 3,
       title: "Whale’s Paradise",
-      description: "Win 5 consecutive coin flips with a minimum $1,000 bet each",
+      description:
+        "Win 5 consecutive coin flips with a minimum $1,000 bet each",
       reward: "$5,000 in stablecoins",
       difficulty: "Expert",
       steps: 5,
@@ -66,7 +70,8 @@ export default function Profile() {
     {
       id: 4,
       title: "Make It All Back In One Trade",
-      description: "Recover from a 90% account loss to double your initial balance, minimum $500 within 24 hours",
+      description:
+        "Recover from a 90% account loss to double your initial balance, minimum $500 within 24 hours",
       reward: "$1,000 in stablecoins",
       difficulty: "Medium",
       steps: 5,
@@ -74,7 +79,8 @@ export default function Profile() {
     {
       id: 5,
       title: "Speed Demon",
-      description: "Complete 1,000 coin flips within 1 hour (minimum $100 bet each)",
+      description:
+        "Complete 1,000 coin flips within 1 hour (minimum $100 bet each)",
       reward: " $1,000 in stablecoins",
       difficulty: "Expert",
       steps: 5,
@@ -82,13 +88,18 @@ export default function Profile() {
     {
       id: 6,
       title: "Noob City",
-      description: "Complete 500 coin flips within 1 hour (minimum $50 bet each)",
+      description:
+        "Complete 500 coin flips within 1 hour (minimum $50 bet each)",
       reward: "$500 in stablecoins",
       difficulty: "Easy",
       steps: 5,
     },
   ]);
-  const [timeRemaining, setTimeRemaining] = useState(calculateTimeRemaining());
+  const [timeRemaining, setTimeRemaining] = useState<{
+    hours: number;
+    minutes: number;
+    seconds: number;
+  } | null>(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -105,7 +116,7 @@ export default function Profile() {
 
   return (
     <div className="pl-4 h-screen w-full max-w-screen max-h-screen overflow-y-hidden overflow-x-hidden z-20 no-scrollbar">
-      <Toaster/>
+      <Toaster />
       <Header />
       <StarField />
       <div className=" container container-fluid mt-[60px] container-fluid mx-auto py-6 pt-0 w-[50%] min-w-[350px] ">
@@ -133,9 +144,19 @@ export default function Profile() {
                   </svg>
                   <p className="text-gray text-lg">
                     New challenges in:{" "}
-                    <span className="text-light-green font-semibold">
-                      {timeRemaining.hours.toString() +":"+ timeRemaining.minutes.toString() +":"+ timeRemaining.seconds.toString()}
-                    </span>
+                    {timeRemaining ? (
+                      <span className="text-light-green font-semibold">
+                        {timeRemaining.hours.toString().padStart(2, "0") +
+                          ":" +
+                          timeRemaining.minutes.toString().padStart(2, "0") +
+                          ":" +
+                          timeRemaining.seconds.toString().padStart(2, "0")}
+                      </span>
+                    ) : (
+                      <span className="text-light-green font-semibold">
+                        Loading...
+                      </span>
+                    )}
                   </p>
                 </div>
               </div>
