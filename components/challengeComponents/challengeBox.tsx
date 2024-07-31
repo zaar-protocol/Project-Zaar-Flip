@@ -1,11 +1,43 @@
 import Image from "next/image";
 import { challenge, userChallenge } from "@/types/challenge";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import toast, {Toaster} from "react-hot-toast";
+import { getAccount } from "@wagmi/core";
+import { config } from "./../../config";
 
 export default function ChallengeBox({ challenge }: { challenge: challenge }) {
   const [progress, setProgress] = useState(-1);
   const stepsArray = Array.from({ length: challenge.steps}, (_, index) => index + 1);
+  const address = getAccount(config).address;
+  useEffect(() => {
+    if (address) {
+      fetch(`/api/getProfile?ownerAddress=${address}`)
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+        if(data==null){
+            fetch(`/api/updateProfile?ownerAddress=${address}&challengeId=${challenge.id}&challengeProgress=-1`);
+          }
+        else{
+          setProgress(data.challengeProgress);
+        }
 
+        });
+    }
+  }, [address]);
+  function acceptChallenge() {
+    const addr = getAccount(config).address;
+    if (!addr){
+      toast.error("Please connect your wallet first");
+      return;
+    }
+    else{
+      fetch(`/api/updateChallengeProgress?ownerAddress=${addr}&challengeId=${challenge.id}&challengeProgress==0`);
+      toast.success("Challenge accepted!");
+      setProgress(0);
+      return;
+    }
+  }
   return (
     <div className="w-full bg-dark-gray rounded-sm p-6 shadow-xl">
       <div className="flex items-center mb-4">
@@ -39,7 +71,7 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
         </span>
       </div>
       {progress==-1 ?
-      <button onClick={()=>{setProgress(0);}} className="w-full bg-yellow text-black px-4 py-2 rounded-sm font-bold hover:bg-gray-900 hover:text-black transition-colors duration-300 uppercase tracking-wide">
+      <button onClick={()=>{acceptChallenge();}} className="w-full bg-yellow text-black px-4 py-2 rounded-sm font-bold hover:bg-gray-900 hover:text-black transition-colors duration-300 uppercase tracking-wide">
         Accept Challenge
       </button>
       : 

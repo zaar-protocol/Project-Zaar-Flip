@@ -5,8 +5,6 @@ import prisma from '@/lib/prisma';
 import initializeCors from 'nextjs-cors';
 import { FaBullseye } from 'react-icons/fa6';
 import { userAgent } from 'next/server';
-
-
 type Event = { id: number; authorAddress: string; createdAt: Date; coins: number; wager: number; winnings: number; outcome: boolean; };
 const allowCors = (fn: (req: NextApiRequest, res: NextApiResponse) => Promise<void>) => async (req: NextApiRequest, res: NextApiResponse) => {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -31,7 +29,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const newWager = Number(req.query.wager) || 0; // Assuming the address is passed as a query parameter
     const newOutcome = Boolean(req.query.outcome) || false; // Assuming the address is passed as a query parameter
     
-    
     //try to find the user's profile
     //update or create it
     const user = await prisma.profile.findUnique({
@@ -44,7 +41,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         update: {
           winnings: (user?.winnings || 0) + newWinnings,
           waged: (user?.waged || 0) + newWager,
-
         },
         create: {
           authorAddress: ownerAddress,
@@ -55,6 +51,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           profPicUrl: "",
           bannerPicUrl: "",
           waged: newWager,
+          challengeId: 0,
+          challengeProgress=-1,
         },
       });
 

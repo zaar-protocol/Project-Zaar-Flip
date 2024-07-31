@@ -24,15 +24,17 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     // Query your Prisma database based on the user's address
     const ownerAddress = req.query.ownerAddress?.toString() || ""; // Assuming the address is passed as a query parameter
-    const userName = req.query.uName?.toString() || ""; // Assuming the address is passed as a query parameter
-    const newBio = req.query.bio?.toString() || ""; // Assuming the address is passed as a query parameter
-    const newEmail = req.query.email?.toString() || ""; // Assuming the address is passed as a query parameter
-    const newProfPicURL = req.query.profPicUrl?.toString() || ""; // Assuming the address is passed as a query parameter
-    const newBannerPicURL = req.query.bannerPicUrl?.toString() || ""; // Assuming the address is passed as a query parameters
+    const userName = ""; // Assuming the address is passed as a query parameter
+    const newBio =  ""; // Assuming the address is passed as a query parameter
+    const newEmail = ""; // Assuming the address is passed as a query parameter
+    const newProfPicURL = ""; // Assuming the address is passed as a query parameter
+    const newBannerPicURL = ""; // Assuming the address is passed as a query parameters
+    const newChallengeId = Number(req.query.challengeId) || 0; // Assuming the address is passed as a query parameter
+    const newChallengeProgress = Number(req.query.challengeProgress) || -1; // Assuming the address is passed as a query parameter  
     const userData = await prisma.profile.upsert({
         where: { authorAddress: ownerAddress },
-        update: { uName: userName, bio: newBio, email: newEmail, profPicUrl: newProfPicURL, bannerPicUrl: newBannerPicURL},
-        create: {uName: userName, bio: newBio, authorAddress: ownerAddress, email: newEmail, profPicUrl: newProfPicURL, bannerPicUrl: newBannerPicURL, winnings:0, waged:0, challengeId:0, challengeProgress:-1} ,
+        update: {challengeId: newChallengeId, challengeProgress: newChallengeProgress},
+        create: {uName: userName, bio: newBio, authorAddress: ownerAddress, email: newEmail, profPicUrl: newProfPicURL, bannerPicUrl: newBannerPicURL, winnings:0, waged:0, challengeId:newChallengeId, challengeProgress:0} ,
     });
     res.status(200).json(userData);
   } catch (error) {

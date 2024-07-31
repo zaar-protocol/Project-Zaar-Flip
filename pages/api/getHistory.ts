@@ -19,8 +19,6 @@ const allowCors = (fn: (req: NextApiRequest, res: NextApiResponse) => Promise<vo
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   //await initializeCors(req, res); // Initialize CORS
-  
-
   try {
     // Query your Prisma database based on the user's address
     const ownerAddress = req.query.ownerAddress?.toString(); // Assuming the address is passed as a query parameter

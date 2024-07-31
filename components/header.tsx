@@ -8,7 +8,6 @@ export const Header = () =>{
   const router = useRouter();
   const [page, setPage] = useState("/");
   useEffect(() => {setPage(router.asPath);} , [router.asPath]);
-  console.log(page);
   
     return(
         <header className="flex flex-row justify-between items-center w-screen  mb-0 relative z-20 px-2 py-2 pr-8 ">

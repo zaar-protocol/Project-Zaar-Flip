@@ -8,7 +8,6 @@ import React from "react";
 import { useAccount, useDisconnect, useBalance } from "wagmi";
 import { FaChevronDown, FaChevronUp, FaBook } from "react-icons/fa";
 import useXP from "@/hooks/xpcalcs";
-import { getAccount } from "@wagmi/core";
 import { config } from "./../../config";
 import { FaEthereum } from "react-icons/fa";
 import { encode } from "base64-arraybuffer";
@@ -16,6 +15,9 @@ import { EventBox } from "@/components/profileComponents/event-box";
 import { Metadata } from "next";
 import ChallengeBox from "@/components/challengeComponents/challengeBox";
 import { challenge, userChallenge } from "@/types/challenge";
+import toast, {Toaster} from "react-hot-toast";
+import { getAccount } from "@wagmi/core";
+
 export const metadata: Metadata = {
   title: "Challenges",
 };
@@ -33,6 +35,7 @@ const calculateTimeRemaining = () => {
 
   return { hours, minutes, seconds };
 };
+
 
 export default function Profile() {
   const [dailyChallenges, setDailyChallenges] = useState<challenge[]>([
@@ -101,11 +104,12 @@ export default function Profile() {
   const todaysChallenge = dailyChallenges[dayOfMonth % dailyChallenges.length];
 
   return (
-    <div className="pl-4 h-screen w-full overflow-x-hidden z-20 no-scrollbar">
+    <div className="pl-4 h-screen w-full max-w-screen max-h-screen overflow-y-hidden overflow-x-hidden z-20 no-scrollbar">
+      <Toaster/>
       <Header />
       <StarField />
       <div className=" container container-fluid mt-[60px] container-fluid mx-auto py-6 pt-0 w-[50%] min-w-[350px] ">
-        <div className="bg-transparent text-white min-h-screen w-full">
+        <div className="bg-transparent text-white h-screen max-h-full w-full">
           <div className="container mx-auto p-4 w-full">
             <main className="flex-grow flex flex-col items-center relative w-full  overflow-hidden">
               <div className="w-full max-w-5xl mb-12">

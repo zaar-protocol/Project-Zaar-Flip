@@ -24,8 +24,6 @@ import {
 import { writeContract } from '@wagmi/core'
 import { waitForTransactionReceipt } from '@wagmi/core'
 
-
-
 export default function Home() {
   const [currentSide, setCurrentSide] = useState('heads');
   const [coinsAmount, setCoinsAmount] = useState(1);
@@ -36,7 +34,6 @@ export default function Home() {
   const coinsDisplayRef = useRef(null);
   const [presetDropdown, setPresetDropdown] = useState(false);
   const [presetSelection, setPresetSelection] = useState("1 : 1 (x1.96)");
-
   const addr = "0x000000000000000000000000000000000000000000000";
   //get prepared function to flip
   const { data: flip}: {data: any} = useSimulateZaarflipFlip({
@@ -110,6 +107,13 @@ export default function Home() {
       }
   }
  
+  function updateChallengeProgress(challengeId: number, progress: number) {
+    fetch(`./api/updateChallengeProgress?challengeId=${challengeId}&progress=${progress}`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+      });
+  }
 
 
  function flipCoin() {
