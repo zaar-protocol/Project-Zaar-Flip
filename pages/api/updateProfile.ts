@@ -32,7 +32,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const userData = await prisma.profile.upsert({
         where: { authorAddress: ownerAddress },
         update: { uName: userName, bio: newBio, email: newEmail, profPicUrl: newProfPicURL, bannerPicUrl: newBannerPicURL},
-        create: {uName: userName, bio: newBio, authorAddress: ownerAddress, email: newEmail, profPicUrl: newProfPicURL, bannerPicUrl: newBannerPicURL, winnings:0, waged:0, challengeId:0, challengeProgress:-1} ,
+        create: { uName: userName, bio: newBio, authorAddress: ownerAddress, email: newEmail, profPicUrl: newProfPicURL, bannerPicUrl: newBannerPicURL, winnings:0, waged:0 } ,
     });
     res.status(200).json(userData);
   } catch (error) {

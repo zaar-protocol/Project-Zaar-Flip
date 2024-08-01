@@ -17,6 +17,7 @@ import ChallengeBox from "@/components/challengeComponents/challengeBox";
 import { challenge, userChallenge } from "@/types/challenge";
 import toast, { Toaster } from "react-hot-toast";
 import { getAccount } from "@wagmi/core";
+import { Event } from "@prisma/client";
 
 export const metadata: Metadata = {
   title: "Challenges",
@@ -48,6 +49,9 @@ export default function Profile() {
       reward: "$1,000 in stablecoins",
       difficulty: "Hard",
       steps: 1,
+      checkProgress: (events: Event[]) => {
+        return 0;
+      },
     },
     {
       id: 2,
@@ -57,6 +61,30 @@ export default function Profile() {
       reward: "$500 in stablecoins",
       difficulty: "Hard",
       steps: 7,
+      checkProgress: (events: Event[]) => {
+        events.forEach((event) => {
+          event.createdAt = new Date(event.createdAt); // Convert to Date object
+        });
+
+        // Sort events by createdAt in descending order
+        events.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+        if (!events[0].outcome) {
+          return 0;
+        }
+        let sequenceLength = 0;
+        for (const event of events) {
+          if (event.outcome && event.wager >= 1) {
+            sequenceLength++;
+          } else {
+            return sequenceLength;
+          }
+          if (sequenceLength == 7) {
+            return 7;
+          }
+        }
+        return 0;
+      },
     },
     {
       id: 3,
@@ -66,6 +94,30 @@ export default function Profile() {
       reward: "$5,000 in stablecoins",
       difficulty: "Expert",
       steps: 5,
+      checkProgress: (events: Event[]) => {
+        events.forEach((event) => {
+          event.createdAt = new Date(event.createdAt); // Convert to Date object
+        });
+
+        // Sort events by createdAt in descending order
+        events.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+        if (!events[0].outcome) {
+          return 0;
+        }
+        let sequenceLength = 0;
+        for (const event of events) {
+          if (event.outcome && event.wager >= 1000) {
+            sequenceLength++;
+          } else {
+            return sequenceLength;
+          }
+          if (sequenceLength == 5) {
+            return 5;
+          }
+        }
+        return 0;
+      },
     },
     {
       id: 4,
@@ -75,6 +127,9 @@ export default function Profile() {
       reward: "$1,000 in stablecoins",
       difficulty: "Medium",
       steps: 5,
+      checkProgress: (events: Event[]) => {
+        return 0;
+      },
     },
     {
       id: 5,
@@ -84,6 +139,9 @@ export default function Profile() {
       reward: " $1,000 in stablecoins",
       difficulty: "Expert",
       steps: 5,
+      checkProgress: (events: Event[]) => {
+        return 0;
+      },
     },
     {
       id: 6,
@@ -93,6 +151,9 @@ export default function Profile() {
       reward: "$500 in stablecoins",
       difficulty: "Easy",
       steps: 5,
+      checkProgress: (events: Event[]) => {
+        return 0;
+      },
     },
   ]);
   const [timeRemaining, setTimeRemaining] = useState<{

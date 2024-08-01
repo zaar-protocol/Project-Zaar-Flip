@@ -27,7 +27,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const newCoins = Number(req.query.coins) || 0; // Assuming the address is passed as a query parameter
     const newWinnings = Number(req.query.winnings) || 0; // Assuming the address is passed as a query parameter
     const newWager = Number(req.query.wager) || 0; // Assuming the address is passed as a query parameter
-    const newOutcome = Boolean(req.query.outcome) || false; // Assuming the address is passed as a query parameter
+    const newOutcome = Boolean(req.query.outcome === 'true') || false; // Assuming the address is passed as a query parameter
     
     //try to find the user's profile
     //update or create it
@@ -51,8 +51,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           profPicUrl: "",
           bannerPicUrl: "",
           waged: newWager,
-          challengeId: 0,
-          challengeProgress=-1,
         },
       });
 

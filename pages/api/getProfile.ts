@@ -26,6 +26,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const ownerAddress = req.query.ownerAddress?.toString(); // Assuming the address is passed as a query parameter
     const userData = await prisma.profile.findFirst({
         where: { authorAddress: ownerAddress },
+        include: { Event: true }, // Include the related events
         });
     res.status(200).json(userData);
   } catch (error) {

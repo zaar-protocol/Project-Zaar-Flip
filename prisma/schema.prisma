@@ -33,6 +33,4 @@ model Profile {
   winnings      Int
   waged         Int
   Event         Event[]
-  challengeId   Int
-  challengeProgress   Int
 }
