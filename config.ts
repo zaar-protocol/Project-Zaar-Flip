@@ -11,7 +11,9 @@ export const initia = {
       http: ['https://json-rpc.stoneevm-16.initia.xyz'], // Use array of URLs
     },
   },
-  
+  blockExplorers: {
+    default: { name: 'Initia', url: 'https://json-rpc.stoneevm-16.initia.xyz' },
+  },
 } as const satisfies Chain
 
 export const config = getDefaultConfig({
