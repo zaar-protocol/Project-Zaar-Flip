@@ -134,7 +134,7 @@ export default function Home() {
     flipContract();
     const addr = getAccount(config).address;
     fetch(
-      `./api/addEvent?ownerAddress=${addr}&coins=5&winnings=100&wager=50&outcome=true`
+      `./api/addEvent?ownerAddress=${addr}&coins=5&winnings=100&wager=1000&outcome=true`
     )
       .then((response) => response.json())
       .then((data) => {

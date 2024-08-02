@@ -32,5 +32,5 @@ model Profile {
   bannerPicUrl  String
   winnings      Int
   waged         Int
-  Event         Event[]
+  events        Event[]
 }

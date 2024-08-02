@@ -14,6 +14,9 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
   );
 
   const loadProgress = (events: Event[], challenge: challenge) => {
+    if (!events) {
+      return -1;
+    }
     const challengeAccepted = events.some(
       (event) =>
         event.coins === 0 &&
@@ -41,7 +44,7 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
           } else {
             console.log("Data object:");
             console.log(data);
-            setProgress(loadProgress(data.Event, challenge));
+            setProgress(loadProgress(data.events, challenge));
           }
         });
     }
