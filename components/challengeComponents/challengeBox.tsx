@@ -1,13 +1,34 @@
 import Image from "next/image";
 import { challenge, userChallenge } from "@/types/challenge";
+import { Event, Profile } from "@prisma/client";
 import React, { useEffect, useState } from "react";
-import toast, {Toaster} from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { getAccount } from "@wagmi/core";
 import { config } from "./../../config";
 
 export default function ChallengeBox({ challenge }: { challenge: challenge }) {
   const [progress, setProgress] = useState(-1);
-  const stepsArray = Array.from({ length: challenge.steps}, (_, index) => index + 1);
+  const stepsArray = Array.from(
+    { length: challenge.steps },
+    (_, index) => index + 1
+  );
+
+  const loadProgress = (events: Event[], challenge: challenge) => {
+    const challengeAccepted = events.some(
+      (event) =>
+        event.coins === 0 &&
+        event.winnings === 0 &&
+        event.wager === 0 &&
+        event.outcome === false
+    );
+
+    if (!challengeAccepted) {
+      return -1;
+    }
+
+    return challenge.checkProgress(events);
+  };
+
   const address = getAccount(config).address;
   useEffect(() => {
     if (address) {
@@ -15,26 +36,40 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
         .then((res) => res.json())
         .then((data) => {
           console.log(data);
-        if(data==null){
-            fetch(`/api/updateProfile?ownerAddress=${address}&challengeId=${challenge.id}&challengeProgress=-1`);
+          if (data == null) {
+            fetch(`/api/updateProfile?ownerAddress=${address}`);
+          } else {
+            console.log("Data object:");
+            console.log(data);
+            setProgress(loadProgress(data.Event, challenge));
           }
-        else{
-          setProgress(data.challengeProgress);
-        }
-
         });
     }
   }, [address]);
+
   function acceptChallenge() {
     const addr = getAccount(config).address;
-    if (!addr){
+    if (!addr) {
       toast.error("Please connect your wallet first");
       return;
-    }
-    else{
-      fetch(`/api/updateChallengeProgress?ownerAddress=${addr}&challengeId=${challenge.id}&challengeProgress==0`);
+    } else {
+      fetch(
+        `/api/addEvent?ownerAddress=${addr}&coins=0&winnings=0&wager=0&outcome=false`
+      );
+      // We create an event for the user with all null values to represent that they have accepted the challenge
+      // This should not affect statistics
+      fetch(`/api/getProfile?ownerAddress=${address}`)
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          if (data == null) {
+            fetch(`/api/updateProfile?ownerAddress=${address}`);
+          } else {
+            setProgress(0);
+          }
+        });
       toast.success("Challenge accepted!");
-      setProgress(0);
+
       return;
     }
   }
@@ -70,24 +105,34 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
           {challenge.difficulty}
         </span>
       </div>
-      {progress==-1 ?
-      <button onClick={()=>{acceptChallenge();}} className="w-full bg-yellow text-black px-4 py-2 rounded-sm font-bold hover:bg-gray-900 hover:text-black transition-colors duration-300 uppercase tracking-wide">
-        Accept Challenge
-      </button>
-      : 
-      progress==challenge.steps ?
-      <button className="w-full bg-lime-green text-black px-4 py-2 rounded-sm font-bold hover:bg-gray-900 hover:text-black transition-colors duration-300 uppercase tracking-wide">
-        Claim Reward
-      </button>
-      :
-      <div className="w-full text-light-gray py-2 rounded-sm font-bold uppercase tracking-wide flex flex-col md:flex-row justify-between">
-        <p className="mr-4">{progress}/{challenge.steps} Steps Completed</p>
-        <div className="flex flex-row">
-        {stepsArray.map((step) => (
-          <div key={step} className={`mr-4 w-6 h-6 bg-gray rounded-full flex flex-shrink ${step <= progress ? "bg-lime-green" : "bg-dark-gray"}`}></div>
-        ))}
+      {progress == -1 ? (
+        <button
+          onClick={() => {
+            acceptChallenge();
+          }}
+          className="w-full bg-yellow text-black px-4 py-2 rounded-sm font-bold hover:bg-gray-900 hover:text-black transition-colors duration-300 uppercase tracking-wide"
+        >
+          Accept Challenge
+        </button>
+      ) : progress == challenge.steps ? (
+        <button className="w-full bg-lime-green text-black px-4 py-2 rounded-sm font-bold hover:bg-gray-900 hover:text-black transition-colors duration-300 uppercase tracking-wide">
+          Claim Reward
+        </button>
+      ) : (
+        <div className="w-full text-light-gray py-2 rounded-sm font-bold uppercase tracking-wide flex flex-col md:flex-row justify-between">
+          <p className="mr-4">
+            {progress}/{challenge.steps} Steps Completed
+          </p>
+          <div className="flex flex-row">
+            {stepsArray.map((step) => (
+              <div
+                key={step}
+                className={`mr-4 w-6 h-6 bg-gray rounded-full flex flex-shrink ${step <= progress ? "bg-lime-green" : "bg-dark-gray"}`}
+              ></div>
+            ))}
+          </div>
         </div>
-      </div>}
+      )}
     </div>
   );
 }

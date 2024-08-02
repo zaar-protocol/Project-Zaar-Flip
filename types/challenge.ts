@@ -1,4 +1,4 @@
-
+import { Event } from "@prisma/client";
 export type challenge = {
     id: number;
     title: string;
@@ -6,6 +6,7 @@ export type challenge = {
     reward: string;
     difficulty: string;
     steps: number;
+    checkProgress: (events: Event[]) => number
 }
 
 export type userChallenge = {
@@ -14,3 +15,4 @@ export type userChallenge = {
     //completed: boolean;
     //expiration: number;
 }
+
