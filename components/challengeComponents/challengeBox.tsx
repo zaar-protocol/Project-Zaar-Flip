@@ -8,6 +8,7 @@ import { config } from "./../../config";
 
 export default function ChallengeBox({ challenge }: { challenge: challenge }) {
   const [progress, setProgress] = useState(-1);
+  const [dailyWinners, setDailyWinners] = useState<number>(0);
   const stepsArray = Array.from(
     { length: challenge.steps },
     (_, index) => index + 1
@@ -50,6 +51,23 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
     }
   }, [address]);
 
+  const fetchDailyWinners = async () => {
+    try {
+      const response = await fetch(`/api/getDailyWinners`);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const winners = await response.json();
+      setDailyWinners(winners.length);
+    } catch (error) {
+      console.error("Error fetching daily winners:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDailyWinners();
+  }, []);
+
   function acceptChallenge() {
     const addr = getAccount(config).address;
     if (!addr) {
@@ -76,6 +94,24 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
       return;
     }
   }
+  function claimReward() {
+    const addr = getAccount(config).address;
+    fetchDailyWinners();
+    if (dailyWinners >= 3) {
+      toast.error("Sorry, there are already 3 winners for today.");
+      return;
+    }
+    if (!addr) {
+      toast.error("Please connect your wallet first");
+      return;
+    } else {
+      fetch(
+        `/api/addWinner?ownerAddress=${addr}&challengeId=${challenge.title}`
+      );
+      toast.success("Challenge completion recorded");
+      return;
+    }
+  }
   return (
     <div className="w-full bg-dark-gray rounded-sm p-6 shadow-xl">
       <div className="flex items-center mb-4">
@@ -96,7 +132,10 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
           <p className="text-sm text-light-gray mb-1 uppercase">Reward:</p>
           <p className="text-lime-green font-semibold">{challenge.reward}</p>
         </div>
-        <span
+        <div className="text-light-green font-semibold">
+          Winners: {dailyWinners}/3
+        </div>
+        {/* <span
           className={`px-3 md:px-[30px] py-1 rounded-sm text-sm uppercase font-medium ${
             challenge.difficulty === "Medium"
               ? "bg-yellow text-black"
@@ -106,7 +145,7 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
           }`}
         >
           {challenge.difficulty}
-        </span>
+        </span> */}
       </div>
       {progress == -1 ? (
         <button
@@ -118,7 +157,12 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
           Accept Challenge
         </button>
       ) : progress == challenge.steps ? (
-        <button className="w-full bg-lime-green text-black px-4 py-2 rounded-sm font-bold hover:bg-gray-900 hover:text-black transition-colors duration-300 uppercase tracking-wide">
+        <button
+          onClick={() => {
+            claimReward();
+          }}
+          className="w-full bg-lime-green text-black px-4 py-2 rounded-sm font-bold hover:bg-gray-900 hover:text-black transition-colors duration-300 uppercase tracking-wide"
+        >
           Claim Reward
         </button>
       ) : (
