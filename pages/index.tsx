@@ -423,7 +423,7 @@ export default function Home() {
                   COINS AMOUNT
                   <Tooltip
                     text={
-                      "This determines how many virtual coins you&apos;re flipping in one game. You can choose from 1 to 10 coins."
+                      "This determines how many virtual coins you are flipping in one game. You can choose from 1 to 10 coins."
                     }
                   />
                 </div>

@@ -130,7 +130,7 @@ export default function Profile() {
       <div className=" container container-fluid mt-[60px] container-fluid mx-auto py-6 pt-0 w-[50%] min-w-[350px] ">
         <div className="bg-transparent text-white h-screen max-h-full w-full">
           <div className="container mx-auto p-4 w-full">
-            <main className="flex-grow flex flex-col items-center relative w-full  overflow-hidden">
+            <main className="flex-grow flex flex-col items-center relative w-full  overflow-visible">
               <div className="w-full max-w-5xl mb-12">
                 <h1 className="text-3xl font-bold text-light-green mb-4">
                   Daily Challenges
@@ -169,7 +169,7 @@ export default function Profile() {
                 </div>
               </div>
 
-              <div className="w-full ">
+              <div className="w-full">
                 {todaysChallenge && (
                   <ChallengeBox challenge={todaysChallenge} />
                 )}

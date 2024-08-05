@@ -5,6 +5,9 @@ import prisma from '@/lib/prisma';
 import initializeCors from 'nextjs-cors';
 import { FaBullseye } from 'react-icons/fa6';
 import { userAgent } from 'next/server';
+import checkProgressFunctions from '../challenges/checkProgressFunctions';
+import { ChallengeKey } from '../challenges/checkProgressFunctions';
+import { challengeKeys } from '../challenges/checkProgressFunctions';
 type Event = { id: number; authorAddress: string; createdAt: Date; coins: number; wager: number; winnings: number; outcome: boolean; };
 const allowCors = (fn: (req: NextApiRequest, res: NextApiResponse) => Promise<void>) => async (req: NextApiRequest, res: NextApiResponse) => {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -25,6 +28,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     // Query your Prisma database based on the user's address
     const ownerAddress = req.query.ownerAddress?.toString() || ""; 
     const newChallengeId = req.query.challengeId?.toString() || "";
+    const steps = Number(req.query.steps) || 0;
 
 
     const today = new Date();
@@ -42,32 +46,50 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   });
 
   if (winnersCount >= 3) {
-    throw new Error('There are already 3 winners for today');
+    return res.status(400).json({error: 'There are already 3 winners for today'});
   }
 
-    const user = await prisma.profile.findUnique({
-      where: { authorAddress: ownerAddress },
-      select: {challengeWins: true},
-    });
+  const user = await prisma.profile.findUnique({
+    where: { authorAddress: ownerAddress },
+    select: {challengeWins: true},
+  });
 
-    if (!user) {
-        throw new Error('Profile not found');
-      }
+  if (!user) {
+    return res.status(404).json({error: 'Profile not found.'});
+  }
 
-    const hasWon = user.challengeWins.some(win => (win.challengeId === newChallengeId));
+  const hasWon = user.challengeWins.some(win => (win.challengeId === newChallengeId));
   if (hasWon) {
-    throw new Error('This profile has already won for this challenge');
+    return res.status(400).json({error: 'This profile has already won this challenge.'});
   }
 
-      //create a winner
-    const u = await prisma.challengeWinner.create({
-      data: {
-        challengeId: newChallengeId,
-        authorAddress: ownerAddress,
-      },
-    });
+  const userData = await prisma.event.findMany({
+    where: { authorAddress: ownerAddress },
+  });
 
-    res.status(200).json(u);
+  if (!Array.isArray(userData)){
+    return res.status(400).json({error: 'User events is not an array'});
+  }
+
+  if(challengeKeys.includes(newChallengeId as ChallengeKey)){
+    const progress = checkProgressFunctions[newChallengeId as ChallengeKey](userData);
+    if (steps === progress) {
+      
+      // Reward contract logic goes here
+
+      const u = await prisma.challengeWinner.create({
+        data: {
+          challengeId: newChallengeId,
+          authorAddress: ownerAddress,
+        },
+      });
+      res.status(200).json(u);
+    } else {
+      res.status(400).json({error: "Challenge progress incomplete."})
+    }
+  } else {
+    res.status(400).json({error: "Invalid challengeId."})
+  }
   } catch (error) {
     console.error('Error fetching user data:', error);
     res.status(500).json({ error: 'Internal server error' });

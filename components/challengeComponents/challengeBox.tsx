@@ -3,11 +3,14 @@ import { challenge, userChallenge } from "@/types/challenge";
 import { Event, Profile } from "@prisma/client";
 import React, { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import { getAccount } from "@wagmi/core";
 import { config } from "./../../config";
+import { Tooltip } from "../tooltip";
+import { useAccount } from "wagmi";
 
 export default function ChallengeBox({ challenge }: { challenge: challenge }) {
-  const [progress, setProgress] = useState(-1);
+  const { address, isConnected } = useAccount();
+  const [progress, setProgress] = useState(-2);
+  const [rewardClaimed, setRewardClaimed] = useState(false);
   const [dailyWinners, setDailyWinners] = useState<number>(0);
   const stepsArray = Array.from(
     { length: challenge.steps },
@@ -15,7 +18,7 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
   );
 
   const loadProgress = (events: Event[], challenge: challenge) => {
-    if (!events) {
+    if (!Array.isArray(events)) {
       return -1;
     }
     const challengeAccepted = events.some(
@@ -33,9 +36,34 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
     return challenge.checkProgress(events);
   };
 
-  const address = getAccount(config).address;
+  const checkRewardClaimed = (challengeWins: any[]) => {
+    const now = new Date();
+    const startOfDay = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      0,
+      0,
+      0,
+      0
+    );
+    const endOfDay = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      23,
+      59,
+      59,
+      999
+    );
+    return challengeWins.some((win) => {
+      const winDate = new Date(win.createdAt);
+      return winDate >= startOfDay && winDate <= endOfDay;
+    });
+  };
+
   useEffect(() => {
-    if (address) {
+    if (isConnected && address) {
       fetch(`/api/getProfile?ownerAddress=${address}`)
         .then((res) => res.json())
         .then((data) => {
@@ -43,13 +71,13 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
           if (data == null) {
             fetch(`/api/updateProfile?ownerAddress=${address}`);
           } else {
-            console.log("Data object:");
-            console.log(data);
+            // find challengeWin for today
             setProgress(loadProgress(data.events, challenge));
+            setRewardClaimed(checkRewardClaimed(data.challengeWins));
           }
         });
     }
-  }, [address]);
+  }, [address, isConnected, challenge]);
 
   const fetchDailyWinners = async () => {
     try {
@@ -66,52 +94,71 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
 
   useEffect(() => {
     fetchDailyWinners();
-  }, []);
+  }, [rewardClaimed, address, isConnected]);
 
-  function acceptChallenge() {
-    const addr = getAccount(config).address;
-    if (!addr) {
+  async function acceptChallenge() {
+    if (!isConnected || !address) {
       toast.error("Please connect your wallet first");
       return;
     } else {
-      fetch(
-        `/api/addEvent?ownerAddress=${addr}&coins=0&winnings=0&wager=0&outcome=false`
-      );
-      // We create an event for the user with all null values to represent that they have accepted the challenge
-      // This should not affect statistics
-      fetch(`/api/getProfile?ownerAddress=${address}`)
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-          if (data == null) {
-            fetch(`/api/updateProfile?ownerAddress=${address}`);
-          } else {
-            setProgress(0);
-          }
-        });
-      toast.success("Challenge accepted!");
+      try {
+        const response = await fetch(
+          `/api/addEvent?ownerAddress=${address}&coins=0&winnings=0&wager=0&outcome=false`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to accept challenge");
+        }
 
+        const profileResponse = await fetch(
+          `/api/getProfile?ownerAddress=${address}`
+        );
+        const data = await profileResponse.json();
+        if (data === null) {
+          await fetch(`/api/updateProfile?ownerAddress=${address}`);
+        } else {
+          setProgress(0);
+        }
+        toast.success("Challenge accepted!");
+      } catch (error) {
+        console.error("Error accepting challenge:", error);
+        toast.error("An error occurred while accepting the challenge.");
+      }
       return;
     }
   }
-  function claimReward() {
-    const addr = getAccount(config).address;
-    fetchDailyWinners();
+  async function claimReward() {
+    await fetchDailyWinners();
     if (dailyWinners >= 3) {
       toast.error("Sorry, there are already 3 winners for today.");
       return;
     }
-    if (!addr) {
+    if (!isConnected || !address) {
       toast.error("Please connect your wallet first");
       return;
     } else {
-      fetch(
-        `/api/addWinner?ownerAddress=${addr}&challengeId=${challenge.title}`
-      );
-      toast.success("Challenge completion recorded");
+      try {
+        const response = await fetch(
+          `/api/addWinner?ownerAddress=${address}&challengeId=${challenge.title}&steps=${challenge.steps}`
+        );
+        if (response.ok) {
+          const result = await response.json();
+          if (result) {
+            setRewardClaimed(true);
+            toast.success("Challenge completion recorded");
+          } else {
+            toast.error("Failed to record challenge completion");
+          }
+        } else {
+          toast.error("Failed to record challenge completion");
+        }
+      } catch (error) {
+        console.error("Error claiming reward:", error);
+        toast.error("An error occured while claiming the reward.");
+      }
       return;
     }
   }
+
   return (
     <div className="w-full bg-dark-gray rounded-sm p-6 shadow-xl">
       <div className="flex items-center mb-4">
@@ -133,21 +180,26 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
           <p className="text-lime-green font-semibold">{challenge.reward}</p>
         </div>
         <div className="text-light-green font-semibold">
-          Winners: {dailyWinners}/3
+          Daily Winners:{" "}
+          <span className={`${dailyWinners >= 3 ? "text-red" : ""}`}>
+            {dailyWinners}/3
+          </span>
+          <Tooltip text='The first three users to complete the daily challenge and click "Claim Reward" will receive the prize!' />
         </div>
-        {/* <span
-          className={`px-3 md:px-[30px] py-1 rounded-sm text-sm uppercase font-medium ${
-            challenge.difficulty === "Medium"
-              ? "bg-yellow text-black"
-              : challenge.difficulty === "Hard"
-                ? "bg-purple text-black"
-                : "bg-red text-black"
-          }`}
-        >
-          {challenge.difficulty}
-        </span> */}
       </div>
-      {progress == -1 ? (
+      {progress == -2 ? (
+        <div className="w-full text-light-gray py-2 rounded-sm font-bold text-center">
+          Loading...
+        </div>
+      ) : rewardClaimed ? (
+        <div className="w-full text-light-gray py-2 rounded-sm font-bold text-center">
+          Congratulations! You have claimed your reward!
+        </div>
+      ) : dailyWinners >= 3 ? (
+        <div className="w-full text-light-gray py-2 rounded-sm font-bold text-center">
+          All prizes for today's challenge have been claimed.
+        </div>
+      ) : progress == -1 ? (
         <button
           onClick={() => {
             acceptChallenge();

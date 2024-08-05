@@ -1,6 +1,19 @@
 import { Event } from "@prisma/client";
 
-const checkProgressFunctions = {
+export const challengeKeys = [
+  "Seed to Whale",
+  "Lucky 7",
+  "Whale’s Paradise",
+  "Make It All Back In One Trade",
+  "Speed Demon",
+  "Noob City",
+] as const;
+export type ChallengeKey = (typeof challengeKeys)[number];
+
+const checkProgressFunctions: Record<
+  ChallengeKey,
+  (events: Event[]) => number
+> = {
   "Seed to Whale": (events: Event[]) => {
     return 0;
   },
