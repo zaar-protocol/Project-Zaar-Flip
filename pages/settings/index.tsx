@@ -5,16 +5,17 @@ import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { Header } from "@/components/header";
 import { FaUser } from "react-icons/fa";
+import { useAccount } from "wagmi";
 import { getAccount } from "@wagmi/core";
 import { config } from "@/config";
-import toast, { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from "react-hot-toast";
 import { StarField } from "@/components/star-field";
-import { type PutBlobResult } from '@vercel/blob';
-import Head from 'next/head';
-import { Metadata } from 'next';
+import { type PutBlobResult } from "@vercel/blob";
+import Head from "next/head";
+import { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Settings",
-}
+};
 export const Settings = () => {
   const [newVanity, setNewVanity] = React.useState("");
   const [currentVanity, setCurrentVanity] = React.useState("Set New Vanity");
@@ -26,47 +27,75 @@ export const Settings = () => {
   const [currentProfileImage, setCurrentProfileImage] = React.useState("");
   const [newProfileBanner, setNewProfileBanner] = React.useState("");
   const [currentProfileBanner, setCurrentProfileBanner] = React.useState("");
-  const addr = getAccount(config).address;
+  const { address, isConnected } = useAccount();
   const inputFileRef = useRef<HTMLInputElement>(null);
   const [blob, setBlob] = useState<PutBlobResult | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   //const inputFileRef = useRef(null);
 
   useEffect(() => {
-    console.log(getAccount(config).address);
-
-    if(addr){
-      fetch(`./api/getProfile?ownerAddress=${addr}`)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        {
-          data?.uName ? setCurrentVanity(data.uName) : null;
-        }
-        {
-          data?.bio ? setCurrentBio(data.bio) : null;
-        }
-        {
-          data?.email ? setCurrentEmail(data.email) : null;
-        }
-        {
-          data?.profPicUrl ? setCurrentProfileImage(data.profPicUrl) : null;
-        }
-        {
-            data?.bannerPicUrl ? setCurrentProfileBanner(data.bannerPicUrl) : null;
-        }
-        console.log(data);
-      });}
-  }, []);
+    if (address && isConnected) {
+      fetch(`./api/getProfile?ownerAddress=${address}`)
+        .then((response) => response.json())
+        .then((data) => {
+          {
+            data?.uName ? setCurrentVanity(data.uName) : null;
+          }
+          {
+            data?.bio ? setCurrentBio(data.bio) : null;
+          }
+          {
+            data?.email ? setCurrentEmail(data.email) : null;
+          }
+          {
+            data?.profPicUrl ? setCurrentProfileImage(data.profPicUrl) : null;
+          }
+          {
+            data?.bannerPicUrl
+              ? setCurrentProfileBanner(data.bannerPicUrl)
+              : null;
+          }
+        });
+    }
+  }, [address, isConnected]);
   function updateProfile() {
+    const sendVanity =
+      newVanity === ""
+        ? currentVanity === "Set New Vanity"
+          ? ""
+          : currentVanity
+        : newVanity;
+
+    const sendBio =
+      newBio === "" ? (currentBio === "Set New Bio" ? "" : currentBio) : newBio;
+    const sendEmail =
+      newEmail === ""
+        ? currentEmail === "Set New Email"
+          ? ""
+          : currentEmail
+        : newEmail;
+    const sendProfileImage =
+      newProfileImage === ""
+        ? currentProfileImage === "Set New Vanity"
+          ? ""
+          : currentProfileImage
+        : newProfileImage;
+    const sendProfileBanner =
+      newProfileBanner === ""
+        ? currentProfileBanner === "Set New Vanity"
+          ? ""
+          : currentProfileBanner
+        : newProfileBanner;
+
     fetch(
-      `./api/updateProfile?ownerAddress=${addr}&uName=${newVanity != "" ? newVanity : currentVanity}&bio=${newBio != "" ? newBio : currentBio}&email=${newEmail != "" ? newEmail : currentEmail}&profPicUrl=${newProfileImage != "" ? newProfileImage : currentProfileImage}&bannerPicUrl=${newProfileBanner != "" ? newProfileBanner: currentProfileBanner}`
+      `./api/updateProfile?ownerAddress=${address}&uName=${sendVanity}&bio=${sendBio}&email=${sendEmail}&profPicUrl=${sendProfileImage}&bannerPicUrl=${sendProfileBanner}`
     )
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
       })
       .then(() => {
-        toast.success('Profile Updated Successfully');
+        toast.success("Profile Updated Successfully");
       });
   }
   const handleNewUserNameChange = (event: {
@@ -84,25 +113,40 @@ export const Settings = () => {
   }) => {
     setNewEmail(event.target.value);
   };
-  const handleFileChange = async (event:React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (!event.target.files) {
       throw new Error("No file selected");
     }
 
     const file = event.target.files[0];
+    const toastId = toast.loading("Uploading...");
 
-    const response = await fetch(`/api/avatarUpload?filename=${file.name}`, {
-      method: "POST",
-      body: file,
-    });
+    setIsUploading(true);
 
-    const newBlob = await response.json();
+    try {
+      const response = await fetch(`/api/avatarUpload?filename=${file.name}`, {
+        method: "POST",
+        body: file,
+      });
 
-    setBlob(newBlob);
-    setNewProfileImage(newBlob.url);
-    console.log(newBlob);
+      const newBlob = await response.json();
+
+      setBlob(newBlob);
+      setNewProfileImage(newBlob.url);
+      console.log(newBlob);
+    } catch (error) {
+      toast.error("Upload failed");
+    } finally {
+      toast.dismiss(toastId);
+      setIsUploading(false);
+    }
   };
-  const handleBannerFileChange = async (event:React.ChangeEvent<HTMLInputElement>) => {
+
+  const handleBannerFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (!event.target.files) {
       throw new Error("No file selected");
     }
@@ -121,17 +165,19 @@ export const Settings = () => {
     console.log(newBlob);
   };
 
-
   return (
     <div className="h-screen pl-4">
       <Head>
         <title>Zaar Flip</title>
-        <meta name="description" content="A first-in-class NFT trading platform for traders of every caliber." />
+        <meta
+          name="description"
+          content="A first-in-class NFT trading platform for traders of every caliber."
+        />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Toaster />
       <Header />
-      <StarField/>
+      <StarField />
       <div className="mt-[60px] container-fluid mx-auto py-6 pt-0 ">
         <div className="bg-transparent text-white min-h-screen  ">
           <div className="container mx-auto p-4">
@@ -221,10 +267,11 @@ export const Settings = () => {
                         />
                       </div>
                       <button
-                        className="hidden md:block bg-yellow border-2 border-yellow p-2 rounded-sm uppercase  text-center text-black  hover:bg-hoveryellow"
+                        className={`hidden md:block border-2 ${isUploading ? "bg-light-gray border-light-gray" : "bg-yellow border-yellow hover:bg-hoveryellow"} p-2 rounded-sm uppercase  text-center text-black`}
                         onClick={() => {
                           updateProfile();
                         }}
+                        disabled={isUploading}
                       >
                         Save Changes
                       </button>
@@ -278,7 +325,7 @@ export const Settings = () => {
 
                         {/* Additional content here */}
                       </div>
-                      
+
                       <button
                         className="block md:hidden bg-yellow mt-[25px] w-full border-2 border-yellow p-2 rounded-sm uppercase  text-center text-black  hover:bg-hoveryellow "
                         onClick={() => {
