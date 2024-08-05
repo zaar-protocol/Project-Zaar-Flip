@@ -32,5 +32,14 @@ model Profile {
   bannerPicUrl  String
   winnings      Int
   waged         Int
-  Event         Event[]
+  events        Event[]
+  challengeWins ChallengeWinner[]
+}
+
+model ChallengeWinner {
+  id            Int      @id @default(autoincrement())
+  user          Profile  @relation(fields: [authorAddress], references: [authorAddress])
+  authorAddress String
+  createdAt     DateTime @default(now())
+  challengeId   String
 }

@@ -1,8 +1,11 @@
 // pages/api/getWatchlist.ts
 import { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
-import prisma from '../../lib/prisma';
+import prisma from '@/lib/prisma';
 import initializeCors from 'nextjs-cors';
+import { FaBullseye } from 'react-icons/fa6';
+import { userAgent } from 'next/server';
+type Event = { id: number; authorAddress: string; createdAt: Date; coins: number; wager: number; winnings: number; outcome: boolean; };
 const allowCors = (fn: (req: NextApiRequest, res: NextApiResponse) => Promise<void>) => async (req: NextApiRequest, res: NextApiResponse) => {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -13,26 +16,34 @@ const allowCors = (fn: (req: NextApiRequest, res: NextApiResponse) => Promise<vo
     res.status(200).end();
     return;
   }
-
   return await fn(req, res);
 };
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   //await initializeCors(req, res); // Initialize CORS
-  
-
   try {
-    // Query your Prisma database based on the user's address
-    const ownerAddress = req.query.ownerAddress?.toString(); // Assuming the address is passed as a query parameter
-    const userData = await prisma.profile.findFirst({
-        where: { authorAddress: ownerAddress },
-        include: { events: true, challengeWins: true }, // Include the related events
-        });
-    res.status(200).json(userData);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+  const dailyWinners = await prisma.challengeWinner.findMany({
+    where: {
+      createdAt: {
+        gte: today,
+        lt: tomorrow,
+      },
+    },
+    include: {
+        user:true,
+    }
+  });
+
+    res.status(200).json(dailyWinners);
   } catch (error) {
-    console.error('Error fetching user data:', error);
+    console.error('Error fetching daily winners:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 }
 export default allowCors(handler);
-

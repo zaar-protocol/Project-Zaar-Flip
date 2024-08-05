@@ -18,6 +18,7 @@ import { challenge, userChallenge } from "@/types/challenge";
 import toast, { Toaster } from "react-hot-toast";
 import { getAccount } from "@wagmi/core";
 import { Event } from "@prisma/client";
+import checkProgressFunctions from "./checkProgressFunctions";
 
 export const metadata: Metadata = {
   title: "Challenges",
@@ -49,9 +50,7 @@ export default function Profile() {
       reward: "$1,000 in stablecoins",
       difficulty: "Hard",
       steps: 1,
-      checkProgress: (events: Event[]) => {
-        return 0;
-      },
+      checkProgress: checkProgressFunctions["Seed to Whale"],
     },
     {
       id: 2,
@@ -61,30 +60,7 @@ export default function Profile() {
       reward: "$500 in stablecoins",
       difficulty: "Hard",
       steps: 7,
-      checkProgress: (events: Event[]) => {
-        events.forEach((event) => {
-          event.createdAt = new Date(event.createdAt); // Convert to Date object
-        });
-
-        // Sort events by createdAt in descending order
-        events.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-
-        if (!events[0].outcome) {
-          return 0;
-        }
-        let sequenceLength = 0;
-        for (const event of events) {
-          if (event.outcome && event.wager >= 1) {
-            sequenceLength++;
-          } else {
-            return sequenceLength;
-          }
-          if (sequenceLength == 7) {
-            return 7;
-          }
-        }
-        return 0;
-      },
+      checkProgress: checkProgressFunctions["Lucky 7"],
     },
     {
       id: 3,
@@ -94,30 +70,7 @@ export default function Profile() {
       reward: "$5,000 in stablecoins",
       difficulty: "Expert",
       steps: 5,
-      checkProgress: (events: Event[]) => {
-        events.forEach((event) => {
-          event.createdAt = new Date(event.createdAt); // Convert to Date object
-        });
-
-        // Sort events by createdAt in descending order
-        events.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-
-        if (!events[0].outcome) {
-          return 0;
-        }
-        let sequenceLength = 0;
-        for (const event of events) {
-          if (event.outcome && event.wager >= 1000) {
-            sequenceLength++;
-          } else {
-            return sequenceLength;
-          }
-          if (sequenceLength == 5) {
-            return 5;
-          }
-        }
-        return 0;
-      },
+      checkProgress: checkProgressFunctions["Whale’s Paradise"],
     },
     {
       id: 4,
@@ -127,9 +80,7 @@ export default function Profile() {
       reward: "$1,000 in stablecoins",
       difficulty: "Medium",
       steps: 5,
-      checkProgress: (events: Event[]) => {
-        return 0;
-      },
+      checkProgress: checkProgressFunctions["Make It All Back In One Trade"],
     },
     {
       id: 5,
@@ -139,9 +90,7 @@ export default function Profile() {
       reward: " $1,000 in stablecoins",
       difficulty: "Expert",
       steps: 5,
-      checkProgress: (events: Event[]) => {
-        return 0;
-      },
+      checkProgress: checkProgressFunctions["Speed Demon"],
     },
     {
       id: 6,
@@ -151,9 +100,7 @@ export default function Profile() {
       reward: "$500 in stablecoins",
       difficulty: "Easy",
       steps: 5,
-      checkProgress: (events: Event[]) => {
-        return 0;
-      },
+      checkProgress: checkProgressFunctions["Noob City"],
     },
   ]);
   const [timeRemaining, setTimeRemaining] = useState<{
@@ -183,7 +130,7 @@ export default function Profile() {
       <div className=" container container-fluid mt-[60px] container-fluid mx-auto py-6 pt-0 w-[50%] min-w-[350px] ">
         <div className="bg-transparent text-white h-screen max-h-full w-full">
           <div className="container mx-auto p-4 w-full">
-            <main className="flex-grow flex flex-col items-center relative w-full  overflow-hidden">
+            <main className="flex-grow flex flex-col items-center relative w-full  overflow-visible">
               <div className="w-full max-w-5xl mb-12">
                 <h1 className="text-3xl font-bold text-light-green mb-4">
                   Daily Challenges
@@ -222,7 +169,7 @@ export default function Profile() {
                 </div>
               </div>
 
-              <div className="w-full ">
+              <div className="w-full">
                 {todaysChallenge && (
                   <ChallengeBox challenge={todaysChallenge} />
                 )}
