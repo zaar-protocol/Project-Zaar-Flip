@@ -134,7 +134,7 @@ export default function Home() {
     flipContract();
     const addr = getAccount(config).address;
     fetch(
-      `./api/addEvent?ownerAddress=${addr}&coins=5&winnings=100&wager=50&outcome=true`
+      `./api/addEvent?ownerAddress=${addr}&coins=5&winnings=100&wager=1000&outcome=true`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -423,7 +423,7 @@ export default function Home() {
                   COINS AMOUNT
                   <Tooltip
                     text={
-                      "This determines how many virtual coins you&apos;re flipping in one game. You can choose from 1 to 10 coins."
+                      "This determines how many virtual coins you are flipping in one game. You can choose from 1 to 10 coins."
                     }
                   />
                 </div>
