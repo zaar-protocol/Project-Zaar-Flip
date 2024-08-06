@@ -2,14 +2,15 @@ import { defineConfig } from "@wagmi/cli";
 import { etherscan, react } from "@wagmi/cli/plugins";
 import { erc20Abi } from "viem";
 import {mainnet } from "wagmi/chains";
-import {abi} from "@/abis/abi.json";
+// import {abi} from "@/abis/abi.json";
+import {abi} from "@/abis/abi"
 
 export default defineConfig({
     out: "generated.ts",
     contracts: [
         {
             name: "zaarflip",
-            abi:abi,
+            abi:abi
         },
         {
             name: "erc20",

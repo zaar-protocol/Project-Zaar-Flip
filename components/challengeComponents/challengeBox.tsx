@@ -6,6 +6,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { config } from "./../../config";
 import { Tooltip } from "../tooltip";
 import { useAccount } from "wagmi";
+import { abi } from "@/abis/abi.json";
 
 export default function ChallengeBox({ challenge }: { challenge: challenge }) {
   const { address, isConnected } = useAccount();
@@ -63,6 +64,8 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
   };
 
   useEffect(() => {
+    console.log("********* ABI ***********");
+    console.log(abi);
     if (isConnected && address) {
       fetch(`/api/getProfile?ownerAddress=${address}`)
         .then((res) => res.json())
@@ -197,7 +200,7 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
         </div>
       ) : dailyWinners >= 3 ? (
         <div className="w-full text-light-gray py-2 rounded-sm font-bold text-center">
-          All prizes for today's challenge have been claimed.
+          All prizes for today&apos;s challenge have been claimed.
         </div>
       ) : progress == -1 ? (
         <button
