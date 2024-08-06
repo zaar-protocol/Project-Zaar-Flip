@@ -10,7 +10,7 @@ export const challengeKeys = [
 ] as const;
 export type ChallengeKey = (typeof challengeKeys)[number];
 
-const checkProgressFunctions: Record<
+export const checkProgressFunctions: Record<
   ChallengeKey,
   (events: Event[]) => number
 > = {
@@ -129,5 +129,3 @@ const checkProgressFunctions: Record<
     return Math.min(Math.floor(total / 10), 5);
   },
 };
-
-export default checkProgressFunctions;

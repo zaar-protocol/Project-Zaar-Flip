@@ -18,7 +18,7 @@ import { challenge, userChallenge } from "@/types/challenge";
 import toast, { Toaster } from "react-hot-toast";
 import { getAccount } from "@wagmi/core";
 import { Event } from "@prisma/client";
-import checkProgressFunctions from "./checkProgressFunctions";
+import { checkProgressFunctions } from "../../components/checkProgressFunctions";
 
 export const metadata: Metadata = {
   title: "Challenges",
