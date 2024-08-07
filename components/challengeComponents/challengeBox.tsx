@@ -6,11 +6,10 @@ import toast, { Toaster } from "react-hot-toast";
 import { config } from "./../../config";
 import { Tooltip } from "../tooltip";
 import { useAccount } from "wagmi";
-import { abi } from "@/abis/abi.json";
 
 export default function ChallengeBox({ challenge }: { challenge: challenge }) {
   const { address, isConnected } = useAccount();
-  const [progress, setProgress] = useState(-2);
+  const [progress, setProgress] = useState(0);
   const [rewardClaimed, setRewardClaimed] = useState(false);
   const [dailyWinners, setDailyWinners] = useState<number>(0);
   const stepsArray = Array.from(
@@ -19,20 +18,22 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
   );
 
   const loadProgress = (events: Event[], challenge: challenge) => {
-    if (!Array.isArray(events)) {
-      return -1;
+    if (!Array.isArray(events) || events.length == 0) {
+      return 0;
     }
-    const challengeAccepted = events.some(
-      (event) =>
-        event.coins === 0 &&
-        event.winnings === 0 &&
-        event.wager === 0 &&
-        event.outcome === false
-    );
+    // ******** Legacy "Accept Challenge" functionality *********
 
-    if (!challengeAccepted) {
-      return -1;
-    }
+    // const challengeAccepted = events.some(
+    //   (event) =>
+    //     event.coins === 0 &&
+    //     event.winnings === 0 &&
+    //     event.wager === 0 &&
+    //     event.outcome === false
+    // );
+
+    // if (!challengeAccepted) {
+    //   return -1;
+    // }
 
     return challenge.checkProgress(events);
   };
@@ -57,6 +58,9 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
       59,
       999
     );
+    if (!challengeWins) {
+      return false;
+    }
     return challengeWins.some((win) => {
       const winDate = new Date(win.createdAt);
       return winDate >= startOfDay && winDate <= endOfDay;
@@ -64,8 +68,6 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
   };
 
   useEffect(() => {
-    console.log("********* ABI ***********");
-    console.log(abi);
     if (isConnected && address) {
       fetch(`/api/getProfile?ownerAddress=${address}`)
         .then((res) => res.json())
@@ -99,36 +101,39 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
     fetchDailyWinners();
   }, [rewardClaimed, address, isConnected]);
 
-  async function acceptChallenge() {
-    if (!isConnected || !address) {
-      toast.error("Please connect your wallet first");
-      return;
-    } else {
-      try {
-        const response = await fetch(
-          `/api/addEvent?ownerAddress=${address}&coins=0&winnings=0&wager=0&outcome=false`
-        );
-        if (!response.ok) {
-          throw new Error("Failed to accept challenge");
-        }
+  // Legacy Accept Challenge functinoality
 
-        const profileResponse = await fetch(
-          `/api/getProfile?ownerAddress=${address}`
-        );
-        const data = await profileResponse.json();
-        if (data === null) {
-          await fetch(`/api/updateProfile?ownerAddress=${address}`);
-        } else {
-          setProgress(0);
-        }
-        toast.success("Challenge accepted!");
-      } catch (error) {
-        console.error("Error accepting challenge:", error);
-        toast.error("An error occurred while accepting the challenge.");
-      }
-      return;
-    }
-  }
+  // async function acceptChallenge() {
+  //   if (!isConnected || !address) {
+  //     toast.error("Please connect your wallet first");
+  //     return;
+  //   } else {
+  //     try {
+  //       const response = await fetch(
+  //         `/api/addEvent?ownerAddress=${address}&coins=0&winnings=0&wager=0&outcome=false`
+  //       );
+  //       if (!response.ok) {
+  //         throw new Error("Failed to accept challenge");
+  //       }
+
+  //       const profileResponse = await fetch(
+  //         `/api/getProfile?ownerAddress=${address}`
+  //       );
+  //       const data = await profileResponse.json();
+  //       if (data === null) {
+  //         await fetch(`/api/updateProfile?ownerAddress=${address}`);
+  //       } else {
+  //         setProgress(0);
+  //       }
+  //       toast.success("Challenge accepted!");
+  //     } catch (error) {
+  //       console.error("Error accepting challenge:", error);
+  //       toast.error("An error occurred while accepting the challenge.");
+  //     }
+  //     return;
+  //   }
+  // }
+
   async function claimReward() {
     await fetchDailyWinners();
     if (dailyWinners >= 3) {
@@ -202,16 +207,18 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
         <div className="w-full text-light-gray py-2 rounded-sm font-bold text-center">
           All prizes for today&apos;s challenge have been claimed.
         </div>
-      ) : progress == -1 ? (
-        <button
-          onClick={() => {
-            acceptChallenge();
-          }}
-          className="w-full bg-yellow text-black px-4 py-2 rounded-sm font-bold hover:bg-gray-900 hover:text-black transition-colors duration-300 uppercase tracking-wide"
-        >
-          Accept Challenge
-        </button>
-      ) : progress == challenge.steps ? (
+      ) : // ************ Legacy Accept Challenge functionality **************
+      // : progress == -1 ? (
+      //   <button
+      //     onClick={() => {
+      //       acceptChallenge();
+      //     }}
+      //     className="w-full bg-yellow text-black px-4 py-2 rounded-sm font-bold hover:bg-gray-900 hover:text-black transition-colors duration-300 uppercase tracking-wide"
+      //   >
+      //     Accept Challenge
+      //   </button>
+      // )
+      progress == challenge.steps ? (
         <button
           onClick={() => {
             claimReward();

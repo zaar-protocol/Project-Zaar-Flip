@@ -121,6 +121,7 @@ export default function Profile() {
   const today = new Date();
   const dayOfMonth = today.getDate();
   const todaysChallenge = dailyChallenges[dayOfMonth % dailyChallenges.length];
+  // const todaysChallenge = dailyChallenges[2];
 
   return (
     <div className="pl-4 h-screen w-full max-w-screen max-h-screen overflow-y-hidden overflow-x-hidden z-20 no-scrollbar">
