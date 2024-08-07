@@ -205,7 +205,7 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
         </div>
       ) : dailyWinners >= 3 ? (
         <div className="w-full text-light-gray py-2 rounded-sm font-bold text-center">
-          All prizes for today's challenge have been claimed.
+          All prizes for today&apos;s challenge have been claimed.
         </div>
       ) : // ************ Legacy Accept Challenge functionality **************
       // : progress == -1 ? (
