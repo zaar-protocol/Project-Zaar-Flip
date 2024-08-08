@@ -14,6 +14,7 @@ import { encode } from "base64-arraybuffer";
 import { EventBox } from "@/components/profileComponents/event-box";
 import { Metadata } from "next";
 import ChallengeBox from "@/components/challengeComponents/challengeBox";
+import ClaimRewardsBox from "@/components/challengeComponents/claimRewardsBox";
 import { challenge, userChallenge } from "@/types/challenge";
 import toast, { Toaster } from "react-hot-toast";
 import { getAccount } from "@wagmi/core";
@@ -47,7 +48,7 @@ export default function Profile() {
       title: "Seed to Whale",
       description:
         "Achieve 2,000x account growth starting from a minimum $1 bet",
-      reward: "$1,000 in stablecoins",
+      reward: "100,000 XP",
       difficulty: "Hard",
       steps: 1,
       checkProgress: checkProgressFunctions["Seed to Whale"],
@@ -57,7 +58,7 @@ export default function Profile() {
       title: "Lucky 7",
       description:
         "Win 7 consecutive coin flips with a minimum $1 bet each flip",
-      reward: "$500 in stablecoins",
+      reward: "100,000 XP",
       difficulty: "Hard",
       steps: 7,
       checkProgress: checkProgressFunctions["Lucky 7"],
@@ -67,7 +68,7 @@ export default function Profile() {
       title: "Whale’s Paradise",
       description:
         "Win 5 consecutive coin flips with a minimum $1,000 bet each",
-      reward: "$5,000 in stablecoins",
+      reward: "100,000 XP",
       difficulty: "Expert",
       steps: 5,
       checkProgress: checkProgressFunctions["Whale’s Paradise"],
@@ -77,7 +78,7 @@ export default function Profile() {
       title: "Make It All Back In One Trade",
       description:
         "Recover from a 90% account loss to double your initial balance, minimum $500 within 24 hours",
-      reward: "$1,000 in stablecoins",
+      reward: "100,000 XP",
       difficulty: "Medium",
       steps: 5,
       checkProgress: checkProgressFunctions["Make It All Back In One Trade"],
@@ -87,7 +88,7 @@ export default function Profile() {
       title: "Speed Demon",
       description:
         "Complete 1,000 coin flips within 1 hour (minimum $100 bet each)",
-      reward: " $1,000 in stablecoins",
+      reward: "100,000 XP",
       difficulty: "Expert",
       steps: 5,
       checkProgress: checkProgressFunctions["Speed Demon"],
@@ -97,7 +98,7 @@ export default function Profile() {
       title: "Noob City",
       description:
         "Complete 500 coin flips within 1 hour (minimum $50 bet each)",
-      reward: "$500 in stablecoins",
+      reward: "100,000 XP",
       difficulty: "Easy",
       steps: 5,
       checkProgress: checkProgressFunctions["Noob City"],
@@ -174,6 +175,9 @@ export default function Profile() {
                 {todaysChallenge && (
                   <ChallengeBox challenge={todaysChallenge} />
                 )}
+              </div>
+              <div className="w-full mt-[50px]">
+                <ClaimRewardsBox />
               </div>
             </main>
           </div>

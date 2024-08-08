@@ -54,7 +54,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         },
       });
 
-      //create an event
+    //create an event
     const u = await prisma.event.create({
       data: {
         coins: newCoins,
@@ -64,6 +64,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         authorAddress: ownerAddress,
       },
     });
+    
     res.status(200).json(u);
   } catch (error) {
     console.error('Error fetching user data:', error);
