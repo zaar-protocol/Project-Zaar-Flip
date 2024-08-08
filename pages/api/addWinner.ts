@@ -31,7 +31,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const steps = Number(req.query.steps) || 0;
 
 
-    const today = new Date();
+  const today = new Date();
   today.setHours(0, 0, 0, 0);
   const tomorrow = new Date(today);
   tomorrow.setDate(today.getDate() + 1);
@@ -81,6 +81,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         data: {
           challengeId: newChallengeId,
           authorAddress: ownerAddress,
+          rewardClaimed: false,
         },
       });
       res.status(200).json(u);

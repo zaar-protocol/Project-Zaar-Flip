@@ -52,8 +52,10 @@ export const checkProgressFunctions: Record<
     if (!events[0].outcome) {
       return 0;
     }
+
     let sequenceLength = 0;
     for (const event of events) {
+      console.log(event)
       if (event.outcome && event.wager >= 1000) {
         sequenceLength++;
       } else {
@@ -62,6 +64,9 @@ export const checkProgressFunctions: Record<
       if (sequenceLength == 5) {
         return 5;
       }
+    }
+    if (sequenceLength > 0){
+      return sequenceLength;
     }
     return 0;
   },

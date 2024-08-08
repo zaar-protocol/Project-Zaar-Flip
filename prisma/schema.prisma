@@ -42,4 +42,5 @@ model ChallengeWinner {
   authorAddress String
   createdAt     DateTime @default(now())
   challengeId   String
+  rewardClaimed Boolean
 }
