@@ -8,6 +8,7 @@ import { config } from "../config";
 import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import Head from "next/head";
 import type { Metadata } from "next";
+import RootLayout from "./layout";
 
 export const metadata: Metadata = {
   title: {
@@ -34,11 +35,13 @@ function MyApp({ Component, pageProps }: AppProps) {
           })}
         >
           <WalletWidgetProvider chainId="2594729740794688">
-            <Head>
-              <title>Zaar</title>
-              <link rel="icon" href="/favicon.ico" />
-            </Head>
-            <Component {...pageProps} />
+            <RootLayout>
+              <Head>
+                <title>Zaar</title>
+                <link rel="icon" href="/favicon.ico" />
+              </Head>
+              <Component {...pageProps} />
+            </RootLayout>
           </WalletWidgetProvider>
         </RainbowKitProvider>
       </QueryClientProvider>

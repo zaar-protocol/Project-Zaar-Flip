@@ -5,9 +5,10 @@ import prisma from '@/lib/prisma';
 import initializeCors from 'nextjs-cors';
 import { FaBullseye } from 'react-icons/fa6';
 import { userAgent } from 'next/server';
-import {checkProgressFunctions} from '../../components/checkProgressFunctions';
-import { ChallengeKey } from '../../components/checkProgressFunctions';
-import { challengeKeys } from '../../components/checkProgressFunctions';
+import {checkProgressFunctions} from '../../components/challengeComponents/checkProgressFunctions';
+import { ChallengeKey } from '../../components/challengeComponents/checkProgressFunctions';
+import { challengeKeys } from '../../components/challengeComponents/checkProgressFunctions';
+
 type Event = { id: number; authorAddress: string; createdAt: Date; coins: number; wager: number; winnings: number; outcome: boolean; };
 const allowCors = (fn: (req: NextApiRequest, res: NextApiResponse) => Promise<void>) => async (req: NextApiRequest, res: NextApiResponse) => {
   res.setHeader('Access-Control-Allow-Credentials', 'true');

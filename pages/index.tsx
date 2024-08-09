@@ -147,7 +147,7 @@ export default function Home() {
   }
 
   return (
-    <div className=" min-h-screen w-screen  relative overflow-hidden flex flex-col items-center justify-start ">
+    <div className=" min-h-screen w-screen overflow-x-hidden overflow-y-hidden relative flex flex-col items-center justify-start ">
       <Head>
         <title>Zaar Flip</title>
         <meta

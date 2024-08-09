@@ -10,7 +10,7 @@ import { useAccount } from "wagmi";
 export default function ChallengeBox({ challenge }: { challenge: challenge }) {
   const { address, isConnected } = useAccount();
   const [progress, setProgress] = useState(0);
-  const [rewardClaimed, setRewardClaimed] = useState(false);
+  const [challengeWon, setChallengeWon] = useState(false);
   const [dailyWinners, setDailyWinners] = useState<number>(0);
   const stepsArray = Array.from(
     { length: challenge.steps },
@@ -38,7 +38,7 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
     return challenge.checkProgress(events);
   };
 
-  const checkRewardClaimed = (challengeWins: any[]) => {
+  const checkChallengeWon = (challengeWins: any[]) => {
     const now = new Date();
     const startOfDay = new Date(
       now.getFullYear(),
@@ -78,7 +78,7 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
           } else {
             // find challengeWin for today
             setProgress(loadProgress(data.events, challenge));
-            setRewardClaimed(checkRewardClaimed(data.challengeWins));
+            setChallengeWon(checkChallengeWon(data.challengeWins));
           }
         });
     }
@@ -99,7 +99,7 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
 
   useEffect(() => {
     fetchDailyWinners();
-  }, [rewardClaimed, address, isConnected]);
+  }, [challengeWon, address, isConnected]);
 
   // Legacy Accept Challenge functinoality
 
@@ -134,38 +134,38 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
   //   }
   // }
 
-  async function claimReward() {
-    await fetchDailyWinners();
-    if (dailyWinners >= 3) {
-      toast.error("Sorry, there are already 3 winners for today.");
-      return;
-    }
-    if (!isConnected || !address) {
-      toast.error("Please connect your wallet first");
-      return;
-    } else {
-      try {
-        const response = await fetch(
-          `/api/addWinner?ownerAddress=${address}&challengeId=${challenge.title}&steps=${challenge.steps}`
-        );
-        if (response.ok) {
-          const result = await response.json();
-          if (result) {
-            setRewardClaimed(true);
-            toast.success("Challenge completion recorded");
-          } else {
-            toast.error("Failed to record challenge completion");
-          }
-        } else {
-          toast.error("Failed to record challenge completion");
-        }
-      } catch (error) {
-        console.error("Error claiming reward:", error);
-        toast.error("An error occured while claiming the reward.");
-      }
-      return;
-    }
-  }
+  // async function claimReward() {
+  //   await fetchDailyWinners();
+  //   if (dailyWinners >= 3) {
+  //     toast.error("Sorry, there are already 3 winners for today.");
+  //     return;
+  //   }
+  //   if (!isConnected || !address) {
+  //     toast.error("Please connect your wallet first");
+  //     return;
+  //   } else {
+  //     try {
+  //       const response = await fetch(
+  //         `/api/addWinner?ownerAddress=${address}&challengeId=${challenge.title}&steps=${challenge.steps}`
+  //       );
+  //       if (response.ok) {
+  //         const result = await response.json();
+  //         if (result) {
+  //           setRewardClaimed(true);
+  //           toast.success("Challenge completion recorded");
+  //         } else {
+  //           toast.error("Failed to record challenge completion");
+  //         }
+  //       } else {
+  //         toast.error("Failed to record challenge completion");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error claiming reward:", error);
+  //       toast.error("An error occured while claiming the reward.");
+  //     }
+  //     return;
+  //   }
+  // }
 
   return (
     <div className="w-full bg-dark-gray rounded-sm p-6 shadow-xl">
@@ -195,39 +195,36 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
           <Tooltip text='The first three users to complete the daily challenge and click "Claim Reward" will receive the prize!' />
         </div>
       </div>
-      {progress == -2 ? (
+      {challengeWon ? (
         <div className="w-full text-light-gray py-2 rounded-sm font-bold text-center">
-          Loading...
-        </div>
-      ) : rewardClaimed ? (
-        <div className="w-full text-light-gray py-2 rounded-sm font-bold text-center">
-          Congratulations! You have claimed your reward!
+          Congratulations! You are one of today&apos;s winners!
         </div>
       ) : dailyWinners >= 3 ? (
         <div className="w-full text-light-gray py-2 rounded-sm font-bold text-center">
           All prizes for today&apos;s challenge have been claimed.
         </div>
-      ) : // ************ Legacy Accept Challenge functionality **************
-      // : progress == -1 ? (
-      //   <button
-      //     onClick={() => {
-      //       acceptChallenge();
-      //     }}
-      //     className="w-full bg-yellow text-black px-4 py-2 rounded-sm font-bold hover:bg-gray-900 hover:text-black transition-colors duration-300 uppercase tracking-wide"
-      //   >
-      //     Accept Challenge
-      //   </button>
-      // )
-      progress == challenge.steps ? (
-        <button
-          onClick={() => {
-            claimReward();
-          }}
-          className="w-full bg-lime-green text-black px-4 py-2 rounded-sm font-bold hover:bg-gray-900 hover:text-black transition-colors duration-300 uppercase tracking-wide"
-        >
-          Claim Reward
-        </button>
       ) : (
+        // ************ Legacy Accept Challenge functionality **************
+        // : progress == -1 ? (
+        //   <button
+        //     onClick={() => {
+        //       acceptChallenge();
+        //     }}
+        //     className="w-full bg-yellow text-black px-4 py-2 rounded-sm font-bold hover:bg-gray-900 hover:text-black transition-colors duration-300 uppercase tracking-wide"
+        //   >
+        //     Accept Challenge
+        //   </button>
+        // )
+        // progress == challenge.steps ? (
+        //   <button
+        //     onClick={() => {
+        //       claimReward();
+        //     }}
+        //     className="w-full bg-lime-green text-black px-4 py-2 rounded-sm font-bold hover:bg-gray-900 hover:text-black transition-colors duration-300 uppercase tracking-wide"
+        //   >
+        //     Claim Reward
+        //   </button>
+        // ) :
         <div className="w-full text-light-gray py-2 rounded-sm font-bold uppercase tracking-wide flex flex-col md:flex-row justify-between">
           <p className="mr-4">
             {progress}/{challenge.steps} Steps Completed
