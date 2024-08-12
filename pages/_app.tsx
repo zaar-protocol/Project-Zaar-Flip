@@ -25,27 +25,19 @@ const client = new QueryClient();
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={client}>
-        <RainbowKitProvider
-          theme={darkTheme({
-            accentColor: "#e3bf00",
-            accentColorForeground: "black",
-            overlayBlur: "small",
-          })}
-        >
+    <RootLayout>
+      <WagmiProvider config={config}>
+        <QueryClientProvider client={client}>
           <WalletWidgetProvider chainId="2594729740794688">
-            <RootLayout>
-              <Head>
-                <title>Zaar</title>
-                <link rel="icon" href="/favicon.ico" />
-              </Head>
-              <Component {...pageProps} />
-            </RootLayout>
+            <Head>
+              <title>Zaar</title>
+              <link rel="icon" href="/favicon.ico" />
+            </Head>
+            <Component {...pageProps} />
           </WalletWidgetProvider>
-        </RainbowKitProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
+    </RootLayout>
   );
 }
 

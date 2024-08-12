@@ -17,14 +17,8 @@ export default function RootLayout({
   }, [pathname]);
 
   return (
-    <html lang="en">
-      <html lang="en">
-        <body className="">
-          <div className="max-w-screen overflow-x-hidden no-scrollbar">
-            {children}
-          </div>
-        </body>
-      </html>
-    </html>
+    <div className="max-w-screen overflow-x-hidden no-scrollbar">
+      {children}
+    </div>
   );
 }

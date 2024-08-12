@@ -9,6 +9,8 @@ import { dailyChallenges } from '@/components/challengeComponents/dailyChallenge
 import { checkProgressFunctions } from '@/components/challengeComponents/checkProgressFunctions';
 import { challengeKeys } from '@/components/challengeComponents/checkProgressFunctions';
 import { ChallengeKey } from '@/components/challengeComponents/checkProgressFunctions';
+import { getBalance } from 'wagmi/actions';
+import { config } from '@/config';
 
 type Event = { id: number; authorAddress: string; createdAt: Date; coins: number; wager: number; winnings: number; outcome: boolean; };
 const allowCors = (fn: (req: NextApiRequest, res: NextApiResponse) => Promise<void>) => async (req: NextApiRequest, res: NextApiResponse) => {
@@ -24,6 +26,10 @@ const allowCors = (fn: (req: NextApiRequest, res: NextApiResponse) => Promise<vo
   return await fn(req, res);
 };
 
+function isValidEthereumAddress(address: string): boolean {
+  return /^0x[a-fA-F0-9]{40}$/.test(address);
+}
+
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   //await initializeCors(req, res); // Initialize CORS
   try {
@@ -35,9 +41,59 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const newOutcome = Boolean(req.query.outcome === 'true') || false; 
 
     const today = new Date();
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date(todayStart);
+    todayEnd.setHours(23, 59, 59, 999);
+
     const dayOfMonth = today.getDate();
     // const todaysChallenge = dailyChallenges[dayOfMonth % dailyChallenges.length];
     const todaysChallenge = dailyChallenges[2];
+
+    const todaysEvents = await prisma.event.findMany({
+      where: {
+        authorAddress: ownerAddress,
+        createdAt: {
+          gte: todayStart,
+          lte: todayEnd,
+        },
+      },
+    });
+
+    let startingBalance = 0;
+    if (todaysEvents.length === 0) {
+      
+      // Validate and use the address
+      
+    if (isValidEthereumAddress(ownerAddress)) {
+      const balance = await getBalance(config, {
+        address: ownerAddress as `0x${string}`, // Type assertion
+      });
+      startingBalance = Number(balance.value)
+    } else {
+      throw new Error('Invalid Ethereum address format');
+    }
+
+
+      await prisma.profile.upsert({
+        where: { authorAddress: ownerAddress },
+        update: {
+          startingBalance: startingBalance || 0,
+        },
+        create: {
+          authorAddress: ownerAddress,
+          winnings: 0,
+          bio: "",
+          uName: "",
+          email: "",
+          profPicUrl: "",
+          bannerPicUrl: "",
+          waged: 0,
+          startingBalance: startingBalance || 0,
+        },
+      });
+    }
+    
     
     //try to find the user's profile
     //update or create it
@@ -56,8 +112,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         profPicUrl: "",
         bannerPicUrl: "",
         waged: newWager,
+        startingBalance: startingBalance || 0,
       },
-      select: { winnings: true, waged: true, challengeWins: true }
+      select: { winnings: true, waged: true, events: true, challengeWins: true, startingBalance: true }
     });
 
   //create an event
@@ -92,9 +149,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     });
   }
 
-  const todaysDate = new Date().toISOString().slice(0, 10); // Get today's date in YYYY-MM-DD format
+  const todaysDate = new Date().toISOString().slice(0, 10);
   const hasWon = user.challengeWins.some(win => {
-    const winDate = new Date(win.createdAt).toISOString().slice(0, 10); // Convert win date to YYYY-MM-DD format
+    const winDate = new Date(win.createdAt).toISOString().slice(0, 10);
     return win.challengeId === todaysChallenge.title && winDate === todaysDate;
   });
 
@@ -106,18 +163,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     });
   }
 
-  const userData = await prisma.event.findMany({
-    where: { authorAddress: ownerAddress },
-  });
-
-  if (!Array.isArray(userData)){
+  if (!Array.isArray(user.events)){
     return res.status(400).json({error: 'User events is not an array'});
   }
 
-    const progress = checkProgressFunctions[todaysChallenge.title as ChallengeKey](userData);
+    const progress = checkProgressFunctions[todaysChallenge.title as ChallengeKey](user.events, Number(user.startingBalance));
+
     if (todaysChallenge.steps === progress) {
-      
-      // Reward contract logic goes here
 
       await prisma.challengeWinner.create({
         data: {

@@ -183,22 +183,23 @@ export default function Profile() {
               <div className="w-full max-w-5xl bg-black border-dark-gray-all p-6 rounded-sm shadow-xl no-scrollbar">
                 {activeTab === "ALL" ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[250px] overflow-y-scroll no-scrollbar">
-                    {history?.map((box) => (
-                      <EventBox
-                        key={box.id}
-                        userName={currentVanity}
-                        date={box.createdAt}
-                        profPicUrl={
-                          currentProfileImage
-                            ? currentProfileImage
-                            : "/profile.jpg"
-                        }
-                        wager={box.wager}
-                        coinsAmount={box.coins}
-                        minHeads={box.minHeads}
-                        outcome={box.outcome}
-                      />
-                    ))}
+                    {history.length > 0 &&
+                      history?.map((box) => (
+                        <EventBox
+                          key={box.id}
+                          userName={currentVanity}
+                          date={box.createdAt}
+                          profPicUrl={
+                            currentProfileImage
+                              ? currentProfileImage
+                              : "/profile.jpg"
+                          }
+                          wager={box.wager}
+                          coinsAmount={box.coins}
+                          minHeads={box.minHeads}
+                          outcome={box.outcome}
+                        />
+                      ))}
                   </div>
                 ) : activeTab == "WON" ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[250px] overflow-y-scroll no-scrollbar">

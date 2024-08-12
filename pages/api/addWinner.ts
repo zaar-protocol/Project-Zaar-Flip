@@ -31,6 +31,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const newChallengeId = req.query.challengeId?.toString() || "";
     const steps = Number(req.query.steps) || 0;
 
+    const startingBalance = 0; //Placeholder to eliminate error. If we need this route, we will need to change this to read the balance from Wagmi
+
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -73,7 +75,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   if(challengeKeys.includes(newChallengeId as ChallengeKey)){
-    const progress = checkProgressFunctions[newChallengeId as ChallengeKey](userData);
+    const progress = checkProgressFunctions[newChallengeId as ChallengeKey](userData, startingBalance);
     if (steps === progress) {
       
       // Reward contract logic goes here
