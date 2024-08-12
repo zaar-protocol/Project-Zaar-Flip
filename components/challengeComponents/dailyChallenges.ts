@@ -1,6 +1,7 @@
 import { checkProgressFunctions } from "./checkProgressFunctions"
+import type { challenge } from "@/types/challenge"
 
-export const dailyChallenges = [
+export const dailyChallenges: challenge[] = [
     {
       id: 1,
       title: "Seed to Whale",
