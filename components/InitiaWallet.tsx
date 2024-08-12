@@ -18,7 +18,6 @@ export const InitiaWallet = () => {
   const [currentVanity, setCurrentVanity] = React.useState("");
   const [currentProfileImage, setCurrentProfileImage] = useState<string>("");
   const router = useRouter();
-
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -72,14 +71,15 @@ export const InitiaWallet = () => {
   }, [address, account]);
 
   const handleMouseEnter = () => {
-    if (hideTimeout) {
+    /*if (hideTimeout) {
       clearTimeout(hideTimeout);
       setHideTimeout(null);
-    }
-    setProfileMenuOpen(true);
+    }*/
+    setProfileMenuOpen(!profileMenuOpen);
   };
 
   const handleMouseLeave = () => {
+
     setHideTimeout(setTimeout(() => setProfileMenuOpen(false), 200));
   };
 
@@ -108,7 +108,7 @@ export const InitiaWallet = () => {
         }
 
         return (
-          <div className="flex items-center text-gray -mr-5 ">
+          <div className="flex items-center text-gray -mr-5 relative">
             {/* <div className="group">
               <button
                 onClick={openChainModal}
@@ -141,11 +141,11 @@ export const InitiaWallet = () => {
                 )}
               </button>
             </div> */}
-
+              
             <div
-              className="group relative z-50"
+              className="relative z-50 w-[150px] "
               onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
+              //onMouseLeave={handleMouseLeave}
               ref={dropdownRef}
             >
               <button
@@ -153,23 +153,21 @@ export const InitiaWallet = () => {
                 onClick={(event) => {
                   view(event);
                 }}
-                className="flex items-center justify-center rounded cursor-pointer px-2 py-2 text-sm font-medium text-gray-700 border border-dark-gray-all md:flex mr-1 max-w-xs gap-2 min-w-[100px]"
+                className="flex items-center justify-center rounded cursor-pointer px-2 py-2 text-sm font-medium text-gray-700 border border-dark-gray-all md:flex w-full gap-2 min-w-[100px]"
                 ref={buttonRef}
               >
-                <div className="truncate text-yellow-400">{currentVanity}</div>
+                <div className=" text-yellow-400">{currentVanity ||account?.address.substring(0,7)+"..."}</div>
               </button>
               <div
-                onMouseLeave={() => {
-                  setProfileMenuOpen(false);
-                }}
-                className={`z-50 dropdown-content absolute left-0 translate-x-[-65px] w-[calc(100%+65px)] bg-black border border-dark-gray-all rounded-sm shadow-lg transition-opacity duration-300 ${profileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"} z-50 uppercase`}
+                className={` z-50  absolute left-0  w-full bg-black border border-dark-gray-all rounded-sm shadow-lg transition-opacity duration-300 ${profileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"} z-50 uppercase`}
               >
                 <Link
                   href="/profile"
-                  className="block px-4 py-3 text-sm text-light-green border-b border-dark-gray hover:bg-gray-900 hover:text-white flex flex-row z-50"
+                  className="block  py-3 px-4 text-sm text-light-green border-b border-dark-gray hover:bg-gray-900 hover:text-white flex flex-row z-50"
+                  
                 >
                   <FaUser className="mr-2" />
-                  Profile
+                  <p className="bg-black">Profile</p>
                 </Link>
                 <Link
                   href="/settings"
@@ -189,9 +187,9 @@ export const InitiaWallet = () => {
                   <FaSignOutAlt className="mr-2" />
                   Log Out
                 </div>
+                </div>
               </div>
             </div>
-          </div>
         );
       })()}
     </div>
