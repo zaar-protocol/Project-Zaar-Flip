@@ -6,6 +6,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { config } from "./../../config";
 import { Tooltip } from "../tooltip";
 import { useAccount } from "wagmi";
+import { getBalance } from "wagmi/actions";
 
 export default function ChallengeBox({ challenge }: { challenge: challenge }) {
   const { address, isConnected } = useAccount();
@@ -17,7 +18,7 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
     (_, index) => index + 1
   );
 
-  const loadProgress = (events: Event[], challenge: challenge) => {
+  const loadProgress = (events: Event[], startingBalance: number) => {
     if (!Array.isArray(events) || events.length == 0) {
       return 0;
     }
@@ -35,7 +36,7 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
     //   return -1;
     // }
 
-    return challenge.checkProgress(events);
+    return challenge.checkProgress(events, startingBalance);
   };
 
   const checkChallengeWon = (challengeWins: any[]) => {
@@ -77,7 +78,7 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
             fetch(`/api/updateProfile?ownerAddress=${address}`);
           } else {
             // find challengeWin for today
-            setProgress(loadProgress(data.events, challenge));
+            setProgress(loadProgress(data.events, data.startingBalance));
             setChallengeWon(checkChallengeWon(data.challengeWins));
           }
         });

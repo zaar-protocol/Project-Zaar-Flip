@@ -6,7 +6,7 @@ export type challenge = {
     reward: string;
     difficulty: string;
     steps: number;
-    checkProgress: (events: Event[]) => number
+    checkProgress: (events: Event[], startingBalance: number) => number
 }
 
 export type userChallenge = {
