@@ -15,6 +15,7 @@ body {
   color: #929292;
   background-color: #000;
   min-height: 100vh;
+  height: 100%;
   width: 100%;
   overflow-x: hidden; /* Prevent horizontal scroll */
   background-image: url('/black-pattern.png');

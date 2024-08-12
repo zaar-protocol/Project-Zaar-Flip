@@ -5,9 +5,10 @@ import prisma from '@/lib/prisma';
 import initializeCors from 'nextjs-cors';
 import { FaBullseye } from 'react-icons/fa6';
 import { userAgent } from 'next/server';
-import {checkProgressFunctions} from '../../components/checkProgressFunctions';
-import { ChallengeKey } from '../../components/checkProgressFunctions';
-import { challengeKeys } from '../../components/checkProgressFunctions';
+import {checkProgressFunctions} from '../../components/challengeComponents/checkProgressFunctions';
+import { ChallengeKey } from '../../components/challengeComponents/checkProgressFunctions';
+import { challengeKeys } from '../../components/challengeComponents/checkProgressFunctions';
+
 type Event = { id: number; authorAddress: string; createdAt: Date; coins: number; wager: number; winnings: number; outcome: boolean; };
 const allowCors = (fn: (req: NextApiRequest, res: NextApiResponse) => Promise<void>) => async (req: NextApiRequest, res: NextApiResponse) => {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -29,6 +30,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const ownerAddress = req.query.ownerAddress?.toString() || ""; 
     const newChallengeId = req.query.challengeId?.toString() || "";
     const steps = Number(req.query.steps) || 0;
+
+    const startingBalance = 0; //Placeholder to eliminate error. If we need this route, we will need to change this to read the balance from Wagmi
 
 
   const today = new Date();
@@ -72,7 +75,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   if(challengeKeys.includes(newChallengeId as ChallengeKey)){
-    const progress = checkProgressFunctions[newChallengeId as ChallengeKey](userData);
+    const progress = checkProgressFunctions[newChallengeId as ChallengeKey](userData, startingBalance);
     if (steps === progress) {
       
       // Reward contract logic goes here

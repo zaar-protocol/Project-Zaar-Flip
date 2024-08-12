@@ -8,6 +8,7 @@ import { config } from "../config";
 import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import Head from "next/head";
 import type { Metadata } from "next";
+import RootLayout from "./layout";
 
 export const metadata: Metadata = {
   title: {
@@ -24,15 +25,9 @@ const client = new QueryClient();
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={client}>
-        <RainbowKitProvider
-          theme={darkTheme({
-            accentColor: "#e3bf00",
-            accentColorForeground: "black",
-            overlayBlur: "small",
-          })}
-        >
+    <RootLayout>
+      <WagmiProvider config={config}>
+        <QueryClientProvider client={client}>
           <WalletWidgetProvider chainId="2594729740794688">
             <Head>
               <title>Zaar</title>
@@ -40,9 +35,9 @@ function MyApp({ Component, pageProps }: AppProps) {
             </Head>
             <Component {...pageProps} />
           </WalletWidgetProvider>
-        </RainbowKitProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
+    </RootLayout>
   );
 }
 

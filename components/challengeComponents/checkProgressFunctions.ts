@@ -10,14 +10,39 @@ export const challengeKeys = [
 ] as const;
 export type ChallengeKey = (typeof challengeKeys)[number];
 
-export const checkProgressFunctions: Record<
-  ChallengeKey,
-  (events: Event[]) => number
-> = {
-  "Seed to Whale": (events: Event[]) => {
+export type CheckProgressFunction = (events: Event[], startingBalance: number) => number;
+
+export const checkProgressFunctions: Record<ChallengeKey, CheckProgressFunction> = {
+  "Seed to Whale": (events: Event[], startingBalance: number) => {
+    if(events.length === 0){
+      return 0;
+    }
+    if(startingBalance >= 1){
+      events.forEach((event) => {
+        event.createdAt = new Date(event.createdAt); // Convert to Date object
+      });
+  
+      // Sort events by createdAt in ascending order
+      events.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+  
+      let balance = startingBalance;
+      for(const event of events){
+        if(event.outcome) {
+          balance = balance - event.wager
+        } else {
+          balance = balance + event.winnings
+        }
+        if((balance-startingBalance)/startingBalance >= 2000){
+          return 1;
+        }
+      }
+    }
     return 0;
   },
-  "Lucky 7": (events: Event[]) => {
+  "Lucky 7": (events: Event[], startingBalance: number) => {
+    if(events.length === 0){
+      return 0;
+    }
     events.forEach((event) => {
       event.createdAt = new Date(event.createdAt); // Convert to Date object
     });
@@ -41,7 +66,10 @@ export const checkProgressFunctions: Record<
     }
     return 0;
   },
-  "Whale’s Paradise": (events: Event[]) => {
+  "Whale’s Paradise": (events: Event[], startingBalance: number) => {
+    if(events.length === 0){
+      return 0;
+    }
     events.forEach((event) => {
       event.createdAt = new Date(event.createdAt); // Convert to Date object
     });
@@ -70,10 +98,44 @@ export const checkProgressFunctions: Record<
     }
     return 0;
   },
-  "Make It All Back In One Trade": (events: Event[]) => {
+  "Make It All Back In One Trade": (events: Event[], startingBalance: number) => {
+    if(events.length === 0){
+      return 0;
+    }
+    if(startingBalance >= 500){
+      events.forEach((event) => {
+        event.createdAt = new Date(event.createdAt); // Convert to Date object
+      });
+  
+      // Sort events by createdAt in ascending order
+      events.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+  
+      let balance = startingBalance;
+      const min = startingBalance * .1;
+      let minReached = false;
+      for(const event of events){
+        if(event.outcome) {
+          balance = balance - event.wager
+        } else {
+          balance = balance + event.winnings
+        }
+        if(minReached){
+          if(balance >= (2 * startingBalance)) {
+            return 1;
+          }
+        } else {
+          if(balance <= min){
+            minReached = true;
+          }
+        }
+      }
+    }
     return 0;
   },
-  "Speed Demon": (events: Event[]) => {
+  "Speed Demon": (events: Event[], startingBalance: number) => {
+    if(events.length === 0){
+      return 0;
+    }
     events.forEach((event) => {
       event.createdAt = new Date(event.createdAt); // Convert to Date object
     });
@@ -103,7 +165,7 @@ export const checkProgressFunctions: Record<
     console.log(total);
     return Math.min(Math.floor(total / 200), 5);
   },
-  "Noob City": (events: Event[]) => {
+  "Noob City": (events: Event[], startingBalance: number) => {
     events.forEach((event) => {
       event.createdAt = new Date(event.createdAt); // Convert to Date object
     });

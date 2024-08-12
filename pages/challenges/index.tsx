@@ -19,7 +19,8 @@ import { challenge, userChallenge } from "@/types/challenge";
 import toast, { Toaster } from "react-hot-toast";
 import { getAccount } from "@wagmi/core";
 import { Event } from "@prisma/client";
-import { checkProgressFunctions } from "../../components/checkProgressFunctions";
+import { checkProgressFunctions } from "../../components/challengeComponents/checkProgressFunctions";
+import { dailyChallenges } from "@/components/challengeComponents/dailyChallenges";
 
 export const metadata: Metadata = {
   title: "Challenges",
@@ -42,68 +43,6 @@ const calculateTimeRemaining = () => {
 };
 
 export default function Profile() {
-  const [dailyChallenges, setDailyChallenges] = useState<challenge[]>([
-    {
-      id: 1,
-      title: "Seed to Whale",
-      description:
-        "Achieve 2,000x account growth starting from a minimum $1 bet",
-      reward: "100,000 XP",
-      difficulty: "Hard",
-      steps: 1,
-      checkProgress: checkProgressFunctions["Seed to Whale"],
-    },
-    {
-      id: 2,
-      title: "Lucky 7",
-      description:
-        "Win 7 consecutive coin flips with a minimum $1 bet each flip",
-      reward: "100,000 XP",
-      difficulty: "Hard",
-      steps: 7,
-      checkProgress: checkProgressFunctions["Lucky 7"],
-    },
-    {
-      id: 3,
-      title: "Whale’s Paradise",
-      description:
-        "Win 5 consecutive coin flips with a minimum $1,000 bet each",
-      reward: "100,000 XP",
-      difficulty: "Expert",
-      steps: 5,
-      checkProgress: checkProgressFunctions["Whale’s Paradise"],
-    },
-    {
-      id: 4,
-      title: "Make It All Back In One Trade",
-      description:
-        "Recover from a 90% account loss to double your initial balance, minimum $500 within 24 hours",
-      reward: "100,000 XP",
-      difficulty: "Medium",
-      steps: 5,
-      checkProgress: checkProgressFunctions["Make It All Back In One Trade"],
-    },
-    {
-      id: 5,
-      title: "Speed Demon",
-      description:
-        "Complete 1,000 coin flips within 1 hour (minimum $100 bet each)",
-      reward: "100,000 XP",
-      difficulty: "Expert",
-      steps: 5,
-      checkProgress: checkProgressFunctions["Speed Demon"],
-    },
-    {
-      id: 6,
-      title: "Noob City",
-      description:
-        "Complete 500 coin flips within 1 hour (minimum $50 bet each)",
-      reward: "100,000 XP",
-      difficulty: "Easy",
-      steps: 5,
-      checkProgress: checkProgressFunctions["Noob City"],
-    },
-  ]);
   const [timeRemaining, setTimeRemaining] = useState<{
     hours: number;
     minutes: number;
@@ -121,66 +60,62 @@ export default function Profile() {
 
   const today = new Date();
   const dayOfMonth = today.getDate();
-  const todaysChallenge = dailyChallenges[dayOfMonth % dailyChallenges.length];
-  // const todaysChallenge = dailyChallenges[2];
+  // const todaysChallenge = dailyChallenges[dayOfMonth % dailyChallenges.length];
+  const todaysChallenge = dailyChallenges[2];
 
   return (
-    <div className="pl-4 h-screen w-full max-w-screen max-h-screen overflow-y-hidden overflow-x-hidden z-20 no-scrollbar">
+    <div className="relative w-screen h-screen overflow-auto no-scrollbar">
       <Toaster />
       <Header />
       <StarField />
-      <div className=" container container-fluid mt-[60px] container-fluid mx-auto py-6 pt-0 w-[50%] min-w-[350px] ">
-        <div className="bg-transparent text-white h-screen max-h-full w-full">
-          <div className="container mx-auto p-4 w-full">
-            <main className="flex-grow flex flex-col items-center relative w-full  overflow-visible">
-              <div className="w-full max-w-5xl mb-12">
-                <h1 className="text-3xl font-bold text-light-green mb-4">
-                  Daily Challenges
-                </h1>
-                <div className="flex items-center">
-                  <svg
-                    className="w-6 h-6 text-yellow mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <p className="text-gray text-lg">
-                    New challenges in:{" "}
-                    {timeRemaining ? (
-                      <span className="text-light-green font-semibold">
-                        {timeRemaining.hours.toString().padStart(2, "0") +
-                          ":" +
-                          timeRemaining.minutes.toString().padStart(2, "0") +
-                          ":" +
-                          timeRemaining.seconds.toString().padStart(2, "0")}
-                      </span>
-                    ) : (
-                      <span className="text-light-green font-semibold">
-                        Loading...
-                      </span>
-                    )}
-                  </p>
-                </div>
+      <div className="absolute inset-0 flex flex-col items-center overflow-auto">
+        <div className="container mx-auto mt-32 pt-0 w-full max-w-screen-xl flex flex-col items-center">
+          <main className="flex flex-col items-center relative w-[50%]">
+            <div className="w-full max-w-5xl mb-12">
+              <h1 className="text-3xl font-bold text-light-green mb-4">
+                Daily Challenges
+              </h1>
+              <div className="flex items-center">
+                <svg
+                  className="w-6 h-6 text-yellow mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <p className="text-gray text-lg">
+                  New challenges in:{" "}
+                  {timeRemaining ? (
+                    <span className="text-light-green font-semibold">
+                      {timeRemaining.hours.toString().padStart(2, "0") +
+                        ":" +
+                        timeRemaining.minutes.toString().padStart(2, "0") +
+                        ":" +
+                        timeRemaining.seconds.toString().padStart(2, "0")}
+                    </span>
+                  ) : (
+                    <span className="text-light-green font-semibold">
+                      Loading...
+                    </span>
+                  )}
+                </p>
               </div>
+            </div>
 
-              <div className="w-full">
-                {todaysChallenge && (
-                  <ChallengeBox challenge={todaysChallenge} />
-                )}
-              </div>
-              <div className="w-full mt-[50px]">
-                <ClaimRewardsBox />
-              </div>
-            </main>
-          </div>
+            <div className="w-full">
+              {todaysChallenge && <ChallengeBox challenge={todaysChallenge} />}
+            </div>
+            <div className="w-full mt-[50px]">
+              <ClaimRewardsBox />
+            </div>
+          </main>
         </div>
       </div>
     </div>

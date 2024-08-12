@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['946i3uhfwajmzkei.public.blob.vercel-storage.com'],
+    domains: ["946i3uhfwajmzkei.public.blob.vercel-storage.com"],
   },
 };
 
