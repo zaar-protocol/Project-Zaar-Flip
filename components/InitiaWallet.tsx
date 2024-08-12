@@ -156,7 +156,7 @@ export const InitiaWallet = () => {
                 className="flex items-center justify-center rounded cursor-pointer px-2 py-2 text-sm font-medium text-gray-700 border border-dark-gray-all md:flex w-full gap-2 min-w-[100px]"
                 ref={buttonRef}
               >
-                <div className=" text-yellow-400">{currentVanity ||account.address.substring(0,7)+"..."}</div>
+                <div className=" text-yellow-400">{currentVanity ||account?.address.substring(0,7)+"..."}</div>
               </button>
               <div
                 className={` z-50  absolute left-0  w-full bg-black border border-dark-gray-all rounded-sm shadow-lg transition-opacity duration-300 ${profileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"} z-50 uppercase`}
