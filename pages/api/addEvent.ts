@@ -48,7 +48,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     const dayOfMonth = today.getDate();
     // const todaysChallenge = dailyChallenges[dayOfMonth % dailyChallenges.length];
-    const todaysChallenge = dailyChallenges[2];
+    const todaysChallenge = dailyChallenges[3];
 
     const todaysEvents = await prisma.event.findMany({
       where: {
@@ -60,8 +60,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       },
     });
 
-    let startingBalance = 0;
+    let startBalance = 0;
     if (todaysEvents.length === 0) {
+      console.log("First event of the day")
       
       // Validate and use the address
       
@@ -69,31 +70,23 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       const balance = await getBalance(config, {
         address: ownerAddress as `0x${string}`, // Type assertion
       });
-      startingBalance = Number(balance.value)
+      startBalance = Number(balance.value)
     } else {
       throw new Error('Invalid Ethereum address format');
     }
-
-
-      await prisma.profile.upsert({
-        where: { authorAddress: ownerAddress },
-        update: {
-          startingBalance: startingBalance || 0,
-        },
-        create: {
-          authorAddress: ownerAddress,
-          winnings: 0,
-          bio: "",
-          uName: "",
-          email: "",
-          profPicUrl: "",
-          bannerPicUrl: "",
-          waged: 0,
-          startingBalance: startingBalance || 0,
-        },
-      });
+    console.log(startBalance)
     }
-    
+
+    //create an event
+  const u = await prisma.event.create({
+    data: {
+      coins: newCoins,
+      winnings: newWinnings,
+      wager: newWager,
+      outcome: newOutcome,
+      authorAddress: ownerAddress,
+    },
+  });
     
     //try to find the user's profile
     //update or create it
@@ -102,6 +95,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       update: {
         winnings: { increment: newWinnings },
         waged: { increment: newWager },
+        ...(todaysEvents.length === 0 && { startingBalance: startBalance }),
       },
       create: {
         authorAddress: ownerAddress,
@@ -112,21 +106,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         profPicUrl: "",
         bannerPicUrl: "",
         waged: newWager,
-        startingBalance: startingBalance || 0,
+        startingBalance: startBalance || 0,
       },
       select: { winnings: true, waged: true, events: true, challengeWins: true, startingBalance: true }
     });
-
-  //create an event
-  const u = await prisma.event.create({
-    data: {
-      coins: newCoins,
-      winnings: newWinnings,
-      wager: newWager,
-      outcome: newOutcome,
-      authorAddress: ownerAddress,
-    },
-  });
 
   today.setHours(0, 0, 0, 0);
   const tomorrow = new Date(today);

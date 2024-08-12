@@ -27,7 +27,7 @@ export const checkProgressFunctions: Record<ChallengeKey, CheckProgressFunction>
   
       let balance = startingBalance;
       for(const event of events){
-        if(event.outcome) {
+        if(!event.outcome) {
           balance = balance - event.wager
         } else {
           balance = balance + event.winnings
@@ -36,7 +36,10 @@ export const checkProgressFunctions: Record<ChallengeKey, CheckProgressFunction>
           return 1;
         }
       }
+      console.log("Balance: ********************")
+      console.log(balance)
     }
+    
     return 0;
   },
   "Lucky 7": (events: Event[], startingBalance: number) => {
@@ -114,21 +117,26 @@ export const checkProgressFunctions: Record<ChallengeKey, CheckProgressFunction>
       const min = startingBalance * .1;
       let minReached = false;
       for(const event of events){
-        if(event.outcome) {
+        if(!event.outcome) {
           balance = balance - event.wager
         } else {
           balance = balance + event.winnings
         }
+        
         if(minReached){
           if(balance >= (2 * startingBalance)) {
             return 1;
           }
         } else {
           if(balance <= min){
+            console.log("Event and balance when min is hit: ")
+            console.log(event)
+            console.log(balance)
             minReached = true;
           }
         }
       }
+      console.log(balance)
     }
     return 0;
   },

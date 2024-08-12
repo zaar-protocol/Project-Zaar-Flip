@@ -39,7 +39,7 @@ export const dailyChallenges: challenge[] = [
         "Recover from a 90% account loss to double your initial balance, minimum $500 within 24 hours",
       reward: "100,000 XP",
       difficulty: "Medium",
-      steps: 5,
+      steps: 1,
       checkProgress: checkProgressFunctions["Make It All Back In One Trade"],
     },
     {
