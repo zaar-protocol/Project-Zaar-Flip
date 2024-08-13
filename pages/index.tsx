@@ -166,7 +166,7 @@ export default function Home() {
         id="planet"
         className="hidden absolute bottom-0 left-0 w-64 h-64 rounded-full bg-yellow-300 opacity-20"
       ></div>
-      <div className=" hidden absolute bottom-0 left-0 w-64 h-64 flex items-center justify-center">
+      <div className="hidden absolute bottom-0 left-0 w-64 h-64 flex items-center justify-center">
         <Image
           src="/logo-3d.png"
           alt="Logo"
@@ -175,7 +175,7 @@ export default function Home() {
           className="w-[100px] h-[100px]  object-contain z-50 opacity-40 bg-red-400"
         />
       </div>
-      <div className="container container-fluid  w-screen h-[800px] items-center justify-center  ">
+      <div className="container container-fluid  w-screen h-[800px] items-center justify-center relative z-10">
         <main className="contiainer w-full  h-full flex flex-col justify-center relative z-20">
           <div className="  flex flex-col h-[300px] items-center justify-center">
             <div

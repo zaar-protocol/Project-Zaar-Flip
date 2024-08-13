@@ -159,18 +159,18 @@ export const InitiaWallet = () => {
                 <div className=" text-yellow-400">{currentVanity}</div>
               </button>
               <div
-                className={` z-50  absolute left-0  w-full bg-black border border-dark-gray-all rounded-sm shadow-lg transition-opacity duration-300 ${profileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"} z-50 uppercase`}
+                className={`relative z-[100] absolute left-0  w-full bg-black border border-dark-gray-all rounded-sm shadow-lg transition-opacity duration-300 ${profileMenuOpen ? "block opacity-100 visible" : "hidden opacity-0 invisible"} uppercase`}
               >
                 <Link
                   href="/profile"
-                  className="block  py-3 px-4 text-sm text-light-green border-b border-dark-gray hover:bg-gray-900 hover:text-white flex flex-row z-50"
+                  className="relative z-[100] block py-3 px-4 text-sm text-light-green border-b border-dark-gray hover:bg-gray-900 hover:text-white flex flex-row"
                 >
                   <FaUser className="mr-2" />
                   <p className="bg-black">Profile</p>
                 </Link>
                 <Link
                   href="/settings"
-                  className="block px-4 py-3 text-sm text-light-green border-b border-dark-gray hover:bg-gray-900 hover:text-white flex flex-row z-50"
+                  className="relative z-[100] block px-4 py-3 text-sm text-light-green border-b border-dark-gray hover:bg-gray-900 hover:text-white flex flex-row"
                 >
                   <FaCog className="mr-2" />
                   Settings
@@ -181,7 +181,7 @@ export const InitiaWallet = () => {
                   onClick={() => {
                     handleLogout();
                   }}
-                  className="hover:cursor-pointer block px-4 py-3 text-sm text-light-green hover:bg-gray-900 hover:text-white flex flex-row z-50"
+                  className="relative z-[100] hover:cursor-pointer block px-4 py-3 text-sm text-light-green hover:bg-gray-900 hover:text-white flex flex-row"
                 >
                   <FaSignOutAlt className="mr-2" />
                   Log Out
