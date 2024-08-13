@@ -48,7 +48,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     const dayOfMonth = today.getDate();
     // const todaysChallenge = dailyChallenges[dayOfMonth % dailyChallenges.length];
-    const todaysChallenge = dailyChallenges[3];
+    const todaysChallenge = dailyChallenges[2];
 
     const todaysEvents = await prisma.event.findMany({
       where: {

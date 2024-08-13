@@ -11,7 +11,6 @@ import { FaWallet } from "react-icons/fa";
 import { FaCog, FaUser, FaSignOutAlt } from "react-icons/fa";
 
 export const InitiaWallet = () => {
-  const [modalOpen, setModalOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [hideTimeout, setHideTimeout] = useState<NodeJS.Timeout | null>(null);
   const { disconnect: wagmiDisconnect } = useDisconnect();
@@ -23,11 +22,8 @@ export const InitiaWallet = () => {
 
   const handleLogout = async () => {
     try {
-      // Call disconnect functions
       await wagmiDisconnect();
       await initiaDisconnect();
-
-      // Redirect to the home page
       router.push("/");
     } catch (error) {
       console.error("Logout error:", error);
@@ -54,10 +50,7 @@ export const InitiaWallet = () => {
   };
 
   useEffect(() => {
-    console.log("account", account);
-    console.log("wallet", wallet);
-    if (!addr) return; // If address is null or undefined, do nothing
-    // Fetch profile data and generate profile image
+    if (!addr) return;
     fetch(`./api/getProfile?ownerAddress=${addr}`)
       .then((response) => response.json())
       .then((data) => {
@@ -70,18 +63,25 @@ export const InitiaWallet = () => {
       });
   }, [address, account]);
 
-  const handleMouseEnter = () => {
-    /*if (hideTimeout) {
-      clearTimeout(hideTimeout);
-      setHideTimeout(null);
-    }*/
-    setProfileMenuOpen(!profileMenuOpen);
+  const toggleDropDown = () => {
+    setProfileMenuOpen((prev) => !prev);
   };
 
-  const handleMouseLeave = () => {
-
-    setHideTimeout(setTimeout(() => setProfileMenuOpen(false), 200));
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target as Node)
+    ) {
+      setProfileMenuOpen(false);
+    }
   };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div
@@ -141,37 +141,36 @@ export const InitiaWallet = () => {
                 )}
               </button>
             </div> */}
-              
+
             <div
               className="relative z-50 w-[150px] "
-              onMouseEnter={handleMouseEnter}
+              // onMouseEnter={handleMouseEnter}
               //onMouseLeave={handleMouseLeave}
               ref={dropdownRef}
             >
               <button
                 type="button"
-                onClick={(event) => {
-                  view(event);
-                }}
+                onClick={toggleDropDown}
                 className="flex items-center justify-center rounded cursor-pointer px-2 py-2 text-sm font-medium text-gray-700 border border-dark-gray-all md:flex w-full gap-2 min-w-[100px]"
                 ref={buttonRef}
+                aria-expanded={profileMenuOpen}
+                aria-haspopup="true"
               >
-                <div className=" text-yellow-400">{currentVanity ||account?.address.substring(0,7)+"..."}</div>
+                <div className=" text-yellow-400">{currentVanity}</div>
               </button>
               <div
-                className={` z-50  absolute left-0  w-full bg-black border border-dark-gray-all rounded-sm shadow-lg transition-opacity duration-300 ${profileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"} z-50 uppercase`}
+                className={`relative z-[100] absolute left-0  w-full bg-black border border-dark-gray-all rounded-sm shadow-lg transition-opacity duration-300 ${profileMenuOpen ? "block opacity-100 visible" : "hidden opacity-0 invisible"} uppercase`}
               >
                 <Link
                   href="/profile"
-                  className="block  py-3 px-4 text-sm text-light-green border-b border-dark-gray hover:bg-gray-900 hover:text-white flex flex-row z-50"
-                  
+                  className="relative z-[100] block py-3 px-4 text-sm text-light-green border-b border-dark-gray hover:bg-gray-900 hover:text-white flex flex-row"
                 >
                   <FaUser className="mr-2" />
                   <p className="bg-black">Profile</p>
                 </Link>
                 <Link
                   href="/settings"
-                  className="block px-4 py-3 text-sm text-light-green border-b border-dark-gray hover:bg-gray-900 hover:text-white flex flex-row z-50"
+                  className="relative z-[100] block px-4 py-3 text-sm text-light-green border-b border-dark-gray hover:bg-gray-900 hover:text-white flex flex-row"
                 >
                   <FaCog className="mr-2" />
                   Settings
@@ -182,14 +181,14 @@ export const InitiaWallet = () => {
                   onClick={() => {
                     handleLogout();
                   }}
-                  className="hover:cursor-pointer block px-4 py-3 text-sm text-light-green hover:bg-gray-900 hover:text-white flex flex-row z-50"
+                  className="relative z-[100] hover:cursor-pointer block px-4 py-3 text-sm text-light-green hover:bg-gray-900 hover:text-white flex flex-row"
                 >
                   <FaSignOutAlt className="mr-2" />
                   Log Out
                 </div>
-                </div>
               </div>
             </div>
+          </div>
         );
       })()}
     </div>
