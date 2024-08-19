@@ -35,6 +35,7 @@ const PlinkoBoard = ({
   const [countdowns, setCountdowns] = useState(
     new Array(multipliers.length).fill(0)
   );
+  const multiplierRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -46,12 +47,21 @@ const PlinkoBoard = ({
     return () => clearInterval(interval);
   }, []);
 
+  const setMultiplierRef = useCallback(
+    (el: HTMLDivElement | null, index: number) => {
+      multiplierRefs.current[index] = el;
+    },
+    []
+  );
+
   const handleBallLanding = (multiplierIndex: number) => {
-    setCountdowns((prevCountdowns) => {
-      const newCountdowns = [...prevCountdowns];
-      newCountdowns[multiplierIndex] = 400;
-      return newCountdowns;
-    });
+    const multiplierElement = multiplierRefs.current[multiplierIndex];
+    if (multiplierElement) {
+      multiplierElement.classList.add("multiplier-bounce");
+      setTimeout(() => {
+        multiplierElement.classList.remove("multiplier-bounce");
+      }, 300);
+    }
   };
 
   const drawBoard = useCallback(
@@ -371,6 +381,7 @@ const PlinkoBoard = ({
         {multipliers.map((multiplier, index) => (
           <div
             key={index}
+            ref={(el) => setMultiplierRef(el, index)}
             className={`relative text-center px-1 py-1 md:px-3 md:py-2 rounded-md ${getMultiplierStyle(multiplier, index, multipliers.length)} transition-all duration-300 ${countdowns[index] > 0 ? "translate-y-[5px]" : ""}`}
             style={{
               boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
