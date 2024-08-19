@@ -18,6 +18,7 @@
     "@vercel/blob": "^0.23.4",
     "@wagmi/cli": "^2.1.11",
     "base64-arraybuffer": "^1.0.2",
+    "matter-js": "^0.20.0",
     "next": "14.2.4",
     "nextjs-cors": "^2.2.0",
     "react": "^18",
@@ -28,6 +29,7 @@
     "wagmi": "^2.10.8"
   },
   "devDependencies": {
+    "@types/matter-js": "^0.19.7",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

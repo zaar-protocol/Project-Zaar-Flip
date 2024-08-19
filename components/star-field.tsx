@@ -69,7 +69,7 @@ export const StarField = () => {
     };
   }, []);
   return (
-    <div className="absolute inset-0 w-full h-full">
+    <div className="absolute inset-0 w-full h-full z-[-10]">
       <div
         id="starfield"
         ref={starfieldRef}
