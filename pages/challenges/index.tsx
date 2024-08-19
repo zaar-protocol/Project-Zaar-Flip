@@ -42,7 +42,7 @@ const calculateTimeRemaining = () => {
   return { hours, minutes, seconds };
 };
 
-export default function Profile() {
+export default function Challenges() {
   const [timeRemaining, setTimeRemaining] = useState<{
     hours: number;
     minutes: number;

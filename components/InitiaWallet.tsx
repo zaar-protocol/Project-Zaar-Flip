@@ -54,7 +54,6 @@ export const InitiaWallet = () => {
     fetch(`./api/getProfile?ownerAddress=${addr}`)
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         setCurrentVanity(data.uName === "" ? displayAddr(addr) : data.uName);
         if (data?.profPicUrl) setCurrentProfileImage(data.profPicUrl);
       })
