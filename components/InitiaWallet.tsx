@@ -40,7 +40,7 @@ export const InitiaWallet = () => {
     disconnect: initiaDisconnect,
   } = useWallet();
 
-  const addr = getAccount(config).address;
+  const { address: wagmiAddress, isConnected } = useAccount();
 
   const displayAddr = (addr: string) => {
     const firstFive = addr.slice(0, 5); // Get the first 5 characters
@@ -50,17 +50,19 @@ export const InitiaWallet = () => {
   };
 
   useEffect(() => {
-    if (!addr) return;
-    fetch(`./api/getProfile?ownerAddress=${addr}`)
+    if (!wagmiAddress) return;
+    fetch(`./api/getProfile?ownerAddress=${wagmiAddress}`)
       .then((response) => response.json())
       .then((data) => {
-        setCurrentVanity(data.uName === "" ? displayAddr(addr) : data.uName);
+        setCurrentVanity(
+          data.uName === "" ? displayAddr(wagmiAddress) : data.uName
+        );
         if (data?.profPicUrl) setCurrentProfileImage(data.profPicUrl);
       })
       .catch((error) => {
         console.error("Error fetching profile data:", error);
       });
-  }, [address, account]);
+  }, [wagmiAddress, account, isConnected]);
 
   const toggleDropDown = () => {
     setProfileMenuOpen((prev) => !prev);
