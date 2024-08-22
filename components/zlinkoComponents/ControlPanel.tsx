@@ -119,6 +119,19 @@ const ControlPanel = ({
                   <button
                     key={degen}
                     onClick={() => {
+                      if (degen === "Degen") {
+                        setRiskLevel("Extreme");
+                        setRows(12);
+                      } else if (degen === "Extra Degen") {
+                        setRiskLevel("Extreme");
+                        setRows(14);
+                      } else if (degen === "Total Degen") {
+                        setRiskLevel("Extreme");
+                        setRows(16);
+                      } else {
+                        setRiskLevel("Low");
+                        setRows(8);
+                      }
                       setDegenLevel(degen);
                       setIsDropdownOpen(false);
                     }}
@@ -141,13 +154,13 @@ const ControlPanel = ({
             {["Low", "Medium", "High"].map((risk) => (
               <button
                 key={risk}
-                disabled={dropBallTrigger}
+                disabled={dropBallTrigger || degenLevel != "Normal"}
                 onClick={() => setLocalRiskLevel(risk)}
                 className={`text-sm px-3 py-1 rounded ${
                   localRiskLevel === risk
                     ? "bg-gray text-light-green"
-                    : "text-light-gray hover:bg-zinc-900"
-                }`}
+                    : "text-light-gray"
+                }${degenLevel != "Normal" ? "hover:bg-zinc-900" : ""}`}
               >
                 {risk}
               </button>
@@ -162,13 +175,13 @@ const ControlPanel = ({
         <div className="flex items-center">
           <span className="text-light-green mr-5">{rows}</span>
           <input
-            disabled={dropBallTrigger}
+            disabled={dropBallTrigger || degenLevel != "Normal"}
             type="range"
             min="8"
             max="16"
             value={rows}
             onChange={(e) => setRows(Number(e.target.value))}
-            className="flex-grow h-4 appearance-none bg-gradient-to-r from-green-500 via-[#eab308] via-orange-500 to-[#ef4444] rounded-full custom-slider" // slider from green-500 via-yellow-500 via-orange-500 to red-500
+            className={`flex-grow h-4 appearance-none bg-gradient-to-r from-green-500 via-[#eab308] via-orange-500 to-[#ef4444] rounded-full custom-slider`} // slider from green-500 via-yellow-500 via-orange-500 to red-500
           />
         </div>
       </div>
