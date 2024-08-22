@@ -5,6 +5,8 @@ import { Header } from "@/components/header";
 import toast, { Toaster } from "react-hot-toast";
 import ControlPanel from "@/components/zlinkoComponents/ControlPanel";
 import PlinkoBoard from "@/components/zlinkoComponents/PlinkoBoard";
+import { storedMultipliers } from "@/components/zlinkoComponents/multipliers";
+import type { Risk } from "@/components/zlinkoComponents/multipliers";
 
 export default function Zlinko() {
   const [betAmount, setBetAmount] = useState<number>(1);
@@ -15,6 +17,28 @@ export default function Zlinko() {
     4.7, 2.3, 1.2, 1, 0.4, 1, 1.2, 2.3, 4.7,
   ]);
   const [dropBallTrigger, setDropBallTrigger] = useState<boolean>(false);
+
+  const fullMultipliers = (halfMultipliers: number[]) => {
+    let reversePart = halfMultipliers.slice(0, -1).reverse();
+    if (rows % 2 !== 0) {
+      reversePart.unshift(halfMultipliers[halfMultipliers.length - 1]);
+    }
+    return halfMultipliers.concat(reversePart);
+  };
+
+  useEffect(() => {
+    console.log(degenLevel);
+    let halfMultipliers;
+    if (degenLevel != "Normal") {
+      halfMultipliers = storedMultipliers[degenLevel as Risk][0];
+    } else {
+      if (riskLevel === "Extreme") {
+        return;
+      }
+      halfMultipliers = storedMultipliers[riskLevel as Risk][rows - 8];
+    }
+    setMultipliers(fullMultipliers(halfMultipliers));
+  }, [rows, riskLevel, degenLevel]);
 
   return (
     <div className="relative w-screen h-screen no-scrollbar">

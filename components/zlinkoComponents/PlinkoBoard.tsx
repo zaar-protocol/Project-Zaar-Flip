@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { probabilities } from "./multipliers";
 
 interface PlinkoBoardProps {
   rows: number;
@@ -72,7 +73,6 @@ const PlinkoBoard = ({
       activeImg: HTMLImageElement,
       hitPegs: Array<{ pegIndex: number; time: number }>
     ) => {
-      console.log("Drawing with ", rows, " rows.");
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
       const spacingX = ctx.canvas.width / (rows + 1);
       const spacingY =
@@ -139,7 +139,6 @@ const PlinkoBoard = ({
   };
 
   useEffect(() => {
-    console.log("Rows changed: ", rows);
     const canvas = canvasRef.current;
     if (canvas === null) {
       return;
@@ -164,7 +163,6 @@ const PlinkoBoard = ({
       ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
       const newPegs = drawBoard(ctx, rows, defaultImg, activeImg, new Array());
       setPegs(newPegs);
-      console.log("Rows changed: ", rows);
     });
   }, [rows, drawBoard]);
 
@@ -244,6 +242,9 @@ const PlinkoBoard = ({
         } else {
           y = pegs[0].y;
           hitPegs.push({ pegIndex: 0, time: ACTIVE_TIMEOUT });
+          ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+          drawBoard(ctx, rows, defaultImg, activeImg, hitPegs);
+          drawBall(ctx, x, y, BALL_RADIUS);
           requestAnimationFrame(animate);
         }
       };
@@ -306,7 +307,6 @@ const PlinkoBoard = ({
             hitPegs = updateHitPegs(hitPegs);
             drawBoard(ctx, rows, defaultImg, activeImg, hitPegs);
             if (hitPegs.length > 0) {
-              console.log(hitPegs);
               requestAnimationFrame(emptyHitPegs);
             }
           };
@@ -330,11 +330,12 @@ const PlinkoBoard = ({
     index: number,
     total: number
   ) => {
-    if (multiplier === 4.7) {
-      return "bg-gradient-to-b from-green-500 to-green-400";
-    } else if (multiplier === 2.3) {
-      return "bg-gradient-to-b from-lime-500 to-green-400";
-    } else if (index === 0 || index === total - 1) {
+    // if (multiplier === 4.7) {
+    //   return "bg-gradient-to-b from-green-500 to-green-400";
+    // } else if (multiplier === 2.3) {
+    //   return "bg-gradient-to-b from-lime-500 to-green-400";
+    // } else
+    if (index === 0 || index === total - 1) {
       return "bg-gradient-to-b from-green-600 to-green-500";
     } else if (multiplier > 1) {
       return "bg-gradient-to-b from-[#eab308] to-[#facc15]"; //yellow-500 to yellow-400
@@ -345,16 +346,8 @@ const PlinkoBoard = ({
     }
   };
 
-  const winChances = new Map<number, number>([
-    [4.7, 0.390625],
-    [2.3, 3.125],
-    [1.2, 10.9375],
-    [1, 12.5],
-    [0.4, 37.5],
-  ]);
-
-  const getWinChance = (multiplier: number): number => {
-    return winChances.get(multiplier) || 0;
+  const getWinChance = (index: number): number => {
+    return probabilities[rows - 8][index] || 0;
   };
 
   return (
@@ -377,17 +370,16 @@ const PlinkoBoard = ({
           style={{ maxWidth: "100%", height: "auto" }}
         />
       </div>
-      <div className="flex justify-evenly rounded-sm pb-2 px-1 relative">
+      <div className="flex rounded-sm pb-2 px-1 relative">
         {multipliers.map((multiplier, index) => (
           <div
             key={index}
             ref={(el) => setMultiplierRef(el, index)}
-            className={`relative text-center px-1 py-1 md:px-3 md:py-2 rounded-md ${getMultiplierStyle(multiplier, index, multipliers.length)} transition-all duration-300 ${countdowns[index] > 0 ? "translate-y-[5px]" : ""}`}
+            className={`relative flex-1 text-center py-1 md:py-2 rounded-md ${getMultiplierStyle(multiplier, index, multipliers.length)} transition-all duration-300 ${countdowns[index] > 0 ? "translate-y-[5px]" : ""}`}
             style={{
               boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-              minWidth: "40px",
             }}
-            onMouseEnter={() => setHoveredMultiplier(multiplier)}
+            onMouseEnter={() => setHoveredMultiplier(index)}
             onMouseLeave={() => setHoveredMultiplier(null)}
           >
             <div
@@ -399,7 +391,7 @@ const PlinkoBoard = ({
             <div className="absolute bottom-0 left-0 right-0 h-1 bg-black bg-opacity-20 rounded-b-md"></div>
           </div>
         ))}
-        {hoveredMultiplier && (
+        {hoveredMultiplier != null && (
           <div
             className="absolute left-1/2 transform -translate-x-1/2 bg-gray-800 text-white rounded-md shadow-lg"
             style={{
@@ -415,7 +407,7 @@ const PlinkoBoard = ({
             <div className="flex justify-between bg-gray text-light-green rounded-sm h-[35px] md:h-[65px]">
               <div className="flex-1 text-center py-2 px-3 md:mt-3">
                 <div className="text-md font-bold">
-                  ${(hoveredMultiplier - 1).toFixed(2)}
+                  ${(multipliers[hoveredMultiplier] - 1).toFixed(2)}
                 </div>
               </div>
               <div className="flex-1 text-center py-2 px-3 md:mt-3">
