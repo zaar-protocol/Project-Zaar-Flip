@@ -33,18 +33,22 @@ export default function Home() {
     chance: 50.0,
   });
   const coinsDisplayRef = useRef(null);
+  const inputRef = useRef<HTMLDivElement>(null);
+  const [wagerDropdown, setWagerDropdown] = useState(false);
   const [presetDropdown, setPresetDropdown] = useState(false);
   const [presetSelection, setPresetSelection] = useState("1 : 1 (x1.96)");
-  const addr = "0x000000000000000000000000000000000000000000000";
+  const tokenAddress = "0xE161Ff5fDC157fb69B1c6459c9aac7E6CcCdbfCA";
   //get prepared function to flip
   const { data: flip }: { data: any } = useSimulateZaarflipFlip({
     args: [
-      BigInt(wager ? wager : 0), // Check to see if user has input a wager
+      BigInt(wager ? wager : 0),
       BigInt(coinsAmount),
       BigInt(minHeadsTails),
-      addr,
+      tokenAddress,
     ],
   });
+
+  const wagerPresets = [10, 50, 100, 500, 1000, 5000];
 
   useEffect(() => {
     updateAll();
@@ -94,6 +98,19 @@ export default function Home() {
       flipCoins(coinsDisplayRef.current, minHeadsTails, side);
     }
   }
+
+  const handleClickOutside = (e: MouseEvent) => {
+    if (inputRef.current && !inputRef.current.contains(e.target as Node)) {
+      setWagerDropdown(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     if (minHeadsTails > coinsAmount) {
@@ -481,35 +498,63 @@ export default function Home() {
             <div className="space-y-3">
               <div>
                 <div className="text-light-green mb-1 text-sm">WAGER</div>
-                <div className="wager-container bg-dark-gray text-light-green rounded-sm p-2 flex items-center justify-between h-10 focus-within:ring-1 focus-within:ring-yellow-400">
-                  <div className="flex items-center">
-                    <Image
-                      src="/zaar-flip-heads.png"
-                      alt="Coin"
-                      width={20}
-                      height={20}
-                      className="mr-2"
-                    />
-                    <input
-                      type="number"
-                      value={wager}
-                      className="wager-input bg-transparent w-24 text-left pl-2 h-8 text-sm focus:outline-none"
-                      onChange={handleWagerChange}
-                    />
-                  </div>
-                  <div className="flex">
-                    <button
-                      onClick={handleHalfWager}
-                      className="wager-button hover:bg-gray  px-2 py-1 rounded-sm h-8 text-sm mr-3"
-                    >
-                      1/2
-                    </button>
-                    <button
-                      onClick={handleDoubleWager}
-                      className="mybutton hover:bg-gray hover:text-md px-2 py-1 rounded-sm h-8 text-sm"
-                    >
-                      x2
-                    </button>
+                <div>
+                  <div className="wager-container bg-dark-gray text-light-green rounded-sm p-2 flex items-center justify-between h-10 focus-within:ring-1 focus-within:ring-yellow-400">
+                    <div className="flex items-center">
+                      <Image
+                        src="/zaar-flip-heads.png"
+                        alt="Coin"
+                        width={20}
+                        height={20}
+                        className="mr-2"
+                      />
+                      <div className="" ref={inputRef}>
+                        <input
+                          type="number"
+                          value={wager}
+                          className="wager-input bg-transparent w-24 text-left pl-2 h-8 text-sm focus:outline-none"
+                          onChange={handleWagerChange}
+                          onFocus={() => setWagerDropdown(true)}
+                        />
+                        {wagerDropdown && (
+                          <div className="absolute z-10 w-36 shadow-lg mt-1">
+                            {wagerPresets.map((value) => (
+                              <div
+                                key={value}
+                                className="cursor-default w-[175px] px-2 hover:bg-gray h-8 flex items-center  bg-dark-gray flex flex-row items-center"
+                                onClick={() => {
+                                  setWager(value);
+                                  setWagerDropdown(false);
+                                }}
+                              >
+                                <Image
+                                  src="/zaar-flip-heads.png"
+                                  alt="Coin"
+                                  width={15}
+                                  height={15}
+                                  className="mr-2"
+                                />
+                                {value} INIT
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex">
+                      <button
+                        onClick={handleHalfWager}
+                        className="wager-button hover:bg-gray  px-2 py-1 rounded-sm h-8 text-sm mr-3"
+                      >
+                        1/2
+                      </button>
+                      <button
+                        onClick={handleDoubleWager}
+                        className="mybutton hover:bg-gray hover:text-md px-2 py-1 rounded-sm h-8 text-sm"
+                      >
+                        x2
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -540,7 +585,7 @@ export default function Home() {
                 <option value="9:8:50.8">9 : 8 (x50.8)</option>
                 <option value="10:10:1003.52">10 : 10 (x1003.52)</option>
               </select>*/}
-                <div className="z-40 relative flex flex-col flex-grow text-light-green rounded-sm w-full h-10 text-sm focus:outline-none focus:border focus:border-yellow-400">
+                <div className="z-40 relative flex flex-col flex-grow text-light-green rounded-sm w-full h-10 text-sm focus:outline-none focus:border focus:border-yellow-400 cursor-pointer">
                   <div
                     className={`${presetDropdown ? "border-light-gray-all" : " "} flex flex-row justify-between bg-dark-gray items-center w-full text-light-green h-10 px-2`}
                     onClick={() => {
@@ -548,7 +593,7 @@ export default function Home() {
                     }}
                   >
                     {presetSelection}
-                    {presetDropdown ? <FaChevronDown /> : <FaChevronUp />}
+                    {presetDropdown ? <FaChevronUp /> : <FaChevronDown />}
                   </div>
                   <div className="absolute flex flex-col w-full mt-10 flex flex-grow">
                     <div

@@ -328,21 +328,40 @@ const PlinkoBoard = ({
   const getMultiplierStyle = (
     multiplier: number,
     index: number,
-    total: number
+    total: number,
+    silver: boolean
   ) => {
     // if (multiplier === 4.7) {
     //   return "bg-gradient-to-b from-green-500 to-green-400";
     // } else if (multiplier === 2.3) {
     //   return "bg-gradient-to-b from-lime-500 to-green-400";
     // } else
+    if (silver) {
+      if (index === 0 || index === total - 1) {
+        return "bg-gradient-to-t from-amber-400 to-amber-200 text-black";
+      } else if (multiplier > 10) {
+        return "bg-gradient-to-t from-slate-600 to-slate-300 text-white";
+      } else if (multiplier > 5) {
+        return "bg-gradient-to-t from-slate-600 to-slate-400 text-white";
+      } else if (multiplier > 2) {
+        return "bg-gradient-to-t from-slate-700 to-slate-400 text-white"; //yellow-500 to yellow-400
+      } else if (multiplier >= 1) {
+        return "bg-gradient-to-t from-slate-800 to-slate-600 text-white"; //yellow-400 to orange-400
+      } else if (multiplier > 0.2) {
+        return "bg-gradient-to-t from-slate-900 to-slate-700 text-white";
+      } else {
+        return "bg-gradient-to-t from-slate-900 to-slate-800 text-white";
+      }
+    }
+
     if (index === 0 || index === total - 1) {
-      return "bg-gradient-to-b from-green-600 to-green-500";
+      return "bg-gradient-to-t from-amber-400 to-amber-300 text-black";
     } else if (multiplier > 1) {
-      return "bg-gradient-to-b from-[#eab308] to-[#facc15]"; //yellow-500 to yellow-400
+      return "bg-gradient-to-t from-[#422006] to-[#713f12] text-white"; //yellow-500 to yellow-400
     } else if (multiplier === 1) {
-      return "bg-gradient-to-b from-[#facc15] to-[#fbbf24]"; //yellow-400 to orange-400
+      return "bg-gradient-to-t from-amber-950 to-amber-900 text-white"; //yellow-400 to orange-400
     } else {
-      return "bg-gradient-to-b from-orange-500 to-orange-400";
+      return "bg-gradient-to-t from-orange-950 to-orange-900 text-white";
     }
   };
 
@@ -354,7 +373,7 @@ const PlinkoBoard = ({
     <div
       className="rounded-sm flex flex-col justify-center relative max-w-full mx-auto max-h-[350px] md:max-h-full"
       style={{
-        height: `${CANVAS_HEIGHT}px`,
+        height: `${CANVAS_HEIGHT + 60}px`,
         width: `${CANVAS_WIDTH}px`,
         backgroundImage: "url('/black-pattern.png')",
         backgroundSize: "auto",
@@ -375,18 +394,23 @@ const PlinkoBoard = ({
           <div
             key={index}
             ref={(el) => setMultiplierRef(el, index)}
-            className={`relative flex-1 text-center py-1 md:py-2 rounded-md ${getMultiplierStyle(multiplier, index, multipliers.length)} transition-all duration-300 ${countdowns[index] > 0 ? "translate-y-[5px]" : ""}`}
+            className={`relative flex-1 mx-[1px] text-center py-1 md:py-2 rounded-md ${getMultiplierStyle(multiplier, index, multipliers.length, true)} transition-all duration-300 ${multiplier === 10000 ? "px-[5px]" : ""}${countdowns[index] > 0 ? "translate-y-[5px]" : ""}`}
             style={{
               boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
             }}
             onMouseEnter={() => setHoveredMultiplier(index)}
             onMouseLeave={() => setHoveredMultiplier(null)}
           >
-            <div
-              className="text-sm font-bold relative z-10 cursor-default"
-              style={{ color: multiplier < 1 ? "white" : "#4a5568" }}
-            >
-              {multiplier}x
+            <div className="text-sm font-bold relative z-10 cursor-default">
+              {multiplier === 10000 ? (
+                <span>10k</span>
+              ) : multiplier === 3333 ? (
+                <span>3333</span>
+              ) : multiplier === 1000 ? (
+                <span>1k</span>
+              ) : (
+                <span>{multiplier}x</span>
+              )}
             </div>
             <div className="absolute bottom-0 left-0 right-0 h-1 bg-black bg-opacity-20 rounded-b-md"></div>
           </div>
