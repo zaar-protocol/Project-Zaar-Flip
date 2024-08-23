@@ -45,7 +45,7 @@ export default function Zlinko() {
       <Toaster />
       <Header />
       <StarField />
-      <div className="max-w-6xl mx-auto flex flex-col lg:flex-row justify-center items-start gap-4 sm:mt-20">
+      <div className="max-w-6xl mx-auto flex flex-col lg:flex-row justify-center items-end gap-4 sm:mt-20">
         <div className="w-full lg:w-auto lg:order-1 order-2">
           <ControlPanel
             betAmount={betAmount}

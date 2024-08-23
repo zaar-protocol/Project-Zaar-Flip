@@ -150,22 +150,28 @@ const ControlPanel = ({
           RISK LEVEL
         </label>
         <div className="bg-dark-gray rounded-sm p-2">
-          <div className="flex justify-between items-center">
-            {["Low", "Medium", "High"].map((risk) => (
-              <button
-                key={risk}
-                disabled={dropBallTrigger || degenLevel != "Normal"}
-                onClick={() => setLocalRiskLevel(risk)}
-                className={`text-sm px-3 py-1 rounded ${
-                  localRiskLevel === risk
-                    ? "bg-gray text-light-green"
-                    : "text-light-gray"
-                }${degenLevel != "Normal" ? "hover:bg-zinc-900" : ""}`}
-              >
-                {risk}
-              </button>
-            ))}
-          </div>
+          {riskLevel === "Extreme" ? (
+            <div className="w-full text-center text-[#ef4444] font-extrabold">
+              Extreme
+            </div>
+          ) : (
+            <div className="flex justify-between items-center">
+              {["Low", "Medium", "High"].map((risk) => (
+                <button
+                  key={risk}
+                  disabled={dropBallTrigger || degenLevel != "Normal"}
+                  onClick={() => setLocalRiskLevel(risk)}
+                  className={`text-sm px-3 py-1 rounded ${
+                    localRiskLevel === risk
+                      ? "bg-gray text-light-green"
+                      : "text-light-gray"
+                  }${degenLevel != "Normal" ? "hover:bg-zinc-900" : ""}`}
+                >
+                  {risk}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
       <div>
