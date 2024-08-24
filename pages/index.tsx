@@ -1,7 +1,7 @@
 "use client";
 import Head from "next/head";
 import Image from "next/image";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, use } from "react";
 import {
   updateCoinsDisplay,
   updateWinChance,
@@ -18,7 +18,7 @@ import { getAccount } from "@wagmi/core";
 import { createConfetti } from "@/components/confetti";
 import { Tooltip } from "@/components/tooltip";
 import { FaChevronUp, FaChevronDown } from "react-icons/fa6";
-import { useSimulateZaarflipFlip } from "@/generated";
+import { useSimulateZaarflipFlip, useWriteZaarflipFlip, useSimulateInitiaTokenApprove} from "@/generated";
 import { writeContract } from "@wagmi/core";
 import { waitForTransactionReceipt } from "@wagmi/core";
 
@@ -124,9 +124,44 @@ export default function Home() {
       setMinHeadsTails(coinsAmount);
     }
   }, [coinsAmount]);
+  const { data: approve }: {data: any} = useSimulateInitiaTokenApprove({
+    args: ['0xE161Ff5fDC157fb69B1c6459c9aac7E6CcCdbfCA', BigInt(1)],
+  });
+  const [okToApprove, setOkToApprove] = useState(false);
+  useEffect(() => {
+    if (approve?.request || false) {
+      setOkToApprove(true);
+    }
+    else{
+      setOkToApprove(false);
+    }
+  }, [approve?.request]);
+  
+  
 
+  //creating a Write contract to use our prepared functions
+
+  async function approver() {
+    const toastId = toast.loading("Waiting on confirmation from your wallet.");
+    try{
+      let myhash = await writeContract(config, approve!.request);
+      toast.dismiss(toastId);
+      toast.loading("Transaction Processing");
+      let receipt = await waitForTransactionReceipt(config, { hash: myhash });
+      toast.dismiss();
+    }
+    catch (error){
+      console.log(error);
+      toast.dismiss();
+    }
+    return;
+  }
+  
   async function flipContract() {
     try {
+      console.log(flip);
+      console.log(flip!.request);
+      const flip1 = useWriteZaarflipFlip(flip!.request);
       let myhash = await writeContract(config, flip!.request);
       let receipt = await waitForTransactionReceipt(config, { hash: myhash });
       console.log(receipt.status.toString());
@@ -147,7 +182,8 @@ export default function Home() {
 
   function flipCoin() {
     const flipSound = new Audio("/coin-flip-sound.mp3"); // Make sure to add this sound file to your public folder
-    flipSound.play();
+    //flipSound.play();
+    //approver();
     flipContract();
     const addr = getAccount(config).address;
     fetch(

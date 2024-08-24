@@ -107,6 +107,115 @@ export const erc20Abi = [
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// initiaToken
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const initiaTokenAbi = [
+  {
+    type: 'event',
+    inputs: [
+      { name: 'owner', type: 'address', indexed: true },
+      { name: 'spender', type: 'address', indexed: true },
+      { name: 'value', type: 'uint256', indexed: false },
+    ],
+    name: 'Approval',
+  },
+  {
+    type: 'event',
+    inputs: [
+      { name: 'from', type: 'address', indexed: true },
+      { name: 'to', type: 'address', indexed: true },
+      { name: 'value', type: 'uint256', indexed: false },
+    ],
+    name: 'Transfer',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'owner', type: 'address' },
+      { name: 'spender', type: 'address' },
+    ],
+    name: 'allowance',
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'spender', type: 'address' },
+      { name: 'amount', type: 'uint256' },
+    ],
+    name: 'approve',
+    outputs: [{ type: 'bool' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'account', type: 'address' }],
+    name: 'balanceOf',
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'decimals',
+    outputs: [{ type: 'uint8' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'name',
+    outputs: [{ type: 'string' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'symbol',
+    outputs: [{ type: 'string' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'totalSupply',
+    outputs: [{ type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'recipient', type: 'address' },
+      { name: 'amount', type: 'uint256' },
+    ],
+    name: 'transfer',
+    outputs: [{ type: 'bool' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'sender', type: 'address' },
+      { name: 'recipient', type: 'address' },
+      { name: 'amount', type: 'uint256' },
+    ],
+    name: 'transferFrom',
+    outputs: [{ type: 'bool' }],
+    stateMutability: 'nonpayable',
+  },
+] as const
+
+export const initiaTokenAddress =
+  '0xD5DeDc655a3000dF6318151940b3311f7a4cc931' as const
+
+export const initiaTokenConfig = {
+  address: initiaTokenAddress,
+  abi: initiaTokenAbi,
+} as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // zaarflip
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -325,6 +434,14 @@ export const zaarflipAbi = [
   { type: 'error', inputs: [], name: 'Unauthorized' },
 ] as const
 
+export const zaarflipAddress =
+  '0xE161Ff5fDC157fb69B1c6459c9aac7E6CcCdbfCA' as const
+
+export const zaarflipConfig = {
+  address: zaarflipAddress,
+  abi: zaarflipAbi,
+} as const
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // React
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -472,10 +589,179 @@ export const useWatchErc20TransferEvent =
   })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link initiaTokenAbi}__
+ */
+export const useReadInitiaToken = /*#__PURE__*/ createUseReadContract({
+  abi: initiaTokenAbi,
+  address: initiaTokenAddress,
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link initiaTokenAbi}__ and `functionName` set to `"allowance"`
+ */
+export const useReadInitiaTokenAllowance = /*#__PURE__*/ createUseReadContract({
+  abi: initiaTokenAbi,
+  address: initiaTokenAddress,
+  functionName: 'allowance',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link initiaTokenAbi}__ and `functionName` set to `"balanceOf"`
+ */
+export const useReadInitiaTokenBalanceOf = /*#__PURE__*/ createUseReadContract({
+  abi: initiaTokenAbi,
+  address: initiaTokenAddress,
+  functionName: 'balanceOf',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link initiaTokenAbi}__ and `functionName` set to `"decimals"`
+ */
+export const useReadInitiaTokenDecimals = /*#__PURE__*/ createUseReadContract({
+  abi: initiaTokenAbi,
+  address: initiaTokenAddress,
+  functionName: 'decimals',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link initiaTokenAbi}__ and `functionName` set to `"name"`
+ */
+export const useReadInitiaTokenName = /*#__PURE__*/ createUseReadContract({
+  abi: initiaTokenAbi,
+  address: initiaTokenAddress,
+  functionName: 'name',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link initiaTokenAbi}__ and `functionName` set to `"symbol"`
+ */
+export const useReadInitiaTokenSymbol = /*#__PURE__*/ createUseReadContract({
+  abi: initiaTokenAbi,
+  address: initiaTokenAddress,
+  functionName: 'symbol',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link initiaTokenAbi}__ and `functionName` set to `"totalSupply"`
+ */
+export const useReadInitiaTokenTotalSupply =
+  /*#__PURE__*/ createUseReadContract({
+    abi: initiaTokenAbi,
+    address: initiaTokenAddress,
+    functionName: 'totalSupply',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link initiaTokenAbi}__
+ */
+export const useWriteInitiaToken = /*#__PURE__*/ createUseWriteContract({
+  abi: initiaTokenAbi,
+  address: initiaTokenAddress,
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link initiaTokenAbi}__ and `functionName` set to `"approve"`
+ */
+export const useWriteInitiaTokenApprove = /*#__PURE__*/ createUseWriteContract({
+  abi: initiaTokenAbi,
+  address: initiaTokenAddress,
+  functionName: 'approve',
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link initiaTokenAbi}__ and `functionName` set to `"transfer"`
+ */
+export const useWriteInitiaTokenTransfer = /*#__PURE__*/ createUseWriteContract(
+  {
+    abi: initiaTokenAbi,
+    address: initiaTokenAddress,
+    functionName: 'transfer',
+  },
+)
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link initiaTokenAbi}__ and `functionName` set to `"transferFrom"`
+ */
+export const useWriteInitiaTokenTransferFrom =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: initiaTokenAbi,
+    address: initiaTokenAddress,
+    functionName: 'transferFrom',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link initiaTokenAbi}__
+ */
+export const useSimulateInitiaToken = /*#__PURE__*/ createUseSimulateContract({
+  abi: initiaTokenAbi,
+  address: initiaTokenAddress,
+})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link initiaTokenAbi}__ and `functionName` set to `"approve"`
+ */
+export const useSimulateInitiaTokenApprove =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: initiaTokenAbi,
+    address: initiaTokenAddress,
+    functionName: 'approve',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link initiaTokenAbi}__ and `functionName` set to `"transfer"`
+ */
+export const useSimulateInitiaTokenTransfer =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: initiaTokenAbi,
+    address: initiaTokenAddress,
+    functionName: 'transfer',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link initiaTokenAbi}__ and `functionName` set to `"transferFrom"`
+ */
+export const useSimulateInitiaTokenTransferFrom =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: initiaTokenAbi,
+    address: initiaTokenAddress,
+    functionName: 'transferFrom',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link initiaTokenAbi}__
+ */
+export const useWatchInitiaTokenEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: initiaTokenAbi,
+    address: initiaTokenAddress,
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link initiaTokenAbi}__ and `eventName` set to `"Approval"`
+ */
+export const useWatchInitiaTokenApprovalEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: initiaTokenAbi,
+    address: initiaTokenAddress,
+    eventName: 'Approval',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link initiaTokenAbi}__ and `eventName` set to `"Transfer"`
+ */
+export const useWatchInitiaTokenTransferEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: initiaTokenAbi,
+    address: initiaTokenAddress,
+    eventName: 'Transfer',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__
  */
 export const useReadZaarflip = /*#__PURE__*/ createUseReadContract({
   abi: zaarflipAbi,
+  address: zaarflipAddress,
 })
 
 /**
@@ -484,6 +770,7 @@ export const useReadZaarflip = /*#__PURE__*/ createUseReadContract({
 export const useReadZaarflipAcceptedTokens =
   /*#__PURE__*/ createUseReadContract({
     abi: zaarflipAbi,
+    address: zaarflipAddress,
     functionName: 'acceptedTokens',
   })
 
@@ -491,7 +778,7 @@ export const useReadZaarflipAcceptedTokens =
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"feePercentage"`
  */
 export const useReadZaarflipFeePercentage = /*#__PURE__*/ createUseReadContract(
-  { abi: zaarflipAbi, functionName: 'feePercentage' },
+  { abi: zaarflipAbi, address: zaarflipAddress, functionName: 'feePercentage' },
 )
 
 /**
@@ -499,6 +786,7 @@ export const useReadZaarflipFeePercentage = /*#__PURE__*/ createUseReadContract(
  */
 export const useReadZaarflipMaxCoins = /*#__PURE__*/ createUseReadContract({
   abi: zaarflipAbi,
+  address: zaarflipAddress,
   functionName: 'maxCoins',
 })
 
@@ -507,6 +795,7 @@ export const useReadZaarflipMaxCoins = /*#__PURE__*/ createUseReadContract({
  */
 export const useReadZaarflipOwner = /*#__PURE__*/ createUseReadContract({
   abi: zaarflipAbi,
+  address: zaarflipAddress,
   functionName: 'owner',
 })
 
@@ -516,6 +805,7 @@ export const useReadZaarflipOwner = /*#__PURE__*/ createUseReadContract({
 export const useReadZaarflipOwnershipHandoverExpiresAt =
   /*#__PURE__*/ createUseReadContract({
     abi: zaarflipAbi,
+    address: zaarflipAddress,
     functionName: 'ownershipHandoverExpiresAt',
   })
 
@@ -524,6 +814,7 @@ export const useReadZaarflipOwnershipHandoverExpiresAt =
  */
 export const useWriteZaarflip = /*#__PURE__*/ createUseWriteContract({
   abi: zaarflipAbi,
+  address: zaarflipAddress,
 })
 
 /**
@@ -532,6 +823,7 @@ export const useWriteZaarflip = /*#__PURE__*/ createUseWriteContract({
 export const useWriteZaarflipAddAcceptedToken =
   /*#__PURE__*/ createUseWriteContract({
     abi: zaarflipAbi,
+    address: zaarflipAddress,
     functionName: 'addAcceptedToken',
   })
 
@@ -541,6 +833,7 @@ export const useWriteZaarflipAddAcceptedToken =
 export const useWriteZaarflipCancelOwnershipHandover =
   /*#__PURE__*/ createUseWriteContract({
     abi: zaarflipAbi,
+    address: zaarflipAddress,
     functionName: 'cancelOwnershipHandover',
   })
 
@@ -550,6 +843,7 @@ export const useWriteZaarflipCancelOwnershipHandover =
 export const useWriteZaarflipCompleteOwnershipHandover =
   /*#__PURE__*/ createUseWriteContract({
     abi: zaarflipAbi,
+    address: zaarflipAddress,
     functionName: 'completeOwnershipHandover',
   })
 
@@ -558,6 +852,7 @@ export const useWriteZaarflipCompleteOwnershipHandover =
  */
 export const useWriteZaarflipFlip = /*#__PURE__*/ createUseWriteContract({
   abi: zaarflipAbi,
+  address: zaarflipAddress,
   functionName: 'flip',
 })
 
@@ -567,6 +862,7 @@ export const useWriteZaarflipFlip = /*#__PURE__*/ createUseWriteContract({
 export const useWriteZaarflipRemoveAcceptedToken =
   /*#__PURE__*/ createUseWriteContract({
     abi: zaarflipAbi,
+    address: zaarflipAddress,
     functionName: 'removeAcceptedToken',
   })
 
@@ -576,6 +872,7 @@ export const useWriteZaarflipRemoveAcceptedToken =
 export const useWriteZaarflipRenounceOwnership =
   /*#__PURE__*/ createUseWriteContract({
     abi: zaarflipAbi,
+    address: zaarflipAddress,
     functionName: 'renounceOwnership',
   })
 
@@ -585,6 +882,7 @@ export const useWriteZaarflipRenounceOwnership =
 export const useWriteZaarflipRequestOwnershipHandover =
   /*#__PURE__*/ createUseWriteContract({
     abi: zaarflipAbi,
+    address: zaarflipAddress,
     functionName: 'requestOwnershipHandover',
   })
 
@@ -594,6 +892,7 @@ export const useWriteZaarflipRequestOwnershipHandover =
 export const useWriteZaarflipSetFeePercentage =
   /*#__PURE__*/ createUseWriteContract({
     abi: zaarflipAbi,
+    address: zaarflipAddress,
     functionName: 'setFeePercentage',
   })
 
@@ -601,7 +900,7 @@ export const useWriteZaarflipSetFeePercentage =
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"setMaxCoins"`
  */
 export const useWriteZaarflipSetMaxCoins = /*#__PURE__*/ createUseWriteContract(
-  { abi: zaarflipAbi, functionName: 'setMaxCoins' },
+  { abi: zaarflipAbi, address: zaarflipAddress, functionName: 'setMaxCoins' },
 )
 
 /**
@@ -610,6 +909,7 @@ export const useWriteZaarflipSetMaxCoins = /*#__PURE__*/ createUseWriteContract(
 export const useWriteZaarflipTransferOwnership =
   /*#__PURE__*/ createUseWriteContract({
     abi: zaarflipAbi,
+    address: zaarflipAddress,
     functionName: 'transferOwnership',
   })
 
@@ -619,6 +919,7 @@ export const useWriteZaarflipTransferOwnership =
 export const useWriteZaarflipWithdrawEther =
   /*#__PURE__*/ createUseWriteContract({
     abi: zaarflipAbi,
+    address: zaarflipAddress,
     functionName: 'withdrawEther',
   })
 
@@ -628,6 +929,7 @@ export const useWriteZaarflipWithdrawEther =
 export const useWriteZaarflipWithdrawFunds =
   /*#__PURE__*/ createUseWriteContract({
     abi: zaarflipAbi,
+    address: zaarflipAddress,
     functionName: 'withdrawFunds',
   })
 
@@ -636,6 +938,7 @@ export const useWriteZaarflipWithdrawFunds =
  */
 export const useSimulateZaarflip = /*#__PURE__*/ createUseSimulateContract({
   abi: zaarflipAbi,
+  address: zaarflipAddress,
 })
 
 /**
@@ -644,6 +947,7 @@ export const useSimulateZaarflip = /*#__PURE__*/ createUseSimulateContract({
 export const useSimulateZaarflipAddAcceptedToken =
   /*#__PURE__*/ createUseSimulateContract({
     abi: zaarflipAbi,
+    address: zaarflipAddress,
     functionName: 'addAcceptedToken',
   })
 
@@ -653,6 +957,7 @@ export const useSimulateZaarflipAddAcceptedToken =
 export const useSimulateZaarflipCancelOwnershipHandover =
   /*#__PURE__*/ createUseSimulateContract({
     abi: zaarflipAbi,
+    address: zaarflipAddress,
     functionName: 'cancelOwnershipHandover',
   })
 
@@ -662,6 +967,7 @@ export const useSimulateZaarflipCancelOwnershipHandover =
 export const useSimulateZaarflipCompleteOwnershipHandover =
   /*#__PURE__*/ createUseSimulateContract({
     abi: zaarflipAbi,
+    address: zaarflipAddress,
     functionName: 'completeOwnershipHandover',
   })
 
@@ -670,6 +976,7 @@ export const useSimulateZaarflipCompleteOwnershipHandover =
  */
 export const useSimulateZaarflipFlip = /*#__PURE__*/ createUseSimulateContract({
   abi: zaarflipAbi,
+  address: zaarflipAddress,
   functionName: 'flip',
 })
 
@@ -679,6 +986,7 @@ export const useSimulateZaarflipFlip = /*#__PURE__*/ createUseSimulateContract({
 export const useSimulateZaarflipRemoveAcceptedToken =
   /*#__PURE__*/ createUseSimulateContract({
     abi: zaarflipAbi,
+    address: zaarflipAddress,
     functionName: 'removeAcceptedToken',
   })
 
@@ -688,6 +996,7 @@ export const useSimulateZaarflipRemoveAcceptedToken =
 export const useSimulateZaarflipRenounceOwnership =
   /*#__PURE__*/ createUseSimulateContract({
     abi: zaarflipAbi,
+    address: zaarflipAddress,
     functionName: 'renounceOwnership',
   })
 
@@ -697,6 +1006,7 @@ export const useSimulateZaarflipRenounceOwnership =
 export const useSimulateZaarflipRequestOwnershipHandover =
   /*#__PURE__*/ createUseSimulateContract({
     abi: zaarflipAbi,
+    address: zaarflipAddress,
     functionName: 'requestOwnershipHandover',
   })
 
@@ -706,6 +1016,7 @@ export const useSimulateZaarflipRequestOwnershipHandover =
 export const useSimulateZaarflipSetFeePercentage =
   /*#__PURE__*/ createUseSimulateContract({
     abi: zaarflipAbi,
+    address: zaarflipAddress,
     functionName: 'setFeePercentage',
   })
 
@@ -715,6 +1026,7 @@ export const useSimulateZaarflipSetFeePercentage =
 export const useSimulateZaarflipSetMaxCoins =
   /*#__PURE__*/ createUseSimulateContract({
     abi: zaarflipAbi,
+    address: zaarflipAddress,
     functionName: 'setMaxCoins',
   })
 
@@ -724,6 +1036,7 @@ export const useSimulateZaarflipSetMaxCoins =
 export const useSimulateZaarflipTransferOwnership =
   /*#__PURE__*/ createUseSimulateContract({
     abi: zaarflipAbi,
+    address: zaarflipAddress,
     functionName: 'transferOwnership',
   })
 
@@ -733,6 +1046,7 @@ export const useSimulateZaarflipTransferOwnership =
 export const useSimulateZaarflipWithdrawEther =
   /*#__PURE__*/ createUseSimulateContract({
     abi: zaarflipAbi,
+    address: zaarflipAddress,
     functionName: 'withdrawEther',
   })
 
@@ -742,6 +1056,7 @@ export const useSimulateZaarflipWithdrawEther =
 export const useSimulateZaarflipWithdrawFunds =
   /*#__PURE__*/ createUseSimulateContract({
     abi: zaarflipAbi,
+    address: zaarflipAddress,
     functionName: 'withdrawFunds',
   })
 
@@ -750,6 +1065,7 @@ export const useSimulateZaarflipWithdrawFunds =
  */
 export const useWatchZaarflipEvent = /*#__PURE__*/ createUseWatchContractEvent({
   abi: zaarflipAbi,
+  address: zaarflipAddress,
 })
 
 /**
@@ -758,6 +1074,7 @@ export const useWatchZaarflipEvent = /*#__PURE__*/ createUseWatchContractEvent({
 export const useWatchZaarflipGameResultEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: zaarflipAbi,
+    address: zaarflipAddress,
     eventName: 'GameResult',
   })
 
@@ -767,6 +1084,7 @@ export const useWatchZaarflipGameResultEvent =
 export const useWatchZaarflipOwnershipHandoverCanceledEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: zaarflipAbi,
+    address: zaarflipAddress,
     eventName: 'OwnershipHandoverCanceled',
   })
 
@@ -776,6 +1094,7 @@ export const useWatchZaarflipOwnershipHandoverCanceledEvent =
 export const useWatchZaarflipOwnershipHandoverRequestedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: zaarflipAbi,
+    address: zaarflipAddress,
     eventName: 'OwnershipHandoverRequested',
   })
 
@@ -785,5 +1104,6 @@ export const useWatchZaarflipOwnershipHandoverRequestedEvent =
 export const useWatchZaarflipOwnershipTransferredEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: zaarflipAbi,
+    address: zaarflipAddress,
     eventName: 'OwnershipTransferred',
   })
