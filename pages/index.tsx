@@ -6,6 +6,7 @@ import {
   updateCoinsDisplay,
   updateWinChance,
   updatePotentialWin,
+  randomFlip,
   flipCoins,
   WinChanceType,
 } from "../components/zaarFlipUtils";
@@ -18,7 +19,12 @@ import { getAccount } from "@wagmi/core";
 import { createConfetti } from "@/components/confetti";
 import { Tooltip } from "@/components/tooltip";
 import { FaChevronUp, FaChevronDown } from "react-icons/fa6";
-import { useSimulateZaarflipFlip, useWriteZaarflipFlip, useSimulateInitiaTokenApprove} from "@/generated";
+import {
+  useSimulateZaarflipFlip,
+  useWriteZaarflipFlip,
+  useSimulateInitiaTokenApprove,
+  useSimulateZaarflipAddAcceptedToken,
+} from "@/generated";
 import { writeContract } from "@wagmi/core";
 import { waitForTransactionReceipt } from "@wagmi/core";
 
@@ -37,7 +43,7 @@ export default function Home() {
   const [wagerDropdown, setWagerDropdown] = useState(false);
   const [presetDropdown, setPresetDropdown] = useState(false);
   const [presetSelection, setPresetSelection] = useState("1 : 1 (x1.96)");
-  const tokenAddress = "0xE161Ff5fDC157fb69B1c6459c9aac7E6CcCdbfCA";
+  const tokenAddress = "0xd5dedc655a3000df6318151940b3311f7a4cc931";
   //get prepared function to flip
   const { data: flip }: { data: any } = useSimulateZaarflipFlip({
     args: [
@@ -47,6 +53,29 @@ export default function Home() {
       tokenAddress,
     ],
   });
+
+  const { data: addToken }: { data: any } = useSimulateZaarflipAddAcceptedToken(
+    {
+      args: [tokenAddress],
+    }
+  );
+
+  async function flipContract() {
+    const toastId = toast.loading("Waiting on confirmation from your wallet.");
+
+    try {
+      let myhash = await writeContract(config, flip!.request);
+      toast.dismiss(toastId);
+      toast.loading("Transaction Processing");
+      let receipt = await waitForTransactionReceipt(config, { hash: myhash });
+      console.log("Receipt: ", receipt);
+      toast.dismiss();
+    } catch (error) {
+      console.error("Error executing write: ", error);
+      toast.dismiss();
+    }
+    return;
+  }
 
   const wagerPresets = [10, 50, 100, 500, 1000, 5000];
 
@@ -95,7 +124,7 @@ export default function Home() {
   function handleSideChange(side: string) {
     if (currentSide !== side && coinsDisplayRef.current) {
       setCurrentSide(side);
-      flipCoins(coinsDisplayRef.current, minHeadsTails, side);
+      flipCoins(coinsDisplayRef.current, minHeadsTails, side, true);
     }
   }
 
@@ -124,67 +153,26 @@ export default function Home() {
       setMinHeadsTails(coinsAmount);
     }
   }, [coinsAmount]);
-  const { data: approve }: {data: any} = useSimulateInitiaTokenApprove({
-    args: ['0xE161Ff5fDC157fb69B1c6459c9aac7E6CcCdbfCA', BigInt(1)],
+
+  const { data: approve }: { data: any } = useSimulateInitiaTokenApprove({
+    args: ["0xE161Ff5fDC157fb69B1c6459c9aac7E6CcCdbfCA", BigInt(1)],
   });
   const [okToApprove, setOkToApprove] = useState(false);
   useEffect(() => {
     if (approve?.request || false) {
       setOkToApprove(true);
-    }
-    else{
+    } else {
       setOkToApprove(false);
     }
   }, [approve?.request]);
-  
-  
 
   //creating a Write contract to use our prepared functions
 
-  async function approver() {
-    const toastId = toast.loading("Waiting on confirmation from your wallet.");
-    try{
-      let myhash = await writeContract(config, approve!.request);
-      toast.dismiss(toastId);
-      toast.loading("Transaction Processing");
-      let receipt = await waitForTransactionReceipt(config, { hash: myhash });
-      toast.dismiss();
-    }
-    catch (error){
-      console.log(error);
-      toast.dismiss();
-    }
-    return;
-  }
-  
-  async function flipContract() {
-    try {
-      console.log(flip);
-      console.log(flip!.request);
-      const flip1 = useWriteZaarflipFlip(flip!.request);
-      let myhash = await writeContract(config, flip!.request);
-      let receipt = await waitForTransactionReceipt(config, { hash: myhash });
-      console.log(receipt.status.toString());
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  function updateChallengeProgress(challengeId: number, progress: number) {
-    fetch(
-      `./api/updateChallengeProgress?challengeId=${challengeId}&progress=${progress}`
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-      });
-  }
-
-  function flipCoin() {
+  async function flipCoin() {
     const flipSound = new Audio("/coin-flip-sound.mp3"); // Make sure to add this sound file to your public folder
     //flipSound.play();
     //approver();
-    flipContract();
+    await flipContract();
     const addr = getAccount(config).address;
     fetch(
       `./api/addEvent?ownerAddress=${addr}&coins=5&winnings=100&wager=1000&outcome=true`
@@ -288,7 +276,8 @@ export default function Home() {
                       flipCoins(
                         coinsDisplayRef.current,
                         minHeadsTails,
-                        currentSide
+                        currentSide,
+                        true
                       );
                     }
                   }}
@@ -729,10 +718,21 @@ export default function Home() {
           </div>
 
           <button
-            onClick={() => {
+            onClick={async () => {
               if (coinsDisplayRef.current) {
-                flipCoins(coinsDisplayRef.current, minHeadsTails, currentSide);
-                flipCoin();
+                await flipCoin();
+                flipCoins(
+                  coinsDisplayRef.current,
+                  minHeadsTails,
+                  currentSide,
+                  false
+                );
+                randomFlip(
+                  coinsDisplayRef.current,
+                  minHeadsTails,
+                  currentSide,
+                  true
+                );
               }
             }}
             className="hidden sm:block gradient-button hover:-translate-y-1 transition duration-700 ease-in-out text-black px-6 py-2 rounded-sm font-bold mt-3 mx-auto block text-sm uppercase"
