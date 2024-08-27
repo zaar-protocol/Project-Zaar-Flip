@@ -1,4 +1,6 @@
+import Image from "next/image";
 import React, { useState, useEffect } from "react";
+import { Tooltip } from "../tooltip";
 
 interface ControlPanelProps {
   betAmount: number;
@@ -89,9 +91,12 @@ const ControlPanel = ({
         </div>
       </div>
       <div>
-        <label className="block text-sm font-medium mb-2 text-light-green mt-5">
-          DEGEN LEVEL
-        </label>
+        <div className="flex mb-2 mt-5">
+          <label className="block text-sm font-medium text-light-green ">
+            DEGEN LEVEL
+          </label>
+          <Tooltip text="High risk not enough for you? The degen options unlock the  EXTREME risk level with preset rows." />
+        </div>
         <div className="relative">
           <button
             onClick={toggleDropdown}
@@ -150,28 +155,39 @@ const ControlPanel = ({
           RISK LEVEL
         </label>
         <div className="bg-dark-gray rounded-sm p-2">
-          {riskLevel === "Extreme" ? (
-            <div className="w-full text-center text-[#ef4444] font-extrabold">
-              Extreme
-            </div>
-          ) : (
-            <div className="flex justify-between items-center">
-              {["Low", "Medium", "High"].map((risk) => (
-                <button
-                  key={risk}
-                  disabled={dropBallTrigger || degenLevel != "Normal"}
-                  onClick={() => setLocalRiskLevel(risk)}
-                  className={`text-sm px-3 py-1 rounded ${
-                    localRiskLevel === risk
-                      ? "bg-gray text-light-green"
-                      : "text-light-gray"
-                  }${degenLevel != "Normal" ? "hover:bg-zinc-900" : ""}`}
-                >
-                  {risk}
-                </button>
+          {riskLevel === "Extreme" && (
+            <div className="relative w-full flex justify-between items-center text-[#ef4444] font-extrabold">
+              {[0, 1, 2].map((index) => (
+                <Image
+                  width={235}
+                  height={215}
+                  src="/pepe.png"
+                  alt="Pepe The Frog"
+                  className="absolute w-8"
+                  style={{
+                    top: "1px",
+                    left: `${index * 95 + 10}px`, // Adjust `left` as needed for positioning
+                  }}
+                />
               ))}
             </div>
           )}
+          <div className="flex justify-between items-center">
+            {["Low", "Medium", "High"].map((risk) => (
+              <button
+                key={risk}
+                disabled={dropBallTrigger || degenLevel != "Normal"}
+                onClick={() => setLocalRiskLevel(risk)}
+                className={`text-sm px-3 py-1 rounded ${
+                  localRiskLevel === risk
+                    ? "bg-gray text-light-green"
+                    : "text-light-gray"
+                }${degenLevel != "Normal" ? "hover:bg-zinc-900" : ""}`}
+              >
+                {risk}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
       <div>
