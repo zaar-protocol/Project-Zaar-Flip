@@ -164,6 +164,7 @@ const ControlPanel = ({
                   src="/pepe.png"
                   alt="Pepe The Frog"
                   className="absolute w-8"
+                  key={index}
                   style={{
                     top: "1px",
                     left: `${index * 95 + 10}px`, // Adjust `left` as needed for positioning
