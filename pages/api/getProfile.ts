@@ -2,6 +2,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
 import prisma from '../../lib/prisma';
+import { formatEther } from 'viem';
 import initializeCors from 'nextjs-cors';
 import { getBalance } from 'wagmi/actions';
 import { config } from '@/config';
@@ -37,7 +38,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       const balance = await getBalance(config, {
         address: ownerAddress as `0x${string}`, // Type assertion
       });
-      startingBalance = Number(balance.value)
+      startingBalance = Number(formatEther(balance.value))
     } else {
       throw new Error('Invalid Ethereum address format');
     }

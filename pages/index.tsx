@@ -8,19 +8,29 @@ import {
   updatePotentialWin,
   flipCoins,
   WinChanceType,
+  randomFlip,
 } from "../components/zaarFlipUtils";
 import { ConnectWallet } from "../components/ConnectWallet";
 import toast, { Toaster } from "react-hot-toast";
 import { StarField } from "@/components/star-field";
 import { Header } from "@/components/header";
 import { config } from "@/config";
-import { getAccount } from "@wagmi/core";
+import { getAccount, getBalance } from "@wagmi/core";
 import { createConfetti } from "@/components/confetti";
 import { Tooltip } from "@/components/tooltip";
 import { FaChevronUp, FaChevronDown } from "react-icons/fa6";
-import { useSimulateZaarflipFlip, useWriteZaarflipFlip, useSimulateInitiaTokenApprove} from "@/generated";
+import {
+  useSimulateZaarflipFlip,
+  useWriteZaarflipFlip,
+  useSimulateInitiaTokenApprove,
+  useReadInitiaTokenAllowance,
+} from "@/generated";
 import { writeContract } from "@wagmi/core";
 import { waitForTransactionReceipt } from "@wagmi/core";
+import { formatEther } from "viem";
+import { useAccount } from "wagmi";
+import ApproveModal from "@/components/approveModal";
+import { initiaTokenAddress } from "@/generated";
 
 export default function Home() {
   const [currentSide, setCurrentSide] = useState("heads");
@@ -37,16 +47,27 @@ export default function Home() {
   const [wagerDropdown, setWagerDropdown] = useState(false);
   const [presetDropdown, setPresetDropdown] = useState(false);
   const [presetSelection, setPresetSelection] = useState("1 : 1 (x1.96)");
+  const [approveModalIsOpen, setApproveModalIsOpen] = useState(false);
+
+  const zaarAddress = "0x8D4909A8Bcb8c7bD6Fc106B7eEBF3A1f0a71bC7a";
   const tokenAddress = "0xE161Ff5fDC157fb69B1c6459c9aac7E6CcCdbfCA";
+
   //get prepared function to flip
   const { data: flip }: { data: any } = useSimulateZaarflipFlip({
     args: [
       BigInt(wager ? wager : 0),
       BigInt(coinsAmount),
       BigInt(minHeadsTails),
-      tokenAddress,
+      initiaTokenAddress,
     ],
   });
+
+  const { address: addr } = useAccount();
+
+  const { data: allowance, refetch: refetchAllowance } =
+    useReadInitiaTokenAllowance({
+      args: [addr ? addr : "0x00000000000000000", zaarAddress],
+    });
 
   const wagerPresets = [10, 50, 100, 500, 1000, 5000];
 
@@ -95,7 +116,7 @@ export default function Home() {
   function handleSideChange(side: string) {
     if (currentSide !== side && coinsDisplayRef.current) {
       setCurrentSide(side);
-      flipCoins(coinsDisplayRef.current, minHeadsTails, side);
+      flipCoins(coinsDisplayRef.current, minHeadsTails, side, true);
     }
   }
 
@@ -124,47 +145,39 @@ export default function Home() {
       setMinHeadsTails(coinsAmount);
     }
   }, [coinsAmount]);
-  const { data: approve }: {data: any} = useSimulateInitiaTokenApprove({
-    args: ['0xE161Ff5fDC157fb69B1c6459c9aac7E6CcCdbfCA', BigInt(1)],
+  const { data: approve }: { data: any } = useSimulateInitiaTokenApprove({
+    args: ["0xE161Ff5fDC157fb69B1c6459c9aac7E6CcCdbfCA", BigInt(1)],
   });
   const [okToApprove, setOkToApprove] = useState(false);
   useEffect(() => {
     if (approve?.request || false) {
       setOkToApprove(true);
-    }
-    else{
+    } else {
       setOkToApprove(false);
     }
   }, [approve?.request]);
-  
-  
 
   //creating a Write contract to use our prepared functions
 
   async function approver() {
     const toastId = toast.loading("Waiting on confirmation from your wallet.");
-    try{
+    try {
       let myhash = await writeContract(config, approve!.request);
       toast.dismiss(toastId);
       toast.loading("Transaction Processing");
       let receipt = await waitForTransactionReceipt(config, { hash: myhash });
       toast.dismiss();
-    }
-    catch (error){
+    } catch (error) {
       console.log(error);
       toast.dismiss();
     }
     return;
   }
-  
+
   async function flipContract() {
     try {
-      console.log(flip);
-      console.log(flip!.request);
-      const flip1 = useWriteZaarflipFlip(flip!.request);
       let myhash = await writeContract(config, flip!.request);
       let receipt = await waitForTransactionReceipt(config, { hash: myhash });
-      console.log(receipt.status.toString());
     } catch (error) {
       console.log(error);
     }
@@ -180,23 +193,69 @@ export default function Home() {
       });
   }
 
-  function flipCoin() {
-    const flipSound = new Audio("/coin-flip-sound.mp3"); // Make sure to add this sound file to your public folder
-    //flipSound.play();
-    //approver();
-    flipContract();
+  async function flipCoin() {
+    // const flipSound = new Audio("/coin-flip-sound.mp3");
     const addr = getAccount(config).address;
-    fetch(
-      `./api/addEvent?ownerAddress=${addr}&coins=5&winnings=100&wager=1000&outcome=true`
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-      })
-      .then(() => {
-        toast.success("Congratulations you won!");
-        createConfetti();
-      });
+    if (addr) {
+      const walletBalance = Number(
+        (await getBalance(config, { address: addr })).formatted
+      );
+      console.log("WalletBalance: ", walletBalance);
+
+      if (walletBalance <= wager) {
+        toast.error("Insufficient funds. Please add Init to your wallet.");
+        return;
+      }
+
+      await refetchAllowance();
+
+      if (!allowance || Number(formatEther(allowance)) <= wager) {
+        setApproveModalIsOpen(true);
+        // Modal Pop up
+        return;
+      }
+
+      console.log("Allowance: ", allowance);
+
+      await flipContract();
+
+      const postWalletBalance = Number(
+        (await getBalance(config, { address: addr })).formatted
+      );
+
+      const outcome = postWalletBalance > walletBalance;
+
+      const winnings = outcome ? postWalletBalance - walletBalance : 0;
+
+      fetch(
+        `./api/addEvent?ownerAddress=${addr}&coins=${coinsAmount}&winnings=${winnings}&wager=${wager}&outcome=${outcome}`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+        })
+        .then(() => {
+          if (outcome) {
+            toast.success("Congratulations you won!");
+            createConfetti();
+          } else {
+            toast.error("You lost.");
+          }
+        });
+
+      if (coinsDisplayRef.current) {
+        flipCoins(coinsDisplayRef.current, minHeadsTails, currentSide, false);
+        randomFlip(
+          coinsDisplayRef.current,
+          minHeadsTails,
+          currentSide,
+          outcome
+        );
+      }
+    } else {
+      toast.error("Please connect your wallet first");
+      return;
+    }
   }
 
   return (
@@ -214,6 +273,15 @@ export default function Home() {
         <Header />
       </div>
       <StarField />
+
+      <ApproveModal
+        isOpen={approveModalIsOpen}
+        onClose={() => {
+          setApproveModalIsOpen(false);
+        }}
+        allowance={allowance ? Number(formatEther(allowance)) : 0}
+        wager={wager}
+      />
 
       <div
         id="planet"
@@ -285,11 +353,7 @@ export default function Home() {
                 <button
                   onClick={() => {
                     if (coinsDisplayRef.current) {
-                      flipCoins(
-                        coinsDisplayRef.current,
-                        minHeadsTails,
-                        currentSide
-                      );
+                      flipCoin();
                     }
                   }}
                   className="gradient-button text-black px-6 py-2  hover:-translate-y-1 transition duration-700 ease-in-out rounded-sm font-bold mt-3 mx-auto block text-sm uppercase transition duration-700 ease-in-out"
@@ -731,7 +795,6 @@ export default function Home() {
           <button
             onClick={() => {
               if (coinsDisplayRef.current) {
-                flipCoins(coinsDisplayRef.current, minHeadsTails, currentSide);
                 flipCoin();
               }
             }}

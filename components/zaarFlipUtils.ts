@@ -72,14 +72,47 @@ export function getLayoutClass(amount:number) {
     coinsDisplay.className = `flex flex-wrap justify-center items-center mb-2 transition-all duration-500 ease-in-out ${newLayout}`;
   }
   
-  export function flipCoins(coinsDisplay: HTMLElement, minHeadsTails: number, currentSide: string): void {
+  export function flipCoins(coinsDisplay: HTMLElement, minHeadsTails: number, currentSide: string, update: boolean): void {
+    console.log("Flipping coins")
     const coins: NodeListOf<HTMLDivElement> = coinsDisplay.querySelectorAll('.coin');
     coins.forEach((coin: HTMLDivElement, index: number) => {
       coin.classList.add('coin-flip');
       setTimeout(() => {
-        coin.style.backgroundImage = index < minHeadsTails ? getHeadsImage(currentSide) : getTailsImage(currentSide);
+        if(update){
+          coin.style.backgroundImage = index < minHeadsTails ? getHeadsImage(currentSide) : getTailsImage(currentSide);
+        }
         coin.classList.remove('coin-flip');
       }, 250);
+    });
+  }
+
+  export function randomFlip(coinsDisplay: HTMLElement, minHeadsTails: number, currentSide: string, outcome: boolean): void {
+    const coins: NodeListOf<HTMLDivElement> = coinsDisplay.querySelectorAll('.coin');
+    const totalCoins = coins.length;
+    
+    // Step 2: Determine how many coins need to land on the currentSide
+    let numCurrentSide = minHeadsTails;
+    if (!outcome) {
+        numCurrentSide = Math.floor(Math.random() * minHeadsTails);
+    } else {
+        numCurrentSide = Math.floor(Math.random() * (totalCoins - minHeadsTails + 1)) + minHeadsTails;
+    }
+    
+    // Step 3: Randomly select the required number of coins to land on the currentSide
+    const selectedCoins: Set<number> = new Set();
+    while (selectedCoins.size < numCurrentSide) {
+        const randomIndex = Math.floor(Math.random() * totalCoins);
+        selectedCoins.add(randomIndex);
+    }
+    
+    // Step 4: Shuffle coins (already shuffled due to random selection)
+    // Step 5: Update coin display based on the outcome
+    coins.forEach((coin, index) => {
+        if (selectedCoins.has(index)) {
+            coin.style.backgroundImage = getHeadsImage(currentSide); // Assume heads/tails images are named heads.png or tails.png
+        } else {
+            coin.style.backgroundImage = getTailsImage(currentSide);
+        }
     });
   }
   

@@ -11,6 +11,7 @@ import { challengeKeys } from '@/components/challengeComponents/checkProgressFun
 import { ChallengeKey } from '@/components/challengeComponents/checkProgressFunctions';
 import { getBalance } from 'wagmi/actions';
 import { config } from '@/config';
+import { formatEther } from 'viem';
 
 type Event = { id: number; authorAddress: string; createdAt: Date; coins: number; wager: number; winnings: number; outcome: boolean; };
 const allowCors = (fn: (req: NextApiRequest, res: NextApiResponse) => Promise<void>) => async (req: NextApiRequest, res: NextApiResponse) => {
@@ -70,7 +71,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       const balance = await getBalance(config, {
         address: ownerAddress as `0x${string}`, // Type assertion
       });
-      startBalance = Number(balance.value)
+      startBalance = Number(formatEther(balance.value))
     } else {
       throw new Error('Invalid Ethereum address format');
     }
