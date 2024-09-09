@@ -4,6 +4,7 @@ import { PrismaClient } from '@prisma/client';
 import prisma from '@/lib/prisma';
 import initializeCors from 'nextjs-cors';
 import { getBalance } from 'wagmi/actions';
+import { initiaTokenAddress } from '@/generated';
 import { config } from '@/config';
 
 
@@ -42,6 +43,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (isValidEthereumAddress(ownerAddress)) {
       const balance = await getBalance(config, {
         address: ownerAddress as `0x${string}`, // Type assertion
+        token: initiaTokenAddress,
       });
       startingBalance = Number(balance.value)
     } else {

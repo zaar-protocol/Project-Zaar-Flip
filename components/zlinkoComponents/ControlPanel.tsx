@@ -44,7 +44,7 @@ const ControlPanel = ({
   return (
     <div className="bg-transparent rounded-sm p-4 space-y-4 max-w-xs mx-auto mb-20 md:mb-0">
       <button
-        className="md:hidden w-full gradient-button text-black font-bold py-2 rounded hover:bg-yellow uppercase"
+        className="lg:hidden w-full gradient-button text-black font-bold py-2 rounded hover:bg-yellow uppercase"
         onClick={() => setDropBallTrigger(true)}
       >
         Drop 1 Ball
@@ -91,17 +91,33 @@ const ControlPanel = ({
         </div>
       </div>
       <div>
-        <div className="flex mb-2 mt-5">
-          <label className="block text-sm font-medium text-light-green ">
-            DEGEN LEVEL
-          </label>
-          <Tooltip text="High risk not enough for you? The degen options unlock the  EXTREME risk level with preset rows." />
+        <div className="flex mb-2 mt-5 justify-between items-center">
+          <div className="flex">
+            <label className="block text-sm font-medium text-light-green ">
+              DEGEN LEVEL
+            </label>
+            <Tooltip text="High risk not enough for you? The degen options unlock the  EXTREME risk level with preset rows." />
+          </div>
+
+          {degenLevel != "Normal" && (
+            <button
+              disabled={dropBallTrigger}
+              onClick={() => {
+                setDegenLevel("Normal");
+                setRiskLevel("Low");
+                setRows(8);
+              }}
+              className="bg-[#303030] hover:bg-[#514534] text-xs font-semibold px-3 py-1 rounded transition duration-200 ease-in-out text-yellow"
+            >
+              Degen Off
+            </button>
+          )}
         </div>
         <div className="relative">
           <button
             onClick={toggleDropdown}
             disabled={dropBallTrigger}
-            className="w-full bg-dark-gray p-2 rounded-sm focus:outline-none h-10 flex flex-row justify-between items-center text-light-green"
+            className={`w-full bg-dark-gray p-2 rounded-sm focus:outline-none h-10 flex flex-row justify-between items-center text-light-green`}
           >
             {degenLevel}
             <svg
@@ -155,7 +171,7 @@ const ControlPanel = ({
           RISK LEVEL
         </label>
         <div className="bg-dark-gray rounded-sm p-2">
-          {riskLevel === "Extreme" && (
+          {/* {riskLevel === "Extreme" && (
             <div className="relative w-full flex justify-between items-center text-[#ef4444] font-extrabold">
               {[0, 1, 2].map((index) => (
                 <Image
@@ -164,6 +180,7 @@ const ControlPanel = ({
                   src="/pepe.png"
                   alt="Pepe The Frog"
                   className="absolute w-8"
+                  key={index}
                   style={{
                     top: "1px",
                     left: `${index * 95 + 10}px`, // Adjust `left` as needed for positioning
@@ -171,21 +188,37 @@ const ControlPanel = ({
                 />
               ))}
             </div>
-          )}
+          )} */}
           <div className="flex justify-between items-center">
-            {["Low", "Medium", "High"].map((risk) => (
-              <button
-                key={risk}
-                disabled={dropBallTrigger || degenLevel != "Normal"}
-                onClick={() => setLocalRiskLevel(risk)}
-                className={`text-sm px-3 py-1 rounded ${
-                  localRiskLevel === risk
-                    ? "bg-gray text-light-green"
-                    : "text-light-gray"
-                }${degenLevel != "Normal" ? "hover:bg-zinc-900" : ""}`}
-              >
-                {risk}
-              </button>
+            {["Low", "Medium", "High"].map((risk, index) => (
+              <div className="flex justify-center" key={risk}>
+                <Image
+                  width={235}
+                  height={215}
+                  src={
+                    degenLevel === "Degen"
+                      ? "/degen.png"
+                      : degenLevel === "Extra Degen"
+                        ? "/extra-degen.png"
+                        : degenLevel === "Total Degen"
+                          ? "/total-degen.png"
+                          : "/pepe.png"
+                  }
+                  alt="Pepe The Frog"
+                  className={`${riskLevel === "Extreme" ? "w-8 absolute" : "hidden"}`}
+                />
+                <button
+                  disabled={dropBallTrigger || degenLevel != "Normal"}
+                  onClick={() => setLocalRiskLevel(risk)}
+                  className={`text-sm px-3 py-1 rounded ${
+                    localRiskLevel === risk
+                      ? "bg-gray text-light-green"
+                      : "text-light-gray"
+                  }${degenLevel != "Normal" ? "hover:bg-zinc-900" : ""}`}
+                >
+                  {risk}
+                </button>
+              </div>
             ))}
           </div>
         </div>
@@ -208,7 +241,7 @@ const ControlPanel = ({
         </div>
       </div>
       <button
-        className="hidden md:block w-full gradient-button text-black font-bold py-2 rounded hover:bg-yellow uppercase"
+        className="hidden lg:block w-full gradient-button text-black font-bold py-2 rounded hover:bg-yellow uppercase"
         disabled={dropBallTrigger}
         onClick={() => setDropBallTrigger(true)}
       >

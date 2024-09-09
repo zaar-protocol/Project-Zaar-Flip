@@ -8,19 +8,35 @@ import {
   updatePotentialWin,
   flipCoins,
   WinChanceType,
+  randomFlip,
+  startFlipping,
+  stopFlipping,
 } from "../components/zaarFlipUtils";
 import { ConnectWallet } from "../components/ConnectWallet";
 import toast, { Toaster } from "react-hot-toast";
 import { StarField } from "@/components/star-field";
 import { Header } from "@/components/header";
 import { config } from "@/config";
-import { getAccount } from "@wagmi/core";
+import { getAccount, getBalance } from "@wagmi/core";
 import { createConfetti } from "@/components/confetti";
 import { Tooltip } from "@/components/tooltip";
 import { FaChevronUp, FaChevronDown } from "react-icons/fa6";
-import { useSimulateZaarflipFlip, useWriteZaarflipFlip, useSimulateInitiaTokenApprove} from "@/generated";
+import {
+  useSimulateZaarflipFlip,
+  useWriteZaarflipFlip,
+  useSimulateInitiaTokenApprove,
+  useReadInitiaTokenAllowance,
+  useSimulateZaarflipAddAcceptedToken,
+} from "@/generated";
 import { writeContract } from "@wagmi/core";
 import { waitForTransactionReceipt } from "@wagmi/core";
+import { formatEther } from "viem";
+import { parseEther } from "viem";
+import { useAccount } from "wagmi";
+import ApproveModal from "@/components/approveModal";
+import LoadingModal from "@/components/loadingModal";
+import { initiaTokenAddress } from "@/generated";
+import { zaarflipAddress } from "@/generated";
 
 export default function Home() {
   const [currentSide, setCurrentSide] = useState("heads");
@@ -37,16 +53,54 @@ export default function Home() {
   const [wagerDropdown, setWagerDropdown] = useState(false);
   const [presetDropdown, setPresetDropdown] = useState(false);
   const [presetSelection, setPresetSelection] = useState("1 : 1 (x1.96)");
-  const tokenAddress = "0xE161Ff5fDC157fb69B1c6459c9aac7E6CcCdbfCA";
+  const [approveModalIsOpen, setApproveModalIsOpen] = useState(false);
+  const [loadingModalIsOpen, setLoadingModalIsOpen] = useState(false);
+
+  // const { data: addAcceptedToken } = useSimulateZaarflipAddAcceptedToken({
+  //   args: [initiaTokenAddress],
+  // });
+
+  // console.log("addAcceptedToken: ", addAcceptedToken);
+
+  // async function callAddAcceptedToken() {
+  //   try {
+  //     let myhash = await writeContract(config, addAcceptedToken!.request);
+  //     let receipt = await waitForTransactionReceipt(config, { hash: myhash });
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  //   return;
+  // }
+
+  const testFlipper = useSimulateZaarflipFlip({
+    args: [
+      BigInt(wager ? wager : 0),
+      BigInt(coinsAmount),
+      BigInt(minHeadsTails),
+      initiaTokenAddress,
+    ],
+  });
+
+  console.log("Test Flipper: ", testFlipper);
+
   //get prepared function to flip
   const { data: flip }: { data: any } = useSimulateZaarflipFlip({
     args: [
       BigInt(wager ? wager : 0),
       BigInt(coinsAmount),
       BigInt(minHeadsTails),
-      tokenAddress,
+      initiaTokenAddress,
     ],
   });
+
+  console.log("Flip: ", flip);
+
+  const { address: addr } = useAccount();
+
+  const { data: allowance, refetch: refetchAllowance } =
+    useReadInitiaTokenAllowance({
+      args: [addr ? addr : "0x00000000000000000", zaarflipAddress],
+    });
 
   const wagerPresets = [10, 50, 100, 500, 1000, 5000];
 
@@ -124,79 +178,121 @@ export default function Home() {
       setMinHeadsTails(coinsAmount);
     }
   }, [coinsAmount]);
-  const { data: approve }: {data: any} = useSimulateInitiaTokenApprove({
-    args: ['0xE161Ff5fDC157fb69B1c6459c9aac7E6CcCdbfCA', BigInt(1)],
-  });
-  const [okToApprove, setOkToApprove] = useState(false);
-  useEffect(() => {
-    if (approve?.request || false) {
-      setOkToApprove(true);
-    }
-    else{
-      setOkToApprove(false);
-    }
-  }, [approve?.request]);
-  
-  
 
-  //creating a Write contract to use our prepared functions
-
-  async function approver() {
-    const toastId = toast.loading("Waiting on confirmation from your wallet.");
-    try{
-      let myhash = await writeContract(config, approve!.request);
-      toast.dismiss(toastId);
-      toast.loading("Transaction Processing");
-      let receipt = await waitForTransactionReceipt(config, { hash: myhash });
-      toast.dismiss();
-    }
-    catch (error){
-      console.log(error);
-      toast.dismiss();
-    }
-    return;
-  }
-  
   async function flipContract() {
+    if (!flip || !flip.request) {
+      console.error("Error, flip contract is null.");
+      return false;
+    }
+    console.log(flip!.request);
     try {
-      console.log(flip);
-      console.log(flip!.request);
-      const flip1 = useWriteZaarflipFlip(flip!.request);
       let myhash = await writeContract(config, flip!.request);
+      console.log("myhash: ", myhash);
       let receipt = await waitForTransactionReceipt(config, { hash: myhash });
-      console.log(receipt.status.toString());
+      console.log("receipt: ", receipt);
+      return true;
     } catch (error) {
       console.log(error);
+      return false;
     }
   }
 
-  function updateChallengeProgress(challengeId: number, progress: number) {
-    fetch(
-      `./api/updateChallengeProgress?challengeId=${challengeId}&progress=${progress}`
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-      });
-  }
-
-  function flipCoin() {
-    const flipSound = new Audio("/coin-flip-sound.mp3"); // Make sure to add this sound file to your public folder
-    //flipSound.play();
-    //approver();
-    flipContract();
+  async function flipCoin() {
+    // const flipSound = new Audio("/coin-flip-sound.mp3");
     const addr = getAccount(config).address;
-    fetch(
-      `./api/addEvent?ownerAddress=${addr}&coins=5&winnings=100&wager=1000&outcome=true`
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-      })
-      .then(() => {
-        toast.success("Congratulations you won!");
-        createConfetti();
+    if (addr) {
+      const walletBalanceUnformatted = await getBalance(config, {
+        address: addr,
+        token: initiaTokenAddress,
       });
+      const walletBalance = Number(walletBalanceUnformatted.value);
+      console.log("WalletBalance: ", walletBalance);
+
+      if (walletBalance <= wager) {
+        toast.error("Insufficient funds. Please add Init to your wallet.");
+        return;
+      }
+
+      const { data: newAllowance } = await refetchAllowance();
+
+      console.log("Allowance Page: ", newAllowance);
+
+      console.log("formatEther(newAllowance): ", formatEther(newAllowance!));
+      console.log(
+        "Number(formatEther(newAllowance)): ",
+        Number(formatEther(newAllowance!))
+      );
+      console.log("wager: ", wager);
+      console.log(
+        "Number(formatEther(newAllowance)) < wager: ",
+        Number(formatEther(newAllowance!)) < wager
+      );
+
+      if (
+        !newAllowance ||
+        newAllowance < BigInt(parseEther(wager.toString()))
+      ) {
+        setApproveModalIsOpen(true);
+        // Modal Pop up
+        return;
+      }
+
+      setLoadingModalIsOpen(true);
+
+      const flippedSuccessfully = await flipContract();
+
+      setLoadingModalIsOpen(false);
+
+      if (flippedSuccessfully) {
+        const postWalletBalanceUnformatted = await getBalance(config, {
+          address: addr,
+          token: initiaTokenAddress,
+        });
+
+        const postWalletBalance = Number(postWalletBalanceUnformatted.value);
+
+        console.log("Initial Wallet Balance: ", walletBalanceUnformatted);
+        console.log("Post Wallet Balance: ", postWalletBalanceUnformatted);
+
+        console.log("Wager: ", wager);
+
+        const outcome = walletBalance - postWalletBalance < wager;
+
+        const winnings = outcome ? postWalletBalance - walletBalance : 0;
+
+        fetch(
+          `./api/addEvent?ownerAddress=${addr}&coins=${coinsAmount}&winnings=${winnings}&wager=${wager}&outcome=${outcome}`
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+          })
+          .then(() => {
+            setTimeout(() => {
+              if (outcome) {
+                toast.success("Congratulations you won!");
+                createConfetti();
+              } else {
+                toast.error("You lost.");
+              }
+            }, 1000);
+          });
+
+        if (coinsDisplayRef.current) {
+          randomFlip(
+            coinsDisplayRef.current,
+            minHeadsTails,
+            currentSide,
+            outcome
+          );
+        }
+      } else {
+        toast.error("Error with flip. Transaction did not complete.");
+      }
+    } else {
+      toast.error("Please connect your wallet first");
+      return;
+    }
   }
 
   return (
@@ -214,6 +310,22 @@ export default function Home() {
         <Header />
       </div>
       <StarField />
+
+      <ApproveModal
+        isOpen={approveModalIsOpen}
+        onClose={() => {
+          setApproveModalIsOpen(false);
+        }}
+        allowance={allowance ? Number(formatEther(allowance)) : 0}
+        wager={wager}
+      />
+
+      <LoadingModal
+        isOpen={loadingModalIsOpen}
+        onClose={() => {
+          setLoadingModalIsOpen(false);
+        }}
+      />
 
       <div
         id="planet"
@@ -251,10 +363,10 @@ export default function Home() {
 
           {/* Mobile layout */}
           <div className="md:hidden space-y-3 w-full px-4">
-            <div className="flex justify-between">
+            <div className="flex items-center justify-between">
               <div className="w-1/2 pr-2">
                 <div className="text-light-green mb-1 text-sm">PICK SIDE:</div>
-                <div className="flex space-x-4">
+                <div className="flex items-center space-x-4">
                   <div
                     onClick={() => handleSideChange("heads")}
                     className={`coin-side ${currentSide === "heads" ? "selected" : ""}`}
@@ -285,17 +397,82 @@ export default function Home() {
                 <button
                   onClick={() => {
                     if (coinsDisplayRef.current) {
-                      flipCoins(
-                        coinsDisplayRef.current,
-                        minHeadsTails,
-                        currentSide
-                      );
+                      flipCoin();
                     }
                   }}
                   className="gradient-button text-black px-6 py-2  hover:-translate-y-1 transition duration-700 ease-in-out rounded-sm font-bold mt-3 mx-auto block text-sm uppercase transition duration-700 ease-in-out"
                 >
                   FLIP COIN - ${wager.toFixed(2)}
                 </button>
+              </div>
+            </div>
+            <div>
+              <div className="text-light-green mb-1 text-sm  flex items-center ">
+                PRESETS
+              </div>
+
+              <div className="z-40 relative flex flex-col flex-grow text-light-green rounded-sm w-full h-10 text-sm focus:outline-none focus:border focus:border-yellow-400">
+                <div
+                  className={`${presetDropdown ? "border-light-gray-all" : " "} flex flex-row justify-between bg-dark-gray items-center w-full text-light-green h-10 px-2`}
+                  onClick={() => {
+                    setPresetDropdown(!presetDropdown);
+                  }}
+                >
+                  {presetSelection}
+                  {presetDropdown ? <FaChevronUp /> : <FaChevronDown />}
+                </div>
+                <div className="absolute flex flex-col w-full mt-10 flex flex-grow">
+                  <div
+                    onClick={() => {
+                      handlePresetChange("10:5:1.57");
+                      setPresetSelection("10 : 5 (x1.57)");
+                      setPresetDropdown(false);
+                    }}
+                    className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection == "10 : 5 (x1.57)" ? "text-white" : ""} ${presetDropdown ? "block" : "hidden"}`}
+                  >
+                    10 : 5 (x1.57)
+                  </div>
+                  <div
+                    onClick={() => {
+                      handlePresetChange("4:3:3.14");
+                      setPresetSelection("4 : 3 (x3.14)");
+                      setPresetDropdown(false);
+                    }}
+                    className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection == "4 : 3 (x3.14)" ? "text-white" : ""} ${presetDropdown ? "block" : "hidden"}`}
+                  >
+                    4 : 3 (x3.14)
+                  </div>
+                  <div
+                    onClick={() => {
+                      handlePresetChange("6:5:8.96");
+                      setPresetSelection("6 : 5 (x8.96)");
+                      setPresetDropdown(false);
+                    }}
+                    className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection == "6 : 5 (x8.96)" ? "text-white" : ""} ${presetDropdown ? "block" : "hidden"}`}
+                  >
+                    6 : 5 (x8.96)
+                  </div>
+                  <div
+                    onClick={() => {
+                      handlePresetChange("9:8:50.8");
+                      setPresetSelection("9 : 8 (x50.8)");
+                      setPresetDropdown(false);
+                    }}
+                    className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection == "9 : 8 (x50.8)" ? "text-white" : ""} ${presetDropdown ? "block" : "hidden"}`}
+                  >
+                    9 : 8 (x50.8)
+                  </div>
+                  <div
+                    onClick={() => {
+                      handlePresetChange("10:10:1003.52");
+                      setPresetSelection("10 : 10 (x1003.52)");
+                      setPresetDropdown(false);
+                    }}
+                    className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection == "10 : 10 (x1003.52)" ? "text-white" : ""} ${presetDropdown ? "block" : "hidden"}`}
+                  >
+                    10 : 10 (x1003.52)
+                  </div>
+                </div>
               </div>
             </div>
             <div>
@@ -337,7 +514,7 @@ export default function Home() {
                 POTENTIAL TO WIN
               </div>
               <div className="bg-gray rounded-sm p-2 text-lime-green h-10 flex items-center text-sm">
-                ${potentialWin}
+                {potentialWin}
               </div>
             </div>
             <div className="flex justify-between">
@@ -393,76 +570,6 @@ export default function Home() {
                       background: `linear-gradient(to right, green, yellow, orange, red)`,
                     }}
                   />
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <div className="text-light-green mb-1 text-sm  flex items-center ">
-                PRESETS
-              </div>
-
-              <div className="z-40 relative flex flex-col flex-grow text-light-green rounded-sm w-full h-10 text-sm focus:outline-none focus:border focus:border-yellow-400">
-                <div
-                  className={`${presetDropdown ? "border-light-gray-all" : " "} flex flex-row justify-between bg-dark-gray items-center w-full text-light-green h-10 px-2`}
-                  onClick={() => {
-                    setPresetDropdown(!presetDropdown);
-                  }}
-                >
-                  {presetSelection}
-                  {presetDropdown ? <FaChevronDown /> : <FaChevronUp />}
-                </div>
-                <div className="absolute flex flex-col w-full mt-10 flex flex-grow">
-                  <div
-                    onClick={() => {
-                      handlePresetChange("10:5:1.57");
-                      setPresetSelection("10 : 5 (x1.57)");
-                      setPresetDropdown(false);
-                    }}
-                    className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection == "10 : 5 (x1.57)" ? "text-white" : ""} ${presetDropdown ? "block" : "hidden"}`}
-                  >
-                    10 : 5 (x1.57)
-                  </div>
-                  <div
-                    onClick={() => {
-                      handlePresetChange("4:3:3.14");
-                      setPresetSelection("4 : 3 (x3.14)");
-                      setPresetDropdown(false);
-                    }}
-                    className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection == "4 : 3 (x3.14)" ? "text-white" : ""} ${presetDropdown ? "block" : "hidden"}`}
-                  >
-                    4 : 3 (x3.14)
-                  </div>
-                  <div
-                    onClick={() => {
-                      handlePresetChange("6:5:8.96");
-                      setPresetSelection("6 : 5 (x8.96)");
-                      setPresetDropdown(false);
-                    }}
-                    className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection == "6 : 5 (x8.96)" ? "text-white" : ""} ${presetDropdown ? "block" : "hidden"}`}
-                  >
-                    6 : 5 (x8.96)
-                  </div>
-                  <div
-                    onClick={() => {
-                      handlePresetChange("9:8:50.8");
-                      setPresetSelection("9 : 8 (x50.8)");
-                      setPresetDropdown(false);
-                    }}
-                    className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection == "9 : 8 (x50.8)" ? "text-white" : ""} ${presetDropdown ? "block" : "hidden"}`}
-                  >
-                    9 : 8 (x50.8)
-                  </div>
-                  <div
-                    onClick={() => {
-                      handlePresetChange("10:10:1003.52");
-                      setPresetSelection("10 : 10 (x1003.52)");
-                      setPresetDropdown(false);
-                    }}
-                    className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection == "10 : 10 (x1003.52)" ? "text-white" : ""} ${presetDropdown ? "block" : "hidden"}`}
-                  >
-                    10 : 10 (x1003.52)
-                  </div>
                 </div>
               </div>
             </div>
@@ -598,8 +705,8 @@ export default function Home() {
                 <div className="text-light-green mb-1 text-sm mt-6">
                   POTENTIAL TO WIN
                 </div>
-                <div className="bg-gray rounded-sm p-2 text-lime-green h-10 flex items-center text-lg">
-                  ${potentialWin}
+                <div className="bg-gray rounded-sm p-2 pl-4 text-lime-green h-10 flex items-center text-lg">
+                  {potentialWin}
                 </div>
               </div>
             </div>
@@ -731,14 +838,36 @@ export default function Home() {
           <button
             onClick={() => {
               if (coinsDisplayRef.current) {
-                flipCoins(coinsDisplayRef.current, minHeadsTails, currentSide);
                 flipCoin();
               }
             }}
-            className="hidden sm:block gradient-button hover:-translate-y-1 transition duration-700 ease-in-out text-black px-6 py-2 rounded-sm font-bold mt-3 mx-auto block text-sm uppercase"
+            className="hidden md:block gradient-button hover:-translate-y-1 transition duration-700 ease-in-out text-black px-6 py-2 rounded-sm font-bold mt-3 mx-auto block text-sm uppercase"
           >
             FLIP COIN - ${wager.toFixed(2)}
           </button>
+          <div className="flex">
+            <button
+              onClick={() => {
+                if (coinsDisplayRef.current) {
+                  randomFlip(
+                    coinsDisplayRef.current,
+                    minHeadsTails,
+                    currentSide,
+                    true
+                  );
+                }
+              }}
+              className="w-24 h-10 block bg-black"
+            ></button>
+            {/* <button
+              onClick={() => {
+                callAddAcceptedToken();
+              }}
+              className="w-32 h-10 block bg-red"
+            >
+              Add Initia Token to Contract
+            </button> */}
+          </div>
         </main>
       </div>
     </div>
