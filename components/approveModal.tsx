@@ -3,8 +3,9 @@ import { useSimulateInitiaTokenApprove } from "@/generated";
 import toast, { Toaster } from "react-hot-toast";
 import { writeContract, waitForTransactionReceipt } from "@wagmi/core";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { parseEther } from "viem";
+import { zaarflipAddress } from "@/generated";
 
 interface ApproveModalProps {
   isOpen: boolean;
@@ -19,13 +20,18 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
   allowance,
   wager,
 }) => {
-  const zaarAddress = "0x8D4909A8Bcb8c7bD6Fc106B7eEBF3A1f0a71bC7a";
   const [approveAmount, setApproveAmount] = useState<bigint>(
     BigInt(wager ? wager : 0)
   );
 
+  useEffect(() => {
+    setApproveAmount(BigInt(wager ? wager : 0));
+    console.log("Allowance Modal: ", allowance);
+    console.log("Wager: ", wager);
+  }, [wager, allowance, isOpen]);
+
   const { data: approve }: { data: any } = useSimulateInitiaTokenApprove({
-    args: [zaarAddress, parseEther(approveAmount.toString())],
+    args: [zaarflipAddress, parseEther(approveAmount.toString())],
   });
 
   async function approver() {
@@ -72,16 +78,21 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
         </button>
         <div className="mt-4">
           <p className="text-white font-bold text-lg">
-            Your allowance is insufficient. Please approve more funds.
+            Please approve more funds.
           </p>
         </div>
         <br />
         <div>
-          Current wager: <span className="text-lime-green">{wager}</span>
+          Allowance needed: <span className="text-lime-green">{wager}</span>
         </div>
         <div>
-          Current allowance: <span className="text-red">{allowance}</span>
+          Current allowance:{" "}
+          <span className="text-red">{allowance.toFixed(2)}</span>
         </div>
+        {/* <div
+          Funds needing approval:{" "}
+          <span className="text-red">{wager - allowance}</span>
+        </div> */}
 
         {/* Input field for approveAmount */}
         <div className="mt-4">
@@ -89,7 +100,7 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
             htmlFor="approveAmount"
             className="block mb-2 text-sm font-medium"
           >
-            Approve Amount:
+            Set Allowance:
           </label>
           <div className="flex items-center">
             <Image
@@ -102,7 +113,9 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
             <input
               type="number"
               id="approveAmount"
-              value={approveAmount.toString()} // Convert BigInt to string for input field
+              value={
+                approveAmount === BigInt(0) ? "" : approveAmount.toString()
+              }
               onChange={(e) => setApproveAmount(BigInt(e.target.value))}
               className={`w-full rounded-md bg-gray rounded-sm p-2 pl-4 h-10 flex items-center text-lg ${approveAmount >= wager ? "text-lime-green" : "text-red"}`}
               min="0"
@@ -113,7 +126,8 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
         <div className="flex justify-center">
           <button
             onClick={handleApproveClick}
-            className="mt-4 gradient-button text-black px-4 py-2 rounded "
+            className="mt-4 gradient-button text-black px-4 py-2 rounded"
+            disabled={!approveAmount || approveAmount <= 0}
           >
             Approve Funds
           </button>

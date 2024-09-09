@@ -10,15 +10,15 @@ import { writeContract } from "@wagmi/core";
 import { config } from "@/config";
 import { abi } from "@/abis/abi";
 import { Header } from "@/components/header";
+import { zaarflipAddress } from "@/generated";
 
 const Test: React.FC = () => {
-  const approveContractAddress = "0x8D4909A8Bcb8c7bD6Fc106B7eEBF3A1f0a71bC7a";
   //   const tokenAddress = "0xd5dedc655a3000df6318151940b3311f7a4cc931";
 
   const approveAmount = BigInt(2);
 
   const { data: approve }: { data: any } = useSimulateInitiaTokenApprove({
-    args: [approveContractAddress, approveAmount],
+    args: [zaarflipAddress, approveAmount],
   });
 
   async function approver() {

@@ -223,6 +223,7 @@ export const zaarflipAbi = [
   {
     type: 'constructor',
     inputs: [
+      { name: '_stakingToken', internalType: 'address', type: 'address' },
       { name: '_maxCoins', internalType: 'uint256', type: 'uint256' },
       { name: '_feePercentage', internalType: 'uint256', type: 'uint256' },
     ],
@@ -231,9 +232,23 @@ export const zaarflipAbi = [
   { type: 'receive', stateMutability: 'payable' },
   {
     type: 'function',
+    inputs: [],
+    name: 'COOLDOWN_PERIOD',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [{ name: '', internalType: 'address', type: 'address' }],
     name: 'acceptedTokens',
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'accumulatedFees',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view',
   },
   {
@@ -261,6 +276,13 @@ export const zaarflipAbi = [
   },
   {
     type: 'function',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'earned',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [],
     name: 'feePercentage',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
@@ -275,8 +297,36 @@ export const zaarflipAbi = [
       { name: 'token', internalType: 'address', type: 'address' },
     ],
     name: 'flip',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getReward',
     outputs: [],
     stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'lastRewardPerTokenPaid',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'lastStakeTime',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'lastUpdateTime',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -324,6 +374,27 @@ export const zaarflipAbi = [
   },
   {
     type: 'function',
+    inputs: [],
+    name: 'rewardPerToken',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'rewardPerTokenStored',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'rewards',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [
       { name: '_feePercentage', internalType: 'uint256', type: 'uint256' },
     ],
@@ -340,6 +411,41 @@ export const zaarflipAbi = [
   },
   {
     type: 'function',
+    inputs: [{ name: 'amount', internalType: 'uint256', type: 'uint256' }],
+    name: 'stake',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'stakedBalances',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'stakingToken',
+    outputs: [{ name: '', internalType: 'contract IERC20', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'user', internalType: 'address', type: 'address' }],
+    name: 'timeUntilUnstake',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'totalStaked',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [{ name: 'newOwner', internalType: 'address', type: 'address' }],
     name: 'transferOwnership',
     outputs: [],
@@ -348,7 +454,7 @@ export const zaarflipAbi = [
   {
     type: 'function',
     inputs: [{ name: 'amount', internalType: 'uint256', type: 'uint256' }],
-    name: 'withdrawEther',
+    name: 'unstake',
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -427,6 +533,48 @@ export const zaarflipAbi = [
     ],
     name: 'OwnershipTransferred',
   },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'user', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'reward',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'RewardPaid',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'user', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'Staked',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'user', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'Unstaked',
+  },
   { type: 'error', inputs: [], name: 'AlreadyInitialized' },
   { type: 'error', inputs: [], name: 'NewOwnerIsZeroAddress' },
   { type: 'error', inputs: [], name: 'NoHandoverRequest' },
@@ -435,7 +583,7 @@ export const zaarflipAbi = [
 ] as const
 
 export const zaarflipAddress =
-  '0xE161Ff5fDC157fb69B1c6459c9aac7E6CcCdbfCA' as const
+  '0xea61cfA2508A27b149D475C9DDD89C77846Baaa6' as const
 
 export const zaarflipConfig = {
   address: zaarflipAddress,
@@ -765,6 +913,16 @@ export const useReadZaarflip = /*#__PURE__*/ createUseReadContract({
 })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"COOLDOWN_PERIOD"`
+ */
+export const useReadZaarflipCooldownPeriod =
+  /*#__PURE__*/ createUseReadContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'COOLDOWN_PERIOD',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"acceptedTokens"`
  */
 export const useReadZaarflipAcceptedTokens =
@@ -775,11 +933,57 @@ export const useReadZaarflipAcceptedTokens =
   })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"accumulatedFees"`
+ */
+export const useReadZaarflipAccumulatedFees =
+  /*#__PURE__*/ createUseReadContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'accumulatedFees',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"earned"`
+ */
+export const useReadZaarflipEarned = /*#__PURE__*/ createUseReadContract({
+  abi: zaarflipAbi,
+  address: zaarflipAddress,
+  functionName: 'earned',
+})
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"feePercentage"`
  */
 export const useReadZaarflipFeePercentage = /*#__PURE__*/ createUseReadContract(
   { abi: zaarflipAbi, address: zaarflipAddress, functionName: 'feePercentage' },
 )
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"lastRewardPerTokenPaid"`
+ */
+export const useReadZaarflipLastRewardPerTokenPaid =
+  /*#__PURE__*/ createUseReadContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'lastRewardPerTokenPaid',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"lastStakeTime"`
+ */
+export const useReadZaarflipLastStakeTime = /*#__PURE__*/ createUseReadContract(
+  { abi: zaarflipAbi, address: zaarflipAddress, functionName: 'lastStakeTime' },
+)
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"lastUpdateTime"`
+ */
+export const useReadZaarflipLastUpdateTime =
+  /*#__PURE__*/ createUseReadContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'lastUpdateTime',
+  })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"maxCoins"`
@@ -808,6 +1012,73 @@ export const useReadZaarflipOwnershipHandoverExpiresAt =
     address: zaarflipAddress,
     functionName: 'ownershipHandoverExpiresAt',
   })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"rewardPerToken"`
+ */
+export const useReadZaarflipRewardPerToken =
+  /*#__PURE__*/ createUseReadContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'rewardPerToken',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"rewardPerTokenStored"`
+ */
+export const useReadZaarflipRewardPerTokenStored =
+  /*#__PURE__*/ createUseReadContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'rewardPerTokenStored',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"rewards"`
+ */
+export const useReadZaarflipRewards = /*#__PURE__*/ createUseReadContract({
+  abi: zaarflipAbi,
+  address: zaarflipAddress,
+  functionName: 'rewards',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"stakedBalances"`
+ */
+export const useReadZaarflipStakedBalances =
+  /*#__PURE__*/ createUseReadContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'stakedBalances',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"stakingToken"`
+ */
+export const useReadZaarflipStakingToken = /*#__PURE__*/ createUseReadContract({
+  abi: zaarflipAbi,
+  address: zaarflipAddress,
+  functionName: 'stakingToken',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"timeUntilUnstake"`
+ */
+export const useReadZaarflipTimeUntilUnstake =
+  /*#__PURE__*/ createUseReadContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'timeUntilUnstake',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"totalStaked"`
+ */
+export const useReadZaarflipTotalStaked = /*#__PURE__*/ createUseReadContract({
+  abi: zaarflipAbi,
+  address: zaarflipAddress,
+  functionName: 'totalStaked',
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__
@@ -854,6 +1125,15 @@ export const useWriteZaarflipFlip = /*#__PURE__*/ createUseWriteContract({
   abi: zaarflipAbi,
   address: zaarflipAddress,
   functionName: 'flip',
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"getReward"`
+ */
+export const useWriteZaarflipGetReward = /*#__PURE__*/ createUseWriteContract({
+  abi: zaarflipAbi,
+  address: zaarflipAddress,
+  functionName: 'getReward',
 })
 
 /**
@@ -904,6 +1184,15 @@ export const useWriteZaarflipSetMaxCoins = /*#__PURE__*/ createUseWriteContract(
 )
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"stake"`
+ */
+export const useWriteZaarflipStake = /*#__PURE__*/ createUseWriteContract({
+  abi: zaarflipAbi,
+  address: zaarflipAddress,
+  functionName: 'stake',
+})
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"transferOwnership"`
  */
 export const useWriteZaarflipTransferOwnership =
@@ -914,14 +1203,13 @@ export const useWriteZaarflipTransferOwnership =
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"withdrawEther"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"unstake"`
  */
-export const useWriteZaarflipWithdrawEther =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: zaarflipAbi,
-    address: zaarflipAddress,
-    functionName: 'withdrawEther',
-  })
+export const useWriteZaarflipUnstake = /*#__PURE__*/ createUseWriteContract({
+  abi: zaarflipAbi,
+  address: zaarflipAddress,
+  functionName: 'unstake',
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"withdrawFunds"`
@@ -981,6 +1269,16 @@ export const useSimulateZaarflipFlip = /*#__PURE__*/ createUseSimulateContract({
 })
 
 /**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"getReward"`
+ */
+export const useSimulateZaarflipGetReward =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'getReward',
+  })
+
+/**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"removeAcceptedToken"`
  */
 export const useSimulateZaarflipRemoveAcceptedToken =
@@ -1031,6 +1329,13 @@ export const useSimulateZaarflipSetMaxCoins =
   })
 
 /**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"stake"`
+ */
+export const useSimulateZaarflipStake = /*#__PURE__*/ createUseSimulateContract(
+  { abi: zaarflipAbi, address: zaarflipAddress, functionName: 'stake' },
+)
+
+/**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"transferOwnership"`
  */
 export const useSimulateZaarflipTransferOwnership =
@@ -1041,13 +1346,13 @@ export const useSimulateZaarflipTransferOwnership =
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"withdrawEther"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"unstake"`
  */
-export const useSimulateZaarflipWithdrawEther =
+export const useSimulateZaarflipUnstake =
   /*#__PURE__*/ createUseSimulateContract({
     abi: zaarflipAbi,
     address: zaarflipAddress,
-    functionName: 'withdrawEther',
+    functionName: 'unstake',
   })
 
 /**
@@ -1106,4 +1411,34 @@ export const useWatchZaarflipOwnershipTransferredEvent =
     abi: zaarflipAbi,
     address: zaarflipAddress,
     eventName: 'OwnershipTransferred',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link zaarflipAbi}__ and `eventName` set to `"RewardPaid"`
+ */
+export const useWatchZaarflipRewardPaidEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    eventName: 'RewardPaid',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link zaarflipAbi}__ and `eventName` set to `"Staked"`
+ */
+export const useWatchZaarflipStakedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    eventName: 'Staked',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link zaarflipAbi}__ and `eventName` set to `"Unstaked"`
+ */
+export const useWatchZaarflipUnstakedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    eventName: 'Unstaked',
   })

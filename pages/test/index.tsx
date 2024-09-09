@@ -22,7 +22,6 @@ import { Header } from "@/components/header";
 
 const Test: React.FC = () => {
   const tokenAddress = "0xE161Ff5fDC157fb69B1c6459c9aac7E6CcCdbfCA";
-  const zaarAddress = "0x8D4909A8Bcb8c7bD6Fc106B7eEBF3A1f0a71bC7a";
 
   const { data: flip }: { data: any } = useSimulateZaarflipFlip({
     args: [BigInt(1), BigInt(1), BigInt(1), tokenAddress],

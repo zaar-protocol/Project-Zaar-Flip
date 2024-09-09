@@ -371,9 +371,9 @@ const PlinkoBoard = ({
 
   return (
     <div
-      className="rounded-sm flex flex-col justify-center relative max-w-full mx-auto max-h-[350px] md:max-h-full"
+      className="rounded-sm flex flex-col justify-center relative max-w-full mx-auto max-h-full"
       style={{
-        height: `${CANVAS_HEIGHT + 60}px`,
+        // height: `${CANVAS_HEIGHT + 60}px`,
         width: `${CANVAS_WIDTH}px`,
         backgroundImage: "url('/black-pattern.png')",
         backgroundSize: "auto",
@@ -401,7 +401,7 @@ const PlinkoBoard = ({
             onMouseEnter={() => setHoveredMultiplier(index)}
             onMouseLeave={() => setHoveredMultiplier(null)}
           >
-            <div className="text-sm font-bold relative z-10 cursor-default">
+            <div className="text-[10px] sm:text-sm font-bold relative z-10 cursor-default">
               {multiplier === 10000 ? (
                 <span>10k</span>
               ) : multiplier === 3333 ? (

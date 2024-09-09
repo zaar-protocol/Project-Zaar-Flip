@@ -10,6 +10,7 @@ import { checkProgressFunctions } from '@/components/challengeComponents/checkPr
 import { challengeKeys } from '@/components/challengeComponents/checkProgressFunctions';
 import { ChallengeKey } from '@/components/challengeComponents/checkProgressFunctions';
 import { getBalance } from 'wagmi/actions';
+import { initiaTokenAddress } from '@/generated';
 import { config } from '@/config';
 import { formatEther } from 'viem';
 
@@ -70,6 +71,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (isValidEthereumAddress(ownerAddress)) {
       const balance = await getBalance(config, {
         address: ownerAddress as `0x${string}`, // Type assertion
+        token: initiaTokenAddress,
       });
       startBalance = Number(formatEther(balance.value))
     } else {
