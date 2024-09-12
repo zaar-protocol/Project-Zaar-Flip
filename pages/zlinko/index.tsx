@@ -7,6 +7,7 @@ import ControlPanel from "@/components/zlinkoComponents/ControlPanel";
 import PlinkoBoard from "@/components/zlinkoComponents/PlinkoBoard";
 import { storedMultipliers } from "@/components/zlinkoComponents/multipliers";
 import type { Risk } from "@/components/zlinkoComponents/multipliers";
+import { ZlinkoHeader } from "@/components/zlinkoComponents/ZlinkoHeader";
 
 export default function Zlinko() {
   const [betAmount, setBetAmount] = useState<number>(1);
@@ -43,7 +44,7 @@ export default function Zlinko() {
   return (
     <div className="relative w-screen h-screen no-scrollbar">
       <Toaster />
-      <Header />
+      <ZlinkoHeader />
       <StarField />
       <div className="max-w-6xl mx-auto flex flex-col lg:flex-row justify-center items-end gap-4 sm:mt-20">
         <div className="w-full lg:w-auto lg:order-1 order-2">
