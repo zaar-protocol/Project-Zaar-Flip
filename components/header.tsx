@@ -8,6 +8,9 @@ import { InitiaWallet } from "@/components/InitiaWallet";
 import { useWallet } from "@initia/react-wallet-widget";
 import { Web3ModalButton } from "./Web3ModalButton";
 import { ThirdWebWallet } from "./ThirdWebWallet";
+import { ConnectButton } from "thirdweb/react";
+import { client } from "@/pages/client";
+import { thirdwebInitiaChain } from "@/thirdweb.config";
 
 export const Header = () => {
   const router = useRouter();
@@ -39,7 +42,12 @@ export const Header = () => {
       </nav>
 
       <div className="flex space-x-4 mr-4">
-        <ThirdWebWallet />
+        <ConnectButton
+          client={client}
+          chain={thirdwebInitiaChain}
+          accountAbstraction={{ chain: thirdwebInitiaChain, sponsorGas: false }}
+        />
+        {/* <ThirdWebWallet /> */}
         {/* <Web3ModalButton /> */}
         {/* <InitiaWallet /> */}
         {/* <ConnectWallet /> */}
