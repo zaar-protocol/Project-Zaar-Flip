@@ -11,6 +11,7 @@ import { ThirdWebWallet } from "./ThirdWebWallet";
 import { ConnectButton } from "thirdweb/react";
 import { client } from "@/pages/client";
 import { thirdwebInitiaChain } from "@/thirdweb.config";
+import { HomePageModal } from "./HomePageModal";
 
 export const HomePageBanner = () => {
   const router = useRouter();
@@ -20,46 +21,19 @@ export const HomePageBanner = () => {
   }, [router.asPath]);
 
   return (
-    <header className="flex flex-row justify-between items-center w-screen  mb-0 relative z-20 px-2 py-2 pr-8 max-h-[57px]">
-      <nav className="hidden  md:flex items-center space-x-8 pl-5 uppercase text-sm ">
-        <Link href="/zaar-flip" className="hover:cursor-pointer">
-          <Image
-            src="/logo.png"
-            alt="Zaar Flip Logo"
-            width={105}
-            height={40}
-            className="text-white"
-          />
-        </Link>
-        <Link href="/zlinko" className="hover:cursor-pointer">
-          <Image
-            src="/zlinko/zaar-zlinko.png"
-            alt="Zaar Zlinko Logo"
-            width={694}
-            height={96}
-            className="text-white h-[24px] w-[173px]"
-          />
-        </Link>
-
-        <Link href="/challenges">
-          <div
-            className={` ${page == "/challenges" ? " text-white " : " text-gray hover:text-hoveryellow "} py-2`}
-          >
-            Challenges
-          </div>
-        </Link>
-      </nav>
-
-      <div className="flex space-x-4 mr-4">
-        <ConnectButton
+    <header className="flex flex-row justify-end w-screen  mb-0 relative z-20 px-2 py-2 pr-8 max-h-[57px]">
+      <div className="flex gap-5 space-x-4 mr-4 relative">
+        {/* <ConnectButton
           client={client}
           chain={thirdwebInitiaChain}
           accountAbstraction={{ chain: thirdwebInitiaChain, sponsorGas: false }}
-        />
+        /> */}
+
         {/* <ThirdWebWallet /> */}
         {/* <Web3ModalButton /> */}
-        {/* <InitiaWallet /> */}
+        <InitiaWallet />
         {/* <ConnectWallet /> */}
+        <HomePageModal />
       </div>
     </header>
   );

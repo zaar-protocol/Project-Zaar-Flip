@@ -737,7 +737,9 @@ input[type=number] {
   outline: none;
 }
 
-
+.reflection-gradient {
+  background: radial-gradient(65.67% 65.67% at 41.2% 34.33%, rgba(215, 169, 0, 0.8) 0%, rgba(59, 0, 147, 0.20) 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
+}
 
 .options li:hover {
   background-color: gray; /* hover effect */
