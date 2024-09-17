@@ -22,19 +22,40 @@ import { Header } from "@/components/header";
 import { HomePageBanner } from "@/components/HomePageBanner";
 
 const Home: React.FC = () => {
+  const size = "w-16 h-16 sm:w-20 sm:h-20 md:w-[350px] md:h-[350px]";
   return (
     <div>
       <HomePageBanner />
       <div className="flex flex-col items-center relative">
-        <div className="absolute reflection-gradient w-[904px] h-[200px] rounded-full opacity-50 -z-10 blur-xl top-[430px]"></div>
         <Image
+          width={1125}
+          height={414}
+          alt="Zaar Coin Reflection"
+          src="/zaar_coin_reflection.png"
+          className="absolute -z-10 top-[290px] left-[185px] mix-blend-plus-lighter"
+        />
+        <Image
+          width={1125}
+          height={414}
+          alt="Zaar Coin Reflection"
+          src="/zaar_coin_reflection.png"
+          className="absolute -z-10 top-[290px] left-[185px] mix-blend-color-dodge"
+        />
+        <div className={`mt-24 zaar-coin zaar-loading-coin ${size}`}>
+          <div className={`zaar-coin-heads ${size}`}></div>
+          <div className={`zaar-coin-tails ${size}`}></div>
+        </div>
+
+        {/* <Image
           height={800}
           width={800}
           src="/old-zaar-coins/zaar-flip-heads.png"
           alt="Zaar-flip coin"
           className="w-[430px] mt-24"
-        />
-        <div className="text-[40px] mt-8 text-white/40">THE FUN NETWORK</div>
+        /> */}
+        <div className="text-[40px] mt-8 text-white/80 mix-blend-overlay">
+          THE FUN NETWORK
+        </div>
       </div>
       <div className="flex flex-col w-full items-center text-white text-lg mt-10">
         Choose your next move

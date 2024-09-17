@@ -9,7 +9,7 @@ export default function RootLayout({
   const { pathname } = useRouter();
 
   useEffect(() => {
-    if (pathname === "/challenges") {
+    if (pathname === "/challenges" || pathname === "/") {
       document.body.style.overflowY = "visible";
     } else {
       document.body.style.overflowY = "hidden";
