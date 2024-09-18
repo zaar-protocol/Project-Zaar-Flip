@@ -25,7 +25,7 @@ const Home: React.FC = () => {
   const size = "w-16 h-16 sm:w-20 sm:h-20 md:w-[350px] md:h-[350px]";
   return (
     <div>
-      <HomePageBanner />
+      <Header />
       <div className="flex flex-col items-center relative">
         <Image
           width={1125}

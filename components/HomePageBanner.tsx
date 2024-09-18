@@ -11,7 +11,7 @@ import { ThirdWebWallet } from "./ThirdWebWallet";
 import { ConnectButton } from "thirdweb/react";
 import { client } from "@/pages/client";
 import { thirdwebInitiaChain } from "@/thirdweb.config";
-import { HomePageModal } from "./HomePageModal";
+import { SideMenuModal } from "./SideMenuModal";
 
 export const HomePageBanner = () => {
   const router = useRouter();
@@ -33,7 +33,7 @@ export const HomePageBanner = () => {
         {/* <Web3ModalButton /> */}
         <InitiaWallet />
         {/* <ConnectWallet /> */}
-        <HomePageModal />
+        <SideMenuModal />
       </div>
     </header>
   );

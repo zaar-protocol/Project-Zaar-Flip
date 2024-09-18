@@ -410,6 +410,75 @@ dialog[open] {
   z-index: -1;
 }
 
+.shooting-star-multiplier {
+  --transition: 0.25s;
+  --spark: 3s;
+  --bg: rgba(48, 48, 48, 0.8);
+  background: var(--bg);
+  padding: 6px 18px;
+  display: grid;
+  border-radius: 0.125rem;
+  position: relative;
+  overflow: hidden;
+  transition: background var(--transition), transform var(--transition);
+}
+
+.shooting-star-multiplier:hover {
+  transform: scale(1.05);
+}
+
+.shooting-star-multiplier .spark {
+  position: absolute;
+  inset: 0;
+  border-radius: 0.125rem;
+  rotate: 0deg;
+  overflow: hidden;
+  mask: linear-gradient(white, transparent 50%);
+  animation: flip calc(var(--spark) * 2) infinite steps(2, end);
+}
+
+@keyframes flip {
+  to {
+    rotate: 360deg;
+  }
+}
+
+.shooting-star-multiplier .spark:before {
+  content: "";
+  position: absolute;
+  width: 200%;
+  aspect-ratio: 1;
+  inset: 0 auto auto 50%;
+  z-index: -1;
+  translate: -50% -15%;
+  rotate: 0;
+  transform: rotate(-90deg);
+  opacity: 1;
+  background: conic-gradient(from 0deg, transparent 0 340deg, white 360deg);
+  transition: opacity var(--transition);
+  animation: rotate var(--spark) linear infinite both;
+}
+
+.shooting-star-multiplier .backdrop {
+  position: absolute;
+  inset: 1px;
+  background: var(--bg);
+  border-radius: 0.125rem;
+  transition: background var(--transition) opacity var(--transition);
+}
+
+@keyframes rotate {
+  to {
+    transform: rotate(90deg);
+  }
+}
+
+.shooting-star-multiplier .content {
+  z-index: 1;
+  position: relative;
+  border-radius: 0.125rem;
+}
+
 
 .slider {
   -webkit-appearance: none;
@@ -748,7 +817,23 @@ dialog[open] {
   transform: translateY(1px);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
-/*responsive design*/
+
+.zaar-raffle-gradient-button {
+  background: linear-gradient(to right, #ADE252, #6C9A19);
+  border: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.zaar-raffle-gradient-button:hover {
+  /* background: linear-gradient(to right, #6C9A19, #6C9A19); */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.zaar-raffle-gradient-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
 
 /*responsive design*/
 @media (max-width: 768px) {
@@ -840,4 +925,34 @@ input:checked + .toggle {
 
 input:checked + .toggle:before {
   transform: translateX(26px);
+}
+
+.ticket {
+  position: relative;
+  overflow: hidden;
+}
+
+.ticket::before,
+.ticket::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-image: linear-gradient(
+    to right,
+    #4b3f00 0px,
+    #181400 5px,
+    transparent 5px
+  );
+  background-size: 10px 2px;
+  background-repeat: repeat-x;
+}
+
+.ticket::before {
+  top: 0;
+}
+
+.ticket::after {
+  bottom: 0;
 }
