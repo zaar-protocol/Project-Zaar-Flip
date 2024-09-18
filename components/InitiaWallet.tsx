@@ -144,7 +144,7 @@ export const InitiaWallet = () => {
             </div> */}
 
             <div
-              className="relative z-50 w-[150px] "
+              className="relative z-30 w-[150px] "
               // onMouseEnter={handleMouseEnter}
               //onMouseLeave={handleMouseLeave}
               ref={dropdownRef}

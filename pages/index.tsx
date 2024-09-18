@@ -1,875 +1,117 @@
-"use client";
-import Head from "next/head";
+/*
+This file displays the migration component. 
+It allows users to migrate their PRTC tokens to Zaar tokens.
+*/
 import Image from "next/image";
-import { useEffect, useState, useRef, use } from "react";
-import {
-  updateCoinsDisplay,
-  updateWinChance,
-  updatePotentialWin,
-  flipCoins,
-  WinChanceType,
-  randomFlip,
-  startFlipping,
-  stopFlipping,
-} from "../components/zaarFlipUtils";
-import { ConnectWallet } from "../components/ConnectWallet";
+import Link from "next/link";
+import { parseEther } from "viem";
+import { useAccount } from "wagmi";
+import { waitForTransactionReceipt } from "@wagmi/core";
 import toast, { Toaster } from "react-hot-toast";
-import { StarField } from "@/components/star-field";
-import { Header } from "@/components/header";
-import { config } from "@/config";
-import { getAccount, getBalance } from "@wagmi/core";
-import { createConfetti } from "@/components/confetti";
-import { Tooltip } from "@/components/tooltip";
-import { FaChevronUp, FaChevronDown } from "react-icons/fa6";
+import { formatEther } from "viem";
+import React, { useEffect, useState } from "react";
 import {
   useSimulateZaarflipFlip,
-  useWriteZaarflipFlip,
-  useSimulateInitiaTokenApprove,
-  useReadInitiaTokenAllowance,
   useSimulateZaarflipAddAcceptedToken,
 } from "@/generated";
 import { writeContract } from "@wagmi/core";
-import { waitForTransactionReceipt } from "@wagmi/core";
-import { formatEther } from "viem";
-import { parseEther } from "viem";
-import { useAccount } from "wagmi";
-import ApproveModal from "@/components/approveModal";
-import LoadingModal from "@/components/loadingModal";
-import { initiaTokenAddress } from "@/generated";
-import { zaarflipAddress } from "@/generated";
+import { useWriteZaarflipFlip } from "@/generated";
+import { config } from "@/config";
+import { abi } from "@/abis/abi";
+import { Header } from "@/components/header";
+import { HomePageBanner } from "@/components/HomePageBanner";
 
-export default function Home() {
-  const [currentSide, setCurrentSide] = useState("heads");
-  const [coinsAmount, setCoinsAmount] = useState(1);
-  const [minHeadsTails, setMinHeadsTails] = useState(1);
-  const [wager, setWager] = useState(1.0);
-  const [potentialWin, setPotentialWin] = useState(1.96);
-  const [winChance, setWinChance] = useState<WinChanceType>({
-    toWin: 1,
-    chance: 50.0,
-  });
-  const coinsDisplayRef = useRef(null);
-  const inputRef = useRef<HTMLDivElement>(null);
-  const [wagerDropdown, setWagerDropdown] = useState(false);
-  const [presetDropdown, setPresetDropdown] = useState(false);
-  const [presetSelection, setPresetSelection] = useState("1 : 1 (x1.96)");
-  const [approveModalIsOpen, setApproveModalIsOpen] = useState(false);
-  const [loadingModalIsOpen, setLoadingModalIsOpen] = useState(false);
-
-  // const { data: addAcceptedToken } = useSimulateZaarflipAddAcceptedToken({
-  //   args: [initiaTokenAddress],
-  // });
-
-  // console.log("addAcceptedToken: ", addAcceptedToken);
-
-  // async function callAddAcceptedToken() {
-  //   try {
-  //     let myhash = await writeContract(config, addAcceptedToken!.request);
-  //     let receipt = await waitForTransactionReceipt(config, { hash: myhash });
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  //   return;
-  // }
-
-  const testFlipper = useSimulateZaarflipFlip({
-    args: [
-      BigInt(wager ? wager : 0),
-      BigInt(coinsAmount),
-      BigInt(minHeadsTails),
-      initiaTokenAddress,
-    ],
-  });
-
-  console.log("Test Flipper: ", testFlipper);
-
-  //get prepared function to flip
-  const { data: flip }: { data: any } = useSimulateZaarflipFlip({
-    args: [
-      BigInt(wager ? wager : 0),
-      BigInt(coinsAmount),
-      BigInt(minHeadsTails),
-      initiaTokenAddress,
-    ],
-  });
-
-  console.log("Flip: ", flip);
-
-  const { address: addr } = useAccount();
-
-  const { data: allowance, refetch: refetchAllowance } =
-    useReadInitiaTokenAllowance({
-      args: [addr ? addr : "0x00000000000000000", zaarflipAddress],
-    });
-
-  const wagerPresets = [10, 50, 100, 500, 1000, 5000];
-
-  useEffect(() => {
-    updateAll();
-  }, [coinsAmount, minHeadsTails, wager]);
-
-  function updateAll() {
-    if (coinsDisplayRef.current) {
-      updateCoinsDisplay(
-        coinsDisplayRef.current,
-        coinsAmount,
-        minHeadsTails,
-        currentSide
-      );
-    }
-    setWinChance(updateWinChance(coinsAmount, minHeadsTails));
-    setPotentialWin(
-      Number(updatePotentialWin(coinsAmount, minHeadsTails, wager))
-    );
-  }
-
-  function handlePresetChange(input: string) {
-    const [coins, minHeadsTails] = input.split(":");
-    setCoinsAmount(parseInt(coins));
-    setMinHeadsTails(parseInt(minHeadsTails));
-    if (parseInt(minHeadsTails) > parseInt(coins)) {
-      setCoinsAmount(parseInt(minHeadsTails));
-    }
-  }
-
-  function handleWagerChange(e: React.ChangeEvent<HTMLInputElement>) {
-    let value = e.target.value.replace("$", "");
-    value = parseFloat(value).toFixed(2);
-    setWager(parseFloat(value));
-  }
-
-  function handleHalfWager() {
-    setWager((prevWager) => parseFloat((prevWager / 2).toFixed(2)));
-  }
-
-  function handleDoubleWager() {
-    setWager((prevWager) => parseFloat((prevWager * 2).toFixed(2)));
-  }
-
-  function handleSideChange(side: string) {
-    if (currentSide !== side && coinsDisplayRef.current) {
-      setCurrentSide(side);
-      flipCoins(coinsDisplayRef.current, minHeadsTails, side);
-    }
-  }
-
-  const handleClickOutside = (e: MouseEvent) => {
-    if (inputRef.current && !inputRef.current.contains(e.target as Node)) {
-      setWagerDropdown(false);
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (minHeadsTails > coinsAmount) {
-      setCoinsAmount(minHeadsTails);
-    }
-  }, [minHeadsTails]);
-
-  // Ensure minHeadsTails is always <= coinsAmount
-  useEffect(() => {
-    if (coinsAmount < minHeadsTails) {
-      setMinHeadsTails(coinsAmount);
-    }
-  }, [coinsAmount]);
-
-  async function flipContract() {
-    if (!flip || !flip.request) {
-      console.error("Error, flip contract is null.");
-      return false;
-    }
-    console.log(flip!.request);
-    try {
-      let myhash = await writeContract(config, flip!.request);
-      console.log("myhash: ", myhash);
-      let receipt = await waitForTransactionReceipt(config, { hash: myhash });
-      console.log("receipt: ", receipt);
-      return true;
-    } catch (error) {
-      console.log(error);
-      return false;
-    }
-  }
-
-  async function flipCoin() {
-    // const flipSound = new Audio("/coin-flip-sound.mp3");
-    const addr = getAccount(config).address;
-    if (addr) {
-      const walletBalanceUnformatted = await getBalance(config, {
-        address: addr,
-        token: initiaTokenAddress,
-      });
-      const walletBalance = Number(walletBalanceUnformatted.value);
-      console.log("WalletBalance: ", walletBalance);
-
-      if (walletBalance <= wager) {
-        toast.error("Insufficient funds. Please add Init to your wallet.");
-        return;
-      }
-
-      const { data: newAllowance } = await refetchAllowance();
-
-      console.log("Allowance Page: ", newAllowance);
-
-      console.log("formatEther(newAllowance): ", formatEther(newAllowance!));
-      console.log(
-        "Number(formatEther(newAllowance)): ",
-        Number(formatEther(newAllowance!))
-      );
-      console.log("wager: ", wager);
-      console.log(
-        "Number(formatEther(newAllowance)) < wager: ",
-        Number(formatEther(newAllowance!)) < wager
-      );
-
-      if (
-        !newAllowance ||
-        newAllowance < BigInt(parseEther(wager.toString()))
-      ) {
-        setApproveModalIsOpen(true);
-        // Modal Pop up
-        return;
-      }
-
-      setLoadingModalIsOpen(true);
-
-      const flippedSuccessfully = await flipContract();
-
-      setLoadingModalIsOpen(false);
-
-      if (flippedSuccessfully) {
-        const postWalletBalanceUnformatted = await getBalance(config, {
-          address: addr,
-          token: initiaTokenAddress,
-        });
-
-        const postWalletBalance = Number(postWalletBalanceUnformatted.value);
-
-        console.log("Initial Wallet Balance: ", walletBalanceUnformatted);
-        console.log("Post Wallet Balance: ", postWalletBalanceUnformatted);
-
-        console.log("Wager: ", wager);
-
-        const outcome = walletBalance - postWalletBalance < wager;
-
-        const winnings = outcome ? postWalletBalance - walletBalance : 0;
-
-        fetch(
-          `./api/addEvent?ownerAddress=${addr}&coins=${coinsAmount}&winnings=${winnings}&wager=${wager}&outcome=${outcome}`
-        )
-          .then((response) => response.json())
-          .then((data) => {
-            console.log(data);
-          })
-          .then(() => {
-            setTimeout(() => {
-              if (outcome) {
-                toast.success("Congratulations you won!");
-                createConfetti();
-              } else {
-                toast.error("You lost.");
-              }
-            }, 1000);
-          });
-
-        if (coinsDisplayRef.current) {
-          randomFlip(
-            coinsDisplayRef.current,
-            minHeadsTails,
-            currentSide,
-            outcome
-          );
-        }
-      } else {
-        toast.error("Error with flip. Transaction did not complete.");
-      }
-    } else {
-      toast.error("Please connect your wallet first");
-      return;
-    }
-  }
-
+const Home: React.FC = () => {
+  const size = "w-16 h-16 sm:w-20 sm:h-20 md:w-[350px] md:h-[350px]";
   return (
-    <div className=" min-h-screen w-screen overflow-x-hidden overflow-y-hidden relative flex flex-col items-center justify-start ">
-      <Head>
-        <title>Zaar Flip</title>
-        <meta
-          name="description"
-          content="A first-in-class NFT trading platform for traders of every caliber."
-        />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <Toaster />
-      <div className="-mr-8">
-        <Header />
-      </div>
-      <StarField />
-
-      <ApproveModal
-        isOpen={approveModalIsOpen}
-        onClose={() => {
-          setApproveModalIsOpen(false);
-        }}
-        allowance={allowance ? Number(formatEther(allowance)) : 0}
-        wager={wager}
-      />
-
-      <LoadingModal
-        isOpen={loadingModalIsOpen}
-        onClose={() => {
-          setLoadingModalIsOpen(false);
-        }}
-      />
-
-      <div
-        id="planet"
-        className="hidden absolute bottom-0 left-0 w-64 h-64 rounded-full bg-yellow-300 opacity-20"
-      ></div>
-      <div className="hidden absolute bottom-0 left-0 w-64 h-64 flex items-center justify-center">
+    <div>
+      <Header />
+      <div className="flex flex-col items-center relative">
         <Image
-          src="/logo-3d.png"
-          alt="Logo"
-          width={160}
-          height={160}
-          className="w-[100px] h-[100px]  object-contain z-50 opacity-40 bg-red-400"
+          width={1125}
+          height={414}
+          alt="Zaar Coin Reflection"
+          src="/zaar_coin_reflection.png"
+          className="absolute -z-10 top-[290px] left-[185px] mix-blend-plus-lighter"
         />
+        <Image
+          width={1125}
+          height={414}
+          alt="Zaar Coin Reflection"
+          src="/zaar_coin_reflection.png"
+          className="absolute -z-10 top-[290px] left-[185px] mix-blend-color-dodge"
+        />
+        <div className={`mt-24 zaar-coin zaar-loading-coin ${size}`}>
+          <div className={`zaar-coin-heads ${size}`}></div>
+          <div className={`zaar-coin-tails ${size}`}></div>
+        </div>
+
+        {/* <Image
+          height={800}
+          width={800}
+          src="/old-zaar-coins/zaar-flip-heads.png"
+          alt="Zaar-flip coin"
+          className="w-[430px] mt-24"
+        /> */}
+        <div className="text-[40px] mt-8 text-white/80 mix-blend-overlay">
+          THE FUN NETWORK
+        </div>
       </div>
-      <div className="container container-fluid  w-screen h-[800px] items-center justify-center relative z-10">
-        <main className="contiainer w-full  h-full flex flex-col justify-center relative z-20">
-          <div className="  flex flex-col h-[300px] items-center justify-center">
-            <div
-              id="coins-display"
-              ref={coinsDisplayRef}
-              className="bg-white absolute top-200 bg-whitish w-full h-[360px] flex items-center justify-center mb-2"
+      <div className="flex flex-col w-full items-center text-white text-lg mt-10">
+        Choose your next move
+        <svg
+          stroke="currentColor"
+          fill="currentColor"
+          strokeWidth="0"
+          viewBox="0 0 512 512"
+          height="1em"
+          width="1em"
+          xmlns="http://www.w3.org/2000/svg"
+          className={`transition-transform duration-300 rotate-180 scale-75`}
+        >
+          <path d="M233.4 105.4c12.5-12.5 32.8-12.5 45.3 0l192 192c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 173.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l192-192z"></path>
+        </svg>
+        <div className="flex w-full justify-center gap-10 my-10">
+          <div className="flex flex-col items-center p-5 bg-dark-gray rounded w-[400px] h-[300px]">
+            <Link
+              href="/zaar-flip"
+              className="hover:cursor-pointer transition duration-300 hover:scale-105"
             >
-              {/* Coins will be dynamically added here */}
-            </div>
-
-            <div className="text-yellow mb-2 mt-4">
-              <span className="text-md mr-2">
-                {winChance.toWin} OR MORE TO WIN
-              </span>
-              <span className="text-light-gray">
-                {winChance.chance}% CHANCE
-              </span>
-            </div>
+              <Image
+                src="/logo.png"
+                alt="Zaar Flip Logo"
+                width={105}
+                height={40}
+                className="mb-2 text-white w-[200px]"
+              />
+            </Link>
+            Be the house! Take the other side of the wager by depositing INIT
+            into the pool. Your deposit may accrue rewards generated by protocol
+            revenues. But be aware! Deposits may also lose value, if and when
+            there are a large amount of user payouts.
           </div>
-
-          {/* Mobile layout */}
-          <div className="md:hidden space-y-3 w-full px-4">
-            <div className="flex items-center justify-between">
-              <div className="w-1/2 pr-2">
-                <div className="text-light-green mb-1 text-sm">PICK SIDE:</div>
-                <div className="flex items-center space-x-4">
-                  <div
-                    onClick={() => handleSideChange("heads")}
-                    className={`coin-side ${currentSide === "heads" ? "selected" : ""}`}
-                  >
-                    <Image
-                      src="/zaar-flip-heads.png"
-                      alt="Heads"
-                      width={48}
-                      height={48}
-                      className="cursor-pointer"
-                    />
-                  </div>
-                  <div
-                    onClick={() => handleSideChange("tails")}
-                    className={`coin-side ${currentSide === "tails" ? "selected" : ""}`}
-                  >
-                    <Image
-                      src="/zaar-flip-tails.png"
-                      alt="Tails"
-                      width={48}
-                      height={48}
-                      className="cursor-pointer"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="w-1/2 pl-2">
-                <button
-                  onClick={() => {
-                    if (coinsDisplayRef.current) {
-                      flipCoin();
-                    }
-                  }}
-                  className="gradient-button text-black px-6 py-2  hover:-translate-y-1 transition duration-700 ease-in-out rounded-sm font-bold mt-3 mx-auto block text-sm uppercase transition duration-700 ease-in-out"
-                >
-                  FLIP COIN - ${wager.toFixed(2)}
-                </button>
-              </div>
-            </div>
-            <div>
-              <div className="text-light-green mb-1 text-sm  flex items-center ">
-                PRESETS
-              </div>
-
-              <div className="z-40 relative flex flex-col flex-grow text-light-green rounded-sm w-full h-10 text-sm focus:outline-none focus:border focus:border-yellow-400">
-                <div
-                  className={`${presetDropdown ? "border-light-gray-all" : " "} flex flex-row justify-between bg-dark-gray items-center w-full text-light-green h-10 px-2`}
-                  onClick={() => {
-                    setPresetDropdown(!presetDropdown);
-                  }}
-                >
-                  {presetSelection}
-                  {presetDropdown ? <FaChevronUp /> : <FaChevronDown />}
-                </div>
-                <div className="absolute flex flex-col w-full mt-10 flex flex-grow">
-                  <div
-                    onClick={() => {
-                      handlePresetChange("10:5:1.57");
-                      setPresetSelection("10 : 5 (x1.57)");
-                      setPresetDropdown(false);
-                    }}
-                    className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection == "10 : 5 (x1.57)" ? "text-white" : ""} ${presetDropdown ? "block" : "hidden"}`}
-                  >
-                    10 : 5 (x1.57)
-                  </div>
-                  <div
-                    onClick={() => {
-                      handlePresetChange("4:3:3.14");
-                      setPresetSelection("4 : 3 (x3.14)");
-                      setPresetDropdown(false);
-                    }}
-                    className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection == "4 : 3 (x3.14)" ? "text-white" : ""} ${presetDropdown ? "block" : "hidden"}`}
-                  >
-                    4 : 3 (x3.14)
-                  </div>
-                  <div
-                    onClick={() => {
-                      handlePresetChange("6:5:8.96");
-                      setPresetSelection("6 : 5 (x8.96)");
-                      setPresetDropdown(false);
-                    }}
-                    className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection == "6 : 5 (x8.96)" ? "text-white" : ""} ${presetDropdown ? "block" : "hidden"}`}
-                  >
-                    6 : 5 (x8.96)
-                  </div>
-                  <div
-                    onClick={() => {
-                      handlePresetChange("9:8:50.8");
-                      setPresetSelection("9 : 8 (x50.8)");
-                      setPresetDropdown(false);
-                    }}
-                    className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection == "9 : 8 (x50.8)" ? "text-white" : ""} ${presetDropdown ? "block" : "hidden"}`}
-                  >
-                    9 : 8 (x50.8)
-                  </div>
-                  <div
-                    onClick={() => {
-                      handlePresetChange("10:10:1003.52");
-                      setPresetSelection("10 : 10 (x1003.52)");
-                      setPresetDropdown(false);
-                    }}
-                    className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection == "10 : 10 (x1003.52)" ? "text-white" : ""} ${presetDropdown ? "block" : "hidden"}`}
-                  >
-                    10 : 10 (x1003.52)
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div>
-              <div className="text-light-green mb-1 text-sm">WAGER</div>
-              <div className="wager-container bg-dark-gray text-light-green rounded-sm p-2 flex items-center justify-between h-10 focus-within:ring-1 focus-within:ring-yellow-400">
-                <div className="flex items-center">
-                  <Image
-                    src="/zaar-flip-heads.png"
-                    alt="Coin"
-                    width={20}
-                    height={20}
-                    className="mr-2"
-                  />
-                  <input
-                    type="text"
-                    value={`$${wager.toFixed(2)}`}
-                    className="wager-input bg-transparent w-24 text-left pl-2 h-8 text-sm focus:outline-none"
-                    onChange={handleWagerChange}
-                  />
-                </div>
-                <div className="flex">
-                  <button
-                    onClick={handleHalfWager}
-                    className="wager-button hover:bg-gray hover:bg-lightGray px-2 py-1 rounded-sm h-8 text-sm mr-3"
-                  >
-                    1/2
-                  </button>
-                  <button
-                    onClick={handleDoubleWager}
-                    className="wager-button hover:bg-gray hover:bg-lightGray px-2 py-1 rounded-sm h-8 text-sm"
-                  >
-                    x2
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div>
-              <div className="text-light-green mb-1 text-sm">
-                POTENTIAL TO WIN
-              </div>
-              <div className="bg-gray rounded-sm p-2 text-lime-green h-10 flex items-center text-sm">
-                {potentialWin}
-              </div>
-            </div>
-            <div className="flex justify-between">
-              <div className="w-1/2 pr-2">
-                <div className="text-light-green mb-1 text-sm">
-                  COINS AMOUNT
-                </div>
-                <div className="bg-dark-gray rounded-sm p-2 flex items-center h-10">
-                  <div className="text-light-green text-center mr-2 text-sm">
-                    x
-                  </div>
-                  <div className="text-light-green text-center mr-5 text-sm">
-                    {coinsAmount}
-                  </div>
-                  <input
-                    id="coinsAmount"
-                    type="range"
-                    min="1"
-                    max="10"
-                    value={coinsAmount}
-                    className="slider coins-amount w-full h-4"
-                    onChange={(e) => {
-                      setCoinsAmount(parseInt(e.target.value));
-                    }}
-                    style={{
-                      background: `linear-gradient(to right, green, yellow, orange, red)`,
-                    }}
-                  />
-                </div>
-              </div>
-              <div className="w-1/2 pl-2">
-                <div className="text-light-green mb-1 text-sm flex items-center">
-                  MIN HEADS / TAILS
-                </div>
-                <div className="bg-dark-gray rounded-sm p-2 flex items-center h-10">
-                  <div className="text-light-green text-center mr-2 text-sm">
-                    x
-                  </div>
-                  <div className="text-light-green text-center mr-5 text-sm">
-                    {minHeadsTails}
-                  </div>
-                  <input
-                    id="minHeadsTails"
-                    type="range"
-                    min="1"
-                    max="10"
-                    value={minHeadsTails}
-                    className="slider min-heads-tails w-full h-4"
-                    onChange={(e) => {
-                      setMinHeadsTails(parseInt(e.target.value));
-                    }}
-                    style={{
-                      background: `linear-gradient(to right, green, yellow, orange, red)`,
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Desktop layout */}
-          <div className="hidden md:grid grid-cols-3 gap-4 w-full max-w-4xl mx-auto mb-4 h-50">
-            <div className="space-y-3">
-              <div>
-                <div className="text-light-green mb-1 text-sm flex items-center">
-                  COINS AMOUNT
-                  <Tooltip
-                    text={
-                      "This determines how many virtual coins you are flipping in one game. You can choose from 1 to 10 coins."
-                    }
-                  />
-                </div>
-                <div className="bg-dark-gray rounded-sm p-2 flex items-center h-10">
-                  <div className="text-light-green text-center mr-2 text-sm">
-                    x
-                  </div>
-                  <div className="text-light-green text-center mr-5 text-sm">
-                    {coinsAmount}
-                  </div>
-                  <input
-                    type="range"
-                    min="1"
-                    max="10"
-                    value={coinsAmount}
-                    className="slider coins-amount w-full h-4"
-                    onChange={(e) => setCoinsAmount(parseInt(e.target.value))}
-                    style={{
-                      background: `linear-gradient(to right, green, yellow, orange, red)`,
-                    }}
-                  />
-                </div>
-              </div>
-              <div>
-                <div className="text-light-green mb-1 text-sm mt-6">
-                  MIN HEADS / TAILS
-                  <Tooltip
-                    text={
-                      "This sets the minimum number of heads (or tails, depending on your chosen side) you need to win. For example, if you set this to 3 with 5 coins, you'd need at least 3 out of 5 coins to land on your chosen side to win."
-                    }
-                  />
-                </div>
-
-                <div className="bg-dark-gray rounded-sm p-2 flex items-center h-10">
-                  <div className="text-light-green text-center mr-2 text-sm">
-                    x
-                  </div>
-                  <div className="text-light-green text-center mr-5 text-sm">
-                    {minHeadsTails}
-                  </div>
-                  <input
-                    type="range"
-                    min="1"
-                    max="10"
-                    value={minHeadsTails}
-                    className="slider min-heads-tails w-full h-4"
-                    onChange={(e) => setMinHeadsTails(parseInt(e.target.value))}
-                    style={{
-                      background: `linear-gradient(to right, green, yellow, orange, red)`,
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="space-y-3">
-              <div>
-                <div className="text-light-green mb-1 text-sm">WAGER</div>
-                <div>
-                  <div className="wager-container bg-dark-gray text-light-green rounded-sm p-2 flex items-center justify-between h-10 focus-within:ring-1 focus-within:ring-yellow-400">
-                    <div className="flex items-center">
-                      <Image
-                        src="/zaar-flip-heads.png"
-                        alt="Coin"
-                        width={20}
-                        height={20}
-                        className="mr-2"
-                      />
-                      <div className="" ref={inputRef}>
-                        <input
-                          type="number"
-                          value={wager}
-                          className="wager-input bg-transparent w-24 text-left pl-2 h-8 text-sm focus:outline-none"
-                          onChange={handleWagerChange}
-                          onFocus={() => setWagerDropdown(true)}
-                        />
-                        {wagerDropdown && (
-                          <div className="absolute z-10 w-36 shadow-lg mt-1">
-                            {wagerPresets.map((value) => (
-                              <div
-                                key={value}
-                                className="cursor-default w-[175px] px-2 hover:bg-gray h-8 flex items-center  bg-dark-gray flex flex-row items-center"
-                                onClick={() => {
-                                  setWager(value);
-                                  setWagerDropdown(false);
-                                }}
-                              >
-                                <Image
-                                  src="/zaar-flip-heads.png"
-                                  alt="Coin"
-                                  width={15}
-                                  height={15}
-                                  className="mr-2"
-                                />
-                                {value} INIT
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex">
-                      <button
-                        onClick={handleHalfWager}
-                        className="wager-button hover:bg-gray  px-2 py-1 rounded-sm h-8 text-sm mr-3"
-                      >
-                        1/2
-                      </button>
-                      <button
-                        onClick={handleDoubleWager}
-                        className="mybutton hover:bg-gray hover:text-md px-2 py-1 rounded-sm h-8 text-sm"
-                      >
-                        x2
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div className="text-light-green mb-1 text-sm mt-6">
-                  POTENTIAL TO WIN
-                </div>
-                <div className="bg-gray rounded-sm p-2 pl-4 text-lime-green h-10 flex items-center text-lg">
-                  {potentialWin}
-                </div>
-              </div>
-            </div>
-            <div className="space-y-3">
-              <div>
-                <div className="text-light-green mb-1 text-sm">
-                  PRESETS
-                  <Tooltip
-                    text={
-                      "Presets offer quick selections of coin amounts and minimum wins. Each option shows the number of coins, required wins, and potential payout multiplier. Choose a preset to instantly set up your game configuration."
-                    }
-                  />
-                </div>
-                {/*<select className="bg-dark-gray text-light-green rounded-sm p-2 w-full h-10 text-sm focus:outline-none focus:border focus:border-yellow-400" onChange={()=>{handlePresetChange("")}}>
-                <option className="hover:bg-gray" value="1:1:1.96">1 : 1 (x1.96)</option>
-                <option value="10:5:1.57">10 : 5 (x1.57)</option>
-                <option value="4:3:3.14">4 : 3 (x3.14)</option>
-                <option value="6:5:8.96">6 : 5 (x8.96)</option>
-                <option value="9:8:50.8">9 : 8 (x50.8)</option>
-                <option value="10:10:1003.52">10 : 10 (x1003.52)</option>
-              </select>*/}
-                <div className="z-40 relative flex flex-col flex-grow text-light-green rounded-sm w-full h-10 text-sm focus:outline-none focus:border focus:border-yellow-400 cursor-pointer">
-                  <div
-                    className={`${presetDropdown ? "border-light-gray-all" : " "} flex flex-row justify-between bg-dark-gray items-center w-full text-light-green h-10 px-2`}
-                    onClick={() => {
-                      setPresetDropdown(!presetDropdown);
-                    }}
-                  >
-                    {presetSelection}
-                    {presetDropdown ? <FaChevronUp /> : <FaChevronDown />}
-                  </div>
-                  <div className="absolute flex flex-col w-full mt-10 flex flex-grow">
-                    <div
-                      onClick={() => {
-                        handlePresetChange("10:5:1.57");
-                        setPresetSelection("10 : 5 (x1.57)");
-                        setPresetDropdown(false);
-                      }}
-                      className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection == "10 : 5 (x1.57)" ? "text-white" : ""} ${presetDropdown ? "block" : "hidden"}`}
-                    >
-                      10 : 5 (x1.57)
-                    </div>
-                    <div
-                      onClick={() => {
-                        handlePresetChange("4:3:3.14");
-                        setPresetSelection("4 : 3 (x3.14)");
-                        setPresetDropdown(false);
-                      }}
-                      className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection == "4 : 3 (x3.14)" ? "text-white" : ""} ${presetDropdown ? "block" : "hidden"}`}
-                    >
-                      4 : 3 (x3.14)
-                    </div>
-                    <div
-                      onClick={() => {
-                        handlePresetChange("6:5:8.96");
-                        setPresetSelection("6 : 5 (x8.96)");
-                        setPresetDropdown(false);
-                      }}
-                      className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection == "6 : 5 (x8.96)" ? "text-white" : ""} ${presetDropdown ? "block" : "hidden"}`}
-                    >
-                      6 : 5 (x8.96)
-                    </div>
-                    <div
-                      onClick={() => {
-                        handlePresetChange("9:8:50.8");
-                        setPresetSelection("9 : 8 (x50.8)");
-                        setPresetDropdown(false);
-                      }}
-                      className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection == "9 : 8 (x50.8)" ? "text-white" : ""} ${presetDropdown ? "block" : "hidden"}`}
-                    >
-                      9 : 8 (x50.8)
-                    </div>
-                    <div
-                      onClick={() => {
-                        handlePresetChange("10:10:1003.52");
-                        setPresetSelection("10 : 10 (x1003.52)");
-                        setPresetDropdown(false);
-                      }}
-                      className={` w-full px-2 hover:bg-gray h-7 flex items-center  bg-dark-gray  ${presetSelection == "10 : 10 (x1003.52)" ? "text-white" : ""} ${presetDropdown ? "block" : "hidden"}`}
-                    >
-                      10 : 10 (x1003.52)
-                    </div>
-                  </div>
-                  {/*<div onClick={()=>{handlePresetChange("10:5:1.57"); setPresetSelection("10 : 5 (x1.57)");}} className={`${presetDropdown? "block" : "hidden"} bg-dark-gray absolute w-full`}>
-                  <div onClick={()=>{handlePresetChange("10:5:1.57"); setPresetSelection("10 : 5 (x1.57)");}}>10 : 5 (x1.57)</div>
-                  <div className={`text-center hover:bg-gray w-full ${presetSelection=="10 : 5 (x1.57)"? " text-white " : "text-light-gray"}`} onClick={()=>{handlePresetChange("10:5:1.57"); setPresetSelection("10 : 5 (x1.57)");}}>4 : 3 (x3.14)</div>
-                </div>*/}
-                </div>
-              </div>
-              <div>
-                <div className="text-light-green mb-1 text-sm mt-6">
-                  PICK SIDE:
-                  <Tooltip
-                    text={
-                      "This lets you choose which side of the coin you're betting on - heads or tails. The side you pick becomes your `winning` side for that game. In essence, you're betting on getting at least a certain number of your chosen side (heads or tails) when flipping a set number of coins. The more challenging your bet, the higher your potential winnings."
-                    }
-                  />
-                </div>
-                <div className="flex space-x-4">
-                  <div
-                    onClick={() => handleSideChange("heads")}
-                    className={`coin-side ${currentSide === "heads" ? "selected" : ""}`}
-                  >
-                    <Image
-                      src="/zaar-flip-heads.png"
-                      alt="Heads"
-                      width={48}
-                      height={48}
-                      className="cursor-pointer"
-                    />
-                  </div>
-                  <div
-                    onClick={() => handleSideChange("tails")}
-                    className={`coin-side ${currentSide === "tails" ? "selected" : ""}`}
-                  >
-                    <Image
-                      src="/zaar-flip-tails.png"
-                      alt="Tails"
-                      width={48}
-                      height={48}
-                      className="cursor-pointer"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <button
-            onClick={() => {
-              if (coinsDisplayRef.current) {
-                flipCoin();
-              }
-            }}
-            className="hidden md:block gradient-button hover:-translate-y-1 transition duration-700 ease-in-out text-black px-6 py-2 rounded-sm font-bold mt-3 mx-auto block text-sm uppercase"
-          >
-            FLIP COIN - ${wager.toFixed(2)}
-          </button>
-          <div className="flex">
-            <button
-              onClick={() => {
-                if (coinsDisplayRef.current) {
-                  randomFlip(
-                    coinsDisplayRef.current,
-                    minHeadsTails,
-                    currentSide,
-                    true
-                  );
-                }
-              }}
-              className="w-24 h-10 block bg-black"
-            ></button>
-            {/* <button
-              onClick={() => {
-                callAddAcceptedToken();
-              }}
-              className="w-32 h-10 block bg-red"
+          <div className="flex flex-col items-center p-5 bg-dark-gray rounded w-[400px] h-[300px]">
+            <Link
+              href="/zlinko"
+              className="hover:cursor-pointer transition duration-300 hover:scale-105"
             >
-              Add Initia Token to Contract
-            </button> */}
+              <Image
+                src="/zlinko/zaar-zlinko.png"
+                alt="Zaar Zlinko Logo"
+                width={105}
+                height={40}
+                className="mt-5 mb-9 text-white w-[200px]"
+              />
+            </Link>
+            Be the house! Take the other side of the wager by depositing INIT
+            into the pool. Your deposit may accrue rewards generated by protocol
+            revenues. But be aware! Deposits may also lose value, if and when
+            there are a large amount of user payouts.
           </div>
-        </main>
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default Home;

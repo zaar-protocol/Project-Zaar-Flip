@@ -86,8 +86,7 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
           Allowance needed: <span className="text-lime-green">{wager}</span>
         </div>
         <div>
-          Current allowance:{" "}
-          <span className="text-red">{allowance.toFixed(2)}</span>
+          Current allowance: <span className="text-red">{allowance}</span>
         </div>
         {/* <div
           Funds needing approval:{" "}
