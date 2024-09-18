@@ -9,7 +9,7 @@ import { useWallet } from "@initia/react-wallet-widget";
 import { Web3ModalButton } from "./Web3ModalButton";
 import { ThirdWebWallet } from "./ThirdWebWallet";
 import { ConnectButton } from "thirdweb/react";
-import { client } from "@/pages/client";
+import { client } from "@/client";
 import { thirdwebInitiaChain } from "@/thirdweb.config";
 import { SideMenuModal } from "./SideMenuModal";
 

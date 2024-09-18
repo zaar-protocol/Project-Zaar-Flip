@@ -14,7 +14,7 @@ import {
   useConnectModal,
   useDisconnect,
 } from "thirdweb/react";
-import { client } from "@/pages/client";
+import { client } from "@/client";
 
 export const ThirdWebWallet = () => {
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
