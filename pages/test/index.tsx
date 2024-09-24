@@ -12,16 +12,8 @@ import { waitForTransactionReceipt } from "@wagmi/core";
 import toast, { Toaster } from "react-hot-toast";
 import { formatEther } from "viem";
 import React, { useEffect, useState } from "react";
-<<<<<<< Updated upstream
-import {
-  useSimulateZaarflipFlip,
-  useSimulateZaarflipAddAcceptedToken,
-} from "@/generated";
-import { writeContract } from "@wagmi/core";
-=======
 import { useSimulateZaarflipFlip, useSimulateZaarflipAddAcceptedToken, useSimulateInitiaTokenApprove } from "@/generated";
 import { writeContract } from '@wagmi/core'
->>>>>>> Stashed changes
 import { useWriteZaarflipFlip } from "@/generated";
 import { config } from "@/config";
 import { abi } from "@/abis/abi";
@@ -30,15 +22,6 @@ import { parse } from "path";
 import { ethers } from "ethers"; // Add this line
 
 const Test: React.FC = () => {
-<<<<<<< Updated upstream
-  const tokenAddress = "0xE161Ff5fDC157fb69B1c6459c9aac7E6CcCdbfCA";
-
-  const { data: flip }: { data: any } = useSimulateZaarflipFlip({
-    args: [BigInt(1), BigInt(1), BigInt(1), tokenAddress],
-  });
-
-  async function flipper() {
-=======
   const contractAddress = "0x19b95Ef8a6B4C4CcbdEaa76Fe03eB86C89b6AB6C";
   const tokenAddress = "0xd5dedc655a3000df6318151940b3311f7a4cc931";
   const approveAmount = parseEther("5");
@@ -86,7 +69,6 @@ const Test: React.FC = () => {
     }
 
   async function flipper() { 
->>>>>>> Stashed changes
     try {
       //console.log("flipping");
       //console.log(flip);
@@ -101,19 +83,9 @@ const Test: React.FC = () => {
   return (
     <div>
       <div className="flex flex-col items-center justify-center space-y-10">
-<<<<<<< Updated upstream
-        <button
-          onClick={() => {
-            flipper();
-          }}
-        >
-          Flip
-        </button>
-=======
         <button onClick={()=>{flipper();}}>Flip</button>
-        <button onClick={()=>{addTokener();}}>Add Token</button>
+        <button onClick={()=>{addToken();}}>Add Token</button>
         <button onClick={()=>{approver();}}>Approve</button>
->>>>>>> Stashed changes
       </div>
     </div>
   );
