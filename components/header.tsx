@@ -15,32 +15,32 @@ import { SideMenuModal } from "./SideMenuModal";
 
 const pageIcons = {
   "/": {
-    src: "/logo-3d.png",
+    src: "/Zaar Wordmark-White.png",
     alt: "Zaar Flip Logo",
-    width: 1696,
-    height: 1769,
-    className: "text-white w-[50px] h-[50px]",
+    width: 500,
+    height: 500,
+    className: "text-white w-[130px] h-[30px]",
   },
   "/zaar-flip": {
     src: "/logo.png",
     alt: "Zaar Flip Logo",
-    width: 105,
-    height: 40,
-    className: "text-white",
+    width: 500,
+    height: 500,
+    className: "text-white w-[130px] h-[40px]",
   },
   "/zlinko": {
     src: "/zlinko/zaar-zlinko.png",
     alt: "Zaar Zlinko Logo",
-    width: 694,
-    height: 96,
+    width: 500,
+    height: 500,
     className: "text-white h-[24px] w-[173px]",
   },
   "/zaar-raffle": {
     src: "/zaar-raffle/zaar-raffle.png",
     alt: "Zaar Raffle",
-    width: 90,
-    height: 30,
-    className: "md:ml-4",
+    width: 500,
+    height: 500,
+    className: "md:ml-4 w-[90px] h-[40px]",
   },
 } as const;
 
@@ -83,7 +83,7 @@ export const Header = () => {
         {/* <ThirdWebWallet /> */}
         {/* <Web3ModalButton /> */}
         <InitiaWallet />
-        {/* <ConnectWallet /> */}
+        {/*<ConnectWallet /> */}
         <SideMenuModal />
       </div>
     </header>

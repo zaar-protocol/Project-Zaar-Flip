@@ -110,6 +110,7 @@ export const InitiaWallet = () => {
 
         return (
           <div className="flex items-center text-gray -mr-5 relative">
+            
             {/* <div className="group">
               <button
                 onClick={openChainModal}

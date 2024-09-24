@@ -40,12 +40,16 @@ const ControlPanel = ({
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
+  const dropaudio = new Audio("/sounds/flip.mp3");
+  const squishaudio = new Audio("/sounds/squish.mp3");
 
   return (
     <div className="bg-transparent rounded-sm p-4 space-y-4 max-w-xs mx-auto mb-20 md:mb-0">
       <button
         className="lg:hidden w-full gradient-button text-black font-bold py-2 rounded hover:bg-yellow uppercase"
-        onClick={() => setDropBallTrigger(true)}
+        onClick={() => {
+          dropaudio.play(); 
+          setDropBallTrigger(true);}}
       >
         Drop 1 Ball
       </button>
@@ -243,7 +247,9 @@ const ControlPanel = ({
       <button
         className="hidden lg:block w-full gradient-button text-black font-bold py-2 rounded hover:bg-yellow uppercase"
         disabled={dropBallTrigger}
-        onClick={() => setDropBallTrigger(true)}
+        onClick={() => {
+          dropaudio.play(); 
+          setDropBallTrigger(true);}}
       >
         Drop 1 Ball
       </button>

@@ -29,7 +29,7 @@ export const SideMenuModal = () => {
     <div>
       <button
         onClick={toggleMenu}
-        className="h-[37px] flex items-center px-4 gap-3 border border-dark-gray-all rounded text-gray"
+        className="h-[37px] flex items-center px-4 gap-3 border border-dark-gray-all rounded text-white"
       >
         MENU
         <svg
@@ -79,9 +79,9 @@ export const SideMenuModal = () => {
             <Image
               height={200}
               width={200}
-              src="/logo-3d.png"
+              src="/Zaar Wordmark-White.png"
               alt="Zaar 3D Logo"
-              className="w-[50px]"
+              className="w-[120px]"
             />
           </Link>
           <Link
@@ -91,11 +91,12 @@ export const SideMenuModal = () => {
             <Image
               src="/logo.png"
               alt="Zaar Flip Logo"
-              width={105}
-              height={40}
+              width={400}
+              height={400}
               className="text-white w-[120px]"
             />
           </Link>
+          <div className="group hover:cursor-pointer transition duration-300 hover:scale-105 relative">
           <Link
             href="/zlinko"
             className="hover:cursor-pointer transition duration-300 hover:scale-105"
@@ -103,18 +104,22 @@ export const SideMenuModal = () => {
             <Image
               src="/zlinko/zaar-zlinko.png"
               alt="Zaar Zlinko Logo"
-              width={105}
-              height={40}
-              className="text-white w-[120px]"
+              width={400}
+              height={400}
+              className=" w-[120px] grayscale"
             />
           </Link>
+          <div className="absolute left-1 text-center text-base text-gray transition duration-300 opacity-0 group-hover:opacity-100">
+              Coming soon
+            </div>
+          </div>
           <div className="group hover:cursor-pointer transition duration-300 hover:scale-105 relative">
             <Image
-              src="/Zaar-Raffle-Gray.png"
+              src="/zaar-raffle.png"
               alt="Zaar Flip Logo"
-              width={105}
-              height={40}
-              className="text-white w-[100px] opacity-80 transition duraction-300 group-hover:opacity-100"
+              width={400}
+              height={400}
+              className="text-white grayscale  w-[100px] opacity-80 transition duraction-300 group-hover:opacity-100"
             />
             <div className="absolute left-1 text-center text-base text-gray transition duration-300 opacity-0 group-hover:opacity-100">
               Coming soon

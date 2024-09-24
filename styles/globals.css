@@ -353,6 +353,10 @@ dialog[open] {
   height: 100%;
   pointer-events: none;
 }
+.grayscale {
+  filter: grayscale(100%);
+}
+
 
 .star {
   position: absolute;

@@ -583,7 +583,7 @@ export const zaarflipAbi = [
 ] as const
 
 export const zaarflipAddress =
-  '0xea61cfA2508A27b149D475C9DDD89C77846Baaa6' as const
+  '0x19b95Ef8a6B4C4CcbdEaa76Fe03eB86C89b6AB6C' as const
 
 export const zaarflipConfig = {
   address: zaarflipAddress,

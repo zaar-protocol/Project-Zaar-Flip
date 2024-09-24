@@ -10,12 +10,7 @@ export default defineConfig({
     contracts: [
         {
             name: "zaarflip",
-            address: "0xea61cfA2508A27b149D475C9DDD89C77846Baaa6",
-            // address: "0x7BDe05B0E0CFEB70ac7C523788144c48427fD919", 
-            // address: "0xb52d0c08B60d9772C2F923c54BC0c3f136BDEcB6",
-            // address: "0x19b95Ef8a6B4C4CcbdEaa76Fe03eB86C89b6AB6C",
-            // address: "0x1DC6df78F3f843476C5497864A63b11f5a3211EB",
-            // address: "0x8D4909A8Bcb8c7bD6Fc106B7eEBF3A1f0a71bC7a",
+            address: "0x19b95Ef8a6B4C4CcbdEaa76Fe03eB86C89b6AB6C",
             abi:abi
         },
         {

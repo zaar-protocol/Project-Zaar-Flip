@@ -37,6 +37,7 @@ const PlinkoBoard = ({
     new Array(multipliers.length).fill(0)
   );
   const multiplierRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const squishaudio = new Audio("/sounds/squish.mp3");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -56,6 +57,8 @@ const PlinkoBoard = ({
   );
 
   const handleBallLanding = (multiplierIndex: number) => {
+    squishaudio.play();
+
     const multiplierElement = multiplierRefs.current[multiplierIndex];
     if (multiplierElement) {
       multiplierElement.classList.add("multiplier-bounce");
@@ -298,6 +301,7 @@ const PlinkoBoard = ({
           };
           step();
         } else {
+
           handleBallLanding(
             trajectory.reduce<number>((sum, value) => sum + value, 0) %
               multipliers.length
@@ -322,6 +326,8 @@ const PlinkoBoard = ({
       };
 
       animateToFirstPeg();
+      squishaudio.play();
+
     });
   };
 

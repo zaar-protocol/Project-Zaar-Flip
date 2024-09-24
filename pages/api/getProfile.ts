@@ -57,7 +57,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         profPicUrl: "",
         bannerPicUrl: "",
         waged: 0,
-        startingBalance: startingBalance || 0,
+        startingBalance: 0,
       },
       select: { winnings: true, waged: true, events: true, challengeWins: true, startingBalance: true }
     });
