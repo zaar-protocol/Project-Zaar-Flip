@@ -8,6 +8,7 @@ import PlinkoBoard from "@/components/zlinkoComponents/PlinkoBoard";
 import { storedMultipliers } from "@/components/zlinkoComponents/multipliers";
 import type { Risk } from "@/components/zlinkoComponents/multipliers";
 import {FaVolumeUp, FaVolumeMute} from "react-icons/fa";
+import MuteButton from "@/components/MuteButton";
 
 export default function Zlinko() {
   const [betAmount, setBetAmount] = useState<number>(1);
@@ -48,24 +49,7 @@ export default function Zlinko() {
       <Header />
       <StarField />
       
-      <div className="absolute bottom-4 right-4 flex items-center gap-2">
-              <div className="text-yellow text-sm">
-                {audioOn? <FaVolumeUp className="h-6 w-6"/>
-                : <FaVolumeMute className="h-6 w-6"/>}
-              </div>
-              <label className="relative inline-flex items-center me-5 cursor-pointer">
-                <input
-                  type="checkbox"
-                  value="audio"
-                  className="sr-only peer"
-                  checked={audioOn}
-                  onChange={() => {
-                    setAudioOn(!audioOn);
-                  }}
-                />
-                <div className="w-11 h-6 bg-gray rounded-full peer peer-focus:ring-4 peer-focus:ring-yellow dark:peer-focus:ring-yellow peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-yellow"></div>
-              </label>
-            </div>
+      <MuteButton />
 
       <div className="max-w-6xl mx-auto flex flex-col lg:flex-row justify-center items-end gap-4 sm:mt-20">
         <div className="w-full lg:w-auto lg:order-1 order-2">

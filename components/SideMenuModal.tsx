@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { use, useRef, useState, useEffect } from "react";
 import { useRouter } from "next/router";
-
+import { useMuteState } from './MuteContext';
 import { ConnectWallet } from "@/components/ConnectWallet";
 import { InitiaWallet } from "@/components/InitiaWallet";
 import { useWallet } from "@initia/react-wallet-widget";
@@ -16,6 +16,13 @@ export const SideMenuModal = () => {
   const router = useRouter();
   const [page, setPage] = useState("/");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isMuted, toggleMute } = useMuteState();
+
+  const playSound = () => {
+    if (isMuted) return;
+    const audio = new Audio("/sounds/switchgame.mp3");
+    audio.play();
+  };
 
   useEffect(() => {
     setPage(router.asPath);
@@ -28,7 +35,7 @@ export const SideMenuModal = () => {
   return (
     <div>
       <button
-        onClick={toggleMenu}
+        onClick={()=>{toggleMenu(); playSound();}}
         className="h-[37px] flex items-center px-4 gap-3 border border-dark-gray-all rounded text-white"
       >
         MENU
@@ -54,7 +61,7 @@ export const SideMenuModal = () => {
         {isMenuOpen && (
           <div
             className="absolute -left-[40px] top-4 bg-black p-3 flex items-center justify-center rounded cursor-pointer z-30"
-            onClick={toggleMenu}
+            onClick={()=>{toggleMenu(); playSound();}}
           >
             <svg
               stroke="currentColor"
@@ -75,6 +82,7 @@ export const SideMenuModal = () => {
           <Link
             href="/"
             className="hover:cursor-pointer transition duration-300 hover:scale-105"
+            onClick={playSound}
           >
             <Image
               height={200}
@@ -87,6 +95,7 @@ export const SideMenuModal = () => {
           <Link
             href="/zaar-flip"
             className="hover:cursor-pointer transition duration-300 hover:scale-105"
+            onClick={playSound}
           >
             <Image
               src="/logo.png"
@@ -100,6 +109,7 @@ export const SideMenuModal = () => {
           <Link
             href="/zlinko"
             className="hover:cursor-pointer transition duration-300 hover:scale-105"
+            onClick={playSound}
           >
             <Image
               src="/zlinko/zaar-zlinko.png"
@@ -129,26 +139,44 @@ export const SideMenuModal = () => {
           <Link
             href="/challenges"
             className="hover:cursor-pointer transition duration-300 hover:text-white"
+            onClick={playSound}
           >
             CHALLENGES
           </Link>
           <Link
             href="/"
             className="hover:cursor-pointer transition duration-300 hover:text-white"
+            onClick={playSound}
           >
             BE THE HOUSE
           </Link>
           <Link
             href="/"
             className="hover:cursor-pointer transition duration-300 hover:text-white"
+            onClick={playSound}
           >
             MIGRATE PRTC
           </Link>
           <Link
             href="/"
             className="hover:cursor-pointer transition duration-300 hover:text-white"
+            onClick={playSound}
           >
             EARN XP
+          </Link>
+          <Link
+            href="/profile"
+            className="hover:cursor-pointer transition duration-300 hover:text-white"
+            onClick={playSound}
+          >
+            PROFILE
+          </Link>
+          <Link
+            href="/settings"
+            className="hover:cursor-pointer transition duration-300 hover:text-white"
+            onClick={playSound}
+          >
+            SETTINGS
           </Link>
           <div className="grow mb-5 flex flex-col justify-end items-center gap-3 text-sm text-gray">
             <div className="flex items-center gap-5 mb-1">

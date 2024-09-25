@@ -207,7 +207,7 @@ export function getLayoutClass(amount:number) {
 
     const fee = grossPayout * 0.04
 
-    return grossPayout - Math.trunc(fee);
+    return (grossPayout - fee).toFixed(2);
   }
   
   export function calculateCombinations(n:number, k:number) {

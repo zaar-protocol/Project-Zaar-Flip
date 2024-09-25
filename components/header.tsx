@@ -80,10 +80,10 @@ export const Header = () => {
           chain={thirdwebInitiaChain}
           accountAbstraction={{ chain: thirdwebInitiaChain, sponsorGas: false }}
         /> */}
-        {/* <ThirdWebWallet /> */}
+        <ThirdWebWallet /> 
         {/* <Web3ModalButton /> */}
-        <InitiaWallet />
-        {/*<ConnectWallet /> */}
+        {/*<InitiaWallet />*/}
+        {/*<ConnectWallet />*/}
         <SideMenuModal />
       </div>
     </header>

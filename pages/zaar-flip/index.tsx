@@ -37,6 +37,8 @@ import ApproveModal from "@/components/approveModal";
 import LoadingModal from "@/components/loadingModal";
 import { initiaTokenAddress } from "@/generated";
 import { zaarflipAddress } from "@/generated";
+import {MuteButton} from "@/components/MuteButton";
+import { useMuteState } from '@/components/MuteContext';
 import useSound from 'use-sound';
 
 
@@ -57,16 +59,14 @@ export default function Home() {
   const [presetSelection, setPresetSelection] = useState("1 : 1 (x1.96)");
   const [approveModalIsOpen, setApproveModalIsOpen] = useState(false);
   const [loadingModalIsOpen, setLoadingModalIsOpen] = useState(false);
-  const [audioOn, setAudioOn] = useState(true);
   const winaudio = new Audio("/sounds/yeahboi.mp3");
+  const winaudio2 = new Audio("/sounds/cena.mp3");
   const flipaudio = new Audio("/sounds/money.mp3");
   const loseaudio = new Audio("/sounds/lose.mp3");
   const loseAudio2 = new Audio("/sounds/lose2.mp3");
-  const loseAudio3 = new Audio("/sounds/lose3.mp3");
-  const loseAudio4 = new Audio("/sounds/lose4.mp3");
-  const loseAudio5 = new Audio("/sounds/lose5.mp3");
-  const loseAudio6 = new Audio("/sounds/lose6.mp3");
   const [audioCount, setAudioCount] = useState(1);
+  const { isMuted, toggleMute } = useMuteState();
+
 
   // const { data: addAcceptedToken } = useSimulateZaarflipAddAcceptedToken({
   //   args: [initiaTokenAddress],
@@ -146,16 +146,16 @@ export default function Home() {
 
   function handleWagerChange(e: React.ChangeEvent<HTMLInputElement>) {
     let value = e.target.value.replace("$", "");
-    value = parseFloat(value).toFixed(2);
+    value = parseFloat(value).toFixed(0);
     setWager(parseFloat(value));
   }
 
   function handleHalfWager() {
-    setWager((prevWager) => parseFloat((prevWager / 2).toFixed(2)));
+    setWager((prevWager) => parseFloat((prevWager / 2).toFixed(0)));
   }
 
   function handleDoubleWager() {
-    setWager((prevWager) => parseFloat((prevWager * 2).toFixed(2)));
+    setWager((prevWager) => parseFloat((prevWager * 2).toFixed(0)));
   }
 
   function handleSideChange(side: string) {
@@ -210,7 +210,7 @@ export default function Home() {
   }
 
   async function flipCoin() {
-    if(audioOn){
+    if(!isMuted){
       flipaudio.play();
     }
     const addr = getAccount(config).address;
@@ -285,34 +285,35 @@ export default function Home() {
             setTimeout(() => {
               if (outcome) {
                 toast.success("Congratulations you won!");
-                if(audioOn){
-                  winaudio.play();
+                if(!isMuted){
+                    if(audioCount%2 == 1){
+                      winaudio.play();
+                    }
+                    else if(audioCount === 2){
+                      winaudio2.play();
+                    }
                 }
                 createConfetti();
               } else {
-                if(audioOn){
+                if(!isMuted){
                   if(audioCount === 1){
                     loseaudio.play();
                     setAudioCount(2);
                   }
                   else if(audioCount === 2){
-                    loseAudio2.play();
                     setAudioCount(3);
                   }
                   else if(audioCount === 3){
-                    loseAudio3.play();
                     setAudioCount(4);
                   }
                   else if(audioCount === 4){
-                    loseAudio4.play();
+                    loseAudio2.play();
                     setAudioCount(5);
                   }
                   else if(audioCount === 5){
-                    loseAudio5.play();
                     setAudioCount(6);
                   }
                   else if(audioCount === 6){
-                    loseAudio6.play();
                     setAudioCount(1);}
                 }
                 toast.error("You lost.");
@@ -899,6 +900,7 @@ export default function Home() {
           
         </main>
       </div>
+      <MuteButton/>
     </div>
   );
 }

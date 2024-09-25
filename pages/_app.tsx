@@ -11,6 +11,8 @@ import type { Metadata } from "next";
 import RootLayout from "./layout";
 import { createWeb3Modal } from "@web3modal/wagmi/react";
 import { ThirdwebProvider } from "thirdweb/react";
+import { MuteProvider } from './../components/MuteContext';
+
 
 export const metadata: Metadata = {
   title: {
@@ -25,30 +27,32 @@ export const metadata: Metadata = {
 
 const client = new QueryClient();
 
-// createWeb3Modal({
-//   wagmiConfig: config,
-//   projectId: "07a5775d26541dd4c353432b24a75b30",
-//   customWallets: [
-//     {
-//       id: "Initia",
-//       name: "Initia Wallet",
-//       homepage:
-//         "https://chromewebstore.google.com/detail/initia-wallet/ffbceckpkpbcmgiaehlloocglmijnpmp?pli=1",
-//       image_url: "/initia.png",
-//     },
-//   ],
-//   featuredWalletIds: [
-//     // "Initia",
-//     "4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0", //TrustWallet
-//     "1ae92b26df02f0abca6304df07debccd18262fdf5fe82daa81593582dac9a369", //RainbowKit
-//     "8a0ee50d1f22f6651afcae7eb4253e52a3310b90af5daef78a8c4929a9bb99d4",
-//   ],
-//   allWallets: "SHOW",
-// });
+createWeb3Modal({
+  wagmiConfig: config,
+  projectId: "07a5775d26541dd4c353432b24a75b30",
+  customWallets: [
+    {
+      id: "Initia",
+      name: "Initia Wallet",
+      homepage:
+        "https://chromewebstore.google.com/detail/initia-wallet/ffbceckpkpbcmgiaehlloocglmijnpmp?pli=1",
+      image_url: "/initia.png",
+    },
+  ],
+  featuredWalletIds: [
+    // "Initia",
+    "4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0", //TrustWallet
+    "1ae92b26df02f0abca6304df07debccd18262fdf5fe82daa81593582dac9a369", //RainbowKit
+    "8a0ee50d1f22f6651afcae7eb4253e52a3310b90af5daef78a8c4929a9bb99d4",
+  ],
+  allWallets: "SHOW",
+});
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <RootLayout>
+      <MuteProvider>
+
       <WagmiProvider config={config}>
         <QueryClientProvider client={client}>
           <WalletWidgetProvider chainId="2594729740794688">
@@ -62,6 +66,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           </WalletWidgetProvider>
         </QueryClientProvider>
       </WagmiProvider>
+      </MuteProvider>
     </RootLayout>
   );
 }

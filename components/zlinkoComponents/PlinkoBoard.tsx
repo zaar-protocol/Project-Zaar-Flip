@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { probabilities } from "./multipliers";
+import { useMuteState } from '@/components/MuteContext';
+
 
 interface PlinkoBoardProps {
   rows: number;
@@ -38,6 +40,8 @@ const PlinkoBoard = ({
   );
   const multiplierRefs = useRef<(HTMLDivElement | null)[]>([]);
   const squishaudio = new Audio("/sounds/squish.mp3");
+  const { isMuted, toggleMute } = useMuteState();
+
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -57,7 +61,10 @@ const PlinkoBoard = ({
   );
 
   const handleBallLanding = (multiplierIndex: number) => {
-    squishaudio.play();
+    if(!isMuted)
+      {
+        squishaudio.play();
+      }
 
     const multiplierElement = multiplierRefs.current[multiplierIndex];
     if (multiplierElement) {
@@ -326,7 +333,6 @@ const PlinkoBoard = ({
       };
 
       animateToFirstPeg();
-      squishaudio.play();
 
     });
   };

@@ -20,9 +20,26 @@ import { config } from "@/config";
 import { abi } from "@/abis/abi";
 import { Header } from "@/components/header";
 import { HomePageBanner } from "@/components/HomePageBanner";
+import { useMuteState } from "@/components/MuteContext";
+import {MuteButton} from "@/components/MuteButton";
 
 const Home: React.FC = () => {
   const size = "w-16 h-16 sm:w-20 sm:h-20 md:w-[350px] md:h-[350px]";
+  const [zlinkoImageSrc, setZlinkoImageSrc] = useState("/zlinko-card.png");
+  const [zaarflipImageSrc, setZaarflipImageSrc] = useState("/zaarflip-card.png");
+  const [blinkerVisible, setBlinkerVisible] = useState(false);
+  const {isMuted, toggleMute} = useMuteState();
+  const playSound = () => {
+    if (isMuted) return;
+    const audio = new Audio("/sounds/switchgame.mp3");
+    audio.play();
+  };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBlinkerVisible((prev) => !prev);
+    }, 500);
+    return () => clearInterval(interval);
+  }, []);
   return (
     <div>
       <Header />
@@ -53,12 +70,15 @@ const Home: React.FC = () => {
           alt="Zaar-flip coin"
           className="w-[430px] mt-24"
         /> */}
-        <div className="text-[40px] mt-8 text-white mix-blend-overlay">
+        <div className="text-[60px] mt-8 font-bold text-white mix-blend-overlay">
           THE FUN NETWORK
         </div>
       </div>
       <div className="flex flex-col w-full items-center text-white text-lg mt-10">
+        <div className="flex flex-row items-center justify-start gap-4 tranistion duration-100 ease-in-out w-[250px]">
         Choose your next move
+        {blinkerVisible ? 
+        
         <svg
           stroke="currentColor"
           fill="currentColor"
@@ -71,40 +91,40 @@ const Home: React.FC = () => {
         >
           <path d="M233.4 105.4c12.5-12.5 32.8-12.5 45.3 0l192 192c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 173.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l192-192z"></path>
         </svg>
+
+        : null }
+        </div>
         
-        <div className="flex w-full flew flex-col md:flex-row items-center justify-center gap-10 my-10">
+        <div className="flex w-full flew flex-col md:flex-row items-center justify-center gap-10 my-10 ">
+        
         <Link
               href="/zaar-flip"
-              className="hover:cursor-pointer transition duration-300 hover:scale-105 hover:text-white"
+              className="hover:cursor-pointer "
+              onMouseEnter={() => setZaarflipImageSrc("/zaarflip-card-hover.png")}
+              onMouseLeave={() => setZaarflipImageSrc("/zaarflip-card.png")}
+              onClick={playSound}
             >
-          <div className="flex flex-col items-center p-5 px-10 md:p-5 bg-dark-gray rounded w-[400px] h-[350px] md:h-[300px]">
-            
-              <Image
-                src="/logo.png"
-                alt="Zaar Flip Logo"
-                width={500}
-                height={500}
-                className="mb-2 text-white w-[200px]"
-              />
-            Choose a side, choose your odds, and flip up to 10 coins your way. Become the house by staking INIT in order to share in the upside / downside of Zaar Flip while earning revenue from all play. Feeling lucky?
-          </div>
+          <Image src={zaarflipImageSrc} alt="Zaar Flip Logo" width={500} height={1000} className="w-[300px]  rounded rounded-md mb-2 text-white " />
+
+
           </Link>
 
             <Link
               href="/zlinko"
-              className="hover:cursor-pointer transition duration-300 hover:scale-105 hover:text-white"
+              className="hover:cursor-pointer transition duration-300  "
+              onMouseEnter={() => setZlinkoImageSrc("/zlinko-card-hover.png")}
+              onMouseLeave={() => setZlinkoImageSrc("/zlinko-card.png")}
+              onClick={playSound}
             >
-                        <div className="flex flex-col items-center p-5 bg-dark-gray rounded w-[400px] h-[300px]">
 
               <Image
-                src="/zlinko/zaar-zlinko.png"
+                src={zlinkoImageSrc}
                 alt="Zaar Zlinko Logo"
                 width={500}
                 height={500}
-                className="mt-5 mb-9 text-white w-[200px]"
+                className="text-white w-[300px]"
               />
-            Select your level of degeneracy and up to 16 rows, each with corresponding bet miltipliers. Are you lucky enough?
-          </div>
+           
           </Link>
 
         </div>

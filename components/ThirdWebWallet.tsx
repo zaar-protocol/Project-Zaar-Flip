@@ -13,8 +13,13 @@ import {
   useActiveWallet,
   useConnectModal,
   useDisconnect,
+  useSwitchActiveWalletChain,
+  useWalletDetailsModal,
 } from "thirdweb/react";
 import { client } from "@/client";
+import { thirdwebInitiaChain } from "@/thirdweb.config";
+import { useMuteState } from './MuteContext';
+
 
 export const ThirdWebWallet = () => {
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
@@ -25,14 +30,22 @@ export const ThirdWebWallet = () => {
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-
+  const switchChain = useSwitchActiveWalletChain();
   const { connect, isConnecting } = useConnectModal();
   const wallet = useActiveWallet();
   const { address: wagmiAddress, isConnected } = useAccount();
+  const { isMuted, toggleMute } = useMuteState();
+
+  const playSound = () => {
+    if (isMuted) return;
+    const audio = new Audio("/sounds/switchgame.mp3");
+    audio.play();
+  };
 
   async function handleConnect() {
     const walletConnected = await connect({ client });
     console.log("Connected to: ", walletConnected);
+    switchChain(thirdwebInitiaChain);
   }
 
   const displayAddr = (addr: string) => {
@@ -41,6 +54,7 @@ export const ThirdWebWallet = () => {
 
     return `${firstFive}...${lastThree}`;
   };
+  const detailsModal = useWalletDetailsModal();
 
   useEffect(() => {
     if (!wagmiAddress) return;
@@ -81,7 +95,7 @@ export const ThirdWebWallet = () => {
     <div>
       {!wallet ? (
         <button
-          onClick={handleConnect}
+          onClick={()=>{playSound(); handleConnect(); }}
           className="bg-yellow text-black flex flex-row items-center justify-center space-x-2 px-4 py-2 text-sm rounded-sm font-bold uppercase gradient-button hover:bg-white border-2 transition duration-500"
         >
           <FaWallet />
@@ -97,15 +111,15 @@ export const ThirdWebWallet = () => {
           >
             <button
               type="button"
-              onClick={toggleDropDown}
+              onClick={()=>{playSound(); detailsModal.open({ client, theme: "dark" }); }}
               className="flex items-center justify-center rounded cursor-pointer px-2 py-2 text-sm font-medium text-gray-700 border border-dark-gray-all md:flex w-full gap-2 min-w-[100px]"
               ref={buttonRef}
               aria-expanded={profileMenuOpen}
               aria-haspopup="true"
             >
-              <div className=" text-yellow-400">{currentVanity}</div>
+              <div className=" text-yellow-400 h-5">{currentVanity || displayAddr(wagmiAddress? wagmiAddress : "")}</div>
             </button>
-            <div
+            {/*<div
               className={`relative z-[100] absolute left-0  w-full bg-black border border-dark-gray-all rounded-sm shadow-lg transition-opacity duration-300 ${profileMenuOpen ? "block opacity-100 visible" : "hidden opacity-0 invisible"} uppercase`}
             >
               <Link
@@ -130,6 +144,7 @@ export const ThirdWebWallet = () => {
                 Log Out
               </div>
             </div>
+            */}
           </div>
         </div>
       )}

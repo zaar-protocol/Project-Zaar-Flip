@@ -1,6 +1,8 @@
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { Tooltip } from "../tooltip";
+import { useMuteState } from '@/components/MuteContext';
+
 
 interface ControlPanelProps {
   betAmount: number;
@@ -42,13 +44,17 @@ const ControlPanel = ({
   };
   const dropaudio = new Audio("/sounds/flip.mp3");
   const squishaudio = new Audio("/sounds/squish.mp3");
+  const { isMuted, toggleMute } = useMuteState();
+
 
   return (
     <div className="bg-transparent rounded-sm p-4 space-y-4 max-w-xs mx-auto mb-20 md:mb-0">
       <button
         className="lg:hidden w-full gradient-button text-black font-bold py-2 rounded hover:bg-yellow uppercase"
         onClick={() => {
+          if(!isMuted ){
           dropaudio.play(); 
+          }
           setDropBallTrigger(true);}}
       >
         Drop 1 Ball
@@ -248,7 +254,9 @@ const ControlPanel = ({
         className="hidden lg:block w-full gradient-button text-black font-bold py-2 rounded hover:bg-yellow uppercase"
         disabled={dropBallTrigger}
         onClick={() => {
-          dropaudio.play(); 
+          if(!isMuted ){
+            dropaudio.play(); 
+          }
           setDropBallTrigger(true);}}
       >
         Drop 1 Ball
