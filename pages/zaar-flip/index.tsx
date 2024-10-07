@@ -40,6 +40,7 @@ import { zaarflipAddress } from "@/generated";
 import {MuteButton} from "@/components/MuteButton";
 import { useMuteState } from '@/components/MuteContext';
 import useSound from 'use-sound';
+import Footer from "@/components/Footer";
 
 
 export default function Home() {
@@ -54,6 +55,8 @@ export default function Home() {
   });
   const coinsDisplayRef = useRef(null);
   const inputRef = useRef<HTMLDivElement>(null);
+  const presetRef1 = useRef<HTMLDivElement>(null);
+  const presetRef2 = useRef<HTMLDivElement>(null);
   const [wagerDropdown, setWagerDropdown] = useState(false);
   const [presetDropdown, setPresetDropdown] = useState(false);
   const [presetSelection, setPresetSelection] = useState("1 : 1 (x1.96)");
@@ -62,6 +65,7 @@ export default function Home() {
   const winaudio = new Audio("/sounds/yeahboi.mp3");
   const winaudio2 = new Audio("/sounds/cena.mp3");
   const flipaudio = new Audio("/sounds/money.mp3");
+  const erroraudio = new Audio("/sounds/error.mp3");
   const loseaudio = new Audio("/sounds/lose.mp3");
   const loseAudio2 = new Audio("/sounds/lose2.mp3");
   const [audioCount, setAudioCount] = useState(1);
@@ -170,11 +174,20 @@ export default function Home() {
       setWagerDropdown(false);
     }
   };
+  const handleClickOutsidePreset = (e: MouseEvent) => {
+    if (presetRef1.current && !presetRef1.current.contains(e.target as Node) && presetRef2.current && !presetRef2.current.contains(e.target as Node)) {
+      setPresetDropdown(false);
+    }
+  };
+  
+  
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutsidePreset);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutsidePreset);
     };
   }, []);
 
@@ -210,11 +223,10 @@ export default function Home() {
   }
 
   async function flipCoin() {
-    if(!isMuted){
-      flipaudio.play();
-    }
+    
     const addr = getAccount(config).address;
     if (addr) {
+      
       const walletBalanceUnformatted = await getBalance(config, {
         address: addr,
         token: initiaTokenAddress,
@@ -224,9 +236,14 @@ export default function Home() {
 
       if (walletBalance <= wager) {
         toast.error("Insufficient funds. Please add Init to your wallet.");
+        if(!isMuted){
+          erroraudio.play();
+        }
         return;
       }
-
+      if(!isMuted){
+        flipaudio.play();
+      }
       const { data: newAllowance } = await refetchAllowance();
 
       console.log("Allowance Page: ", newAllowance);
@@ -333,6 +350,9 @@ export default function Home() {
         toast.error("Error with flip. Transaction did not complete.");
       }
     } else {
+      if(!isMuted){
+        erroraudio.play();
+      }
       toast.error("Please connect your wallet first");
       return;
     }
@@ -346,7 +366,7 @@ export default function Home() {
   });*/
 
   return (
-    <div className=" min-h-screen w-screen overflow-x-hidden overflow-y-hidden relative flex flex-col items-center justify-start ">
+    <div className=" h-screen w-screen overflow-x-hidden no-scrollbar relative flex flex-col items-center justify-start pb-10 ">
       <Head>
         <title>Zaar Flip</title>
         <meta
@@ -461,7 +481,7 @@ export default function Home() {
                 PRESETS
               </div>
 
-              <div className="z-40 relative flex flex-col flex-grow text-light-green rounded-sm w-full h-10 text-sm focus:outline-none focus:border focus:border-yellow-400">
+              <div ref={presetRef1} className="z-40 relative flex flex-col flex-grow text-light-green rounded-sm w-full h-10 text-sm focus:outline-none focus:border focus:border-yellow-400">
                 <div
                   className={`${presetDropdown ? "border-light-gray-all" : " "} flex flex-row justify-between bg-dark-gray items-center w-full text-light-green h-10 px-2`}
                   onClick={() => {
@@ -690,9 +710,9 @@ export default function Home() {
             </div>
             <div className="space-y-3">
               <div>
-                <div className="text-light-green mb-1 text-sm">WAGER</div>
+                <div className="text-light-green mb-0 h-6 text-sm">WAGER</div>
                 <div>
-                  <div className="wager-container bg-dark-gray text-light-green rounded-sm p-2 flex items-center justify-between h-10 focus-within:ring-1 focus-within:ring-yellow-400">
+                  <div className="wager-container bg-dark-gray text-light-green rounded-sm p-2 flex items-center justify-between h-10 focus-within:ring-1 focus-within:ring-yellow">
                     <div className="flex items-center">
                       <Image
                         src="/zaar-flip-heads.png"
@@ -715,6 +735,7 @@ export default function Home() {
                               <div
                                 key={value}
                                 className="cursor-default w-[175px] px-2 hover:bg-gray h-8 flex items-center  bg-dark-gray flex flex-row items-center"
+                                
                                 onClick={() => {
                                   setWager(value);
                                   setWagerDropdown(false);
@@ -752,7 +773,7 @@ export default function Home() {
                 </div>
               </div>
               <div>
-                <div className="text-light-green mb-1 text-sm mt-6">
+                <div className="text-light-green mb-1 text-sm mt-7">
                   POTENTIAL TO WIN
                 </div>
                 <div className="bg-gray rounded-sm p-2 pl-4 text-lime-green h-10 flex items-center text-lg">
@@ -761,8 +782,8 @@ export default function Home() {
               </div>
             </div>
             <div className="space-y-3">
-              <div>
-                <div className="text-light-green mb-1 text-sm">
+              <div >
+                <div  className="text-light-green mb-1 text-sm">
                   PRESETS
                   <Tooltip
                     text={
@@ -778,7 +799,7 @@ export default function Home() {
                 <option value="9:8:50.8">9 : 8 (x50.8)</option>
                 <option value="10:10:1003.52">10 : 10 (x1003.52)</option>
               </select>*/}
-                <div className="z-40 relative flex flex-col flex-grow text-light-green rounded-sm w-full h-10 text-sm focus:outline-none focus:border focus:border-yellow-400 cursor-pointer">
+                <div ref={presetRef2} className="z-40 relative flex flex-col flex-grow text-light-green rounded-sm w-full h-10 text-sm focus:outline-none focus:border focus:border-yellow-400 cursor-pointer">
                   <div
                     className={`${presetDropdown ? "border-light-gray-all" : " "} flex flex-row justify-between bg-dark-gray items-center w-full text-light-green h-10 px-2`}
                     onClick={() => {
@@ -901,6 +922,7 @@ export default function Home() {
         </main>
       </div>
       <MuteButton/>
+      <Footer/>
     </div>
   );
 }

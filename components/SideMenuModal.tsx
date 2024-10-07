@@ -33,7 +33,7 @@ export const SideMenuModal = () => {
   };
 
   return (
-    <div>
+    <div className="z-50">
       <button
         onClick={()=>{toggleMenu(); playSound();}}
         className="h-[37px] flex items-center px-4 gap-3 border border-dark-gray-all rounded text-white"
@@ -60,7 +60,7 @@ export const SideMenuModal = () => {
       >
         {isMenuOpen && (
           <div
-            className="absolute -left-[40px] top-4 bg-black p-3 flex items-center justify-center rounded cursor-pointer z-30"
+            className="absolute -left-[40px] top-4 bg-black p-3 flex items-center justify-center rounded cursor-pointer z-50"
             onClick={()=>{toggleMenu(); playSound();}}
           >
             <svg
@@ -78,7 +78,7 @@ export const SideMenuModal = () => {
           </div>
         )}
 
-        <div className="bg-black border-l-gray border-l-2 flex flex-col items-center pt-24 gap-8 h-full text-lg text-[#E3BF00]">
+        <div className="bg-black border-l-gray border-l-2 flex flex-col items-center pt-24 gap-8 h-full text-lg text-[#E3BF00] z-50">
           <Link
             href="/"
             className="hover:cursor-pointer transition duration-300 hover:scale-105"
@@ -105,7 +105,7 @@ export const SideMenuModal = () => {
               className="text-white w-[120px]"
             />
           </Link>
-          <div className="group hover:cursor-pointer transition duration-300 hover:scale-105 relative">
+          <div className="group hover:cursor-pointer transition duration-300 hover:scale-105 relative z-50">
           <Link
             href="/zlinko"
             className="hover:cursor-pointer transition duration-300 hover:scale-105"
@@ -119,11 +119,11 @@ export const SideMenuModal = () => {
               className=" w-[120px] grayscale"
             />
           </Link>
-          <div className="absolute left-1 text-center text-base text-gray transition duration-300 opacity-0 group-hover:opacity-100">
+          <div className="absolute left-1 text-center text-base text-gray transition duration-300 opacity-0 group-hover:opacity-100 w-full z-50">
               Coming soon
             </div>
           </div>
-          <div className="group hover:cursor-pointer transition duration-300 hover:scale-105 relative">
+          <div className="group hover:cursor-pointer transition duration-300 hover:scale-105 relative z-50">
             <Image
               src="/zaar-raffle.png"
               alt="Zaar Flip Logo"
@@ -145,21 +145,21 @@ export const SideMenuModal = () => {
           </Link>
           <Link
             href="/"
-            className="hover:cursor-pointer transition duration-300 hover:text-white"
+            className="hidden hover:cursor-pointer transition duration-300 hover:text-white"
             onClick={playSound}
           >
             BE THE HOUSE
           </Link>
           <Link
             href="/"
-            className="hover:cursor-pointer transition duration-300 hover:text-white"
+            className="hidden hover:cursor-pointer transition duration-300 hover:text-white"
             onClick={playSound}
           >
             MIGRATE PRTC
           </Link>
           <Link
             href="/"
-            className="hover:cursor-pointer transition duration-300 hover:text-white"
+            className="hidden hover:cursor-pointer transition duration-300 hover:text-white"
             onClick={playSound}
           >
             EARN XP
@@ -178,7 +178,7 @@ export const SideMenuModal = () => {
           >
             SETTINGS
           </Link>
-          <div className="grow mb-5 flex flex-col justify-end items-center gap-3 text-sm text-gray">
+          <div className="grow mb-5 flex flex-col justify-end items-center gap-3 text-sm text-gray z-50">
             <div className="flex items-center gap-5 mb-1">
               <Link href="/" className="hover:text-white">
                 <svg
@@ -209,7 +209,7 @@ export const SideMenuModal = () => {
                 </svg>
               </Link>
             </div>
-            <Link href="/" className="hover:text-white">
+            <Link href="https://gitbook.zaar.market/" className="hover:text-white">
               Docs
             </Link>
             <Link href="/" className="hover:text-white">

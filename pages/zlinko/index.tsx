@@ -9,6 +9,7 @@ import { storedMultipliers } from "@/components/zlinkoComponents/multipliers";
 import type { Risk } from "@/components/zlinkoComponents/multipliers";
 import {FaVolumeUp, FaVolumeMute} from "react-icons/fa";
 import MuteButton from "@/components/MuteButton";
+import Footer from "@/components/Footer";
 
 export default function Zlinko() {
   const [betAmount, setBetAmount] = useState<number>(1);
@@ -76,6 +77,7 @@ export default function Zlinko() {
           />
         </div>
       </div>
+      <Footer/>
     </div>
   );
 }

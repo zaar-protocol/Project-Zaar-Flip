@@ -22,9 +22,10 @@ import { Header } from "@/components/header";
 import { HomePageBanner } from "@/components/HomePageBanner";
 import { useMuteState } from "@/components/MuteContext";
 import {MuteButton} from "@/components/MuteButton";
+import { Footer } from "@/components/Footer";
 
 const Home: React.FC = () => {
-  const size = "w-16 h-16 sm:w-20 sm:h-20 md:w-[350px] md:h-[350px]";
+  const size = "w-[115px] h-[121px]  md:w-[350px] md:h-[350px]";
   const [zlinkoImageSrc, setZlinkoImageSrc] = useState("/zlinko-card.png");
   const [zaarflipImageSrc, setZaarflipImageSrc] = useState("/zaarflip-card.png");
   const [blinkerVisible, setBlinkerVisible] = useState(false);
@@ -43,20 +44,20 @@ const Home: React.FC = () => {
   return (
     <div>
       <Header />
-      <div className="flex flex-col items-center justify-center w-full relative">
+      <div className="flex flex-col items-center justify-center w-full relative pb-10">
         <Image
           width={1125}
           height={414}
           alt="Zaar Coin Reflection"
           src="/zaar_coin_reflection.png"
-          className=" absolute -z-10 top-[160px] w-full left-0 md:top-[290px]   mix-blend-plus-lighter"
+          className=" absolute -z-10 top-[180px] w-full left-0 md:top-[290px]   mix-blend-plus-lighter"
         />
         <Image
           width={1125}
           height={414}
           alt="Zaar Coin Reflection"
           src="/zaar_coin_reflection.png"
-          className="absolute -z-10 top-[160px] md:top-[290px] w-full left-0 mix-blend-color-dodge"
+          className="absolute -z-10 top-[180px] md:top-[290px] w-full left-0 mix-blend-color-dodge"
         />
         <div className={`mt-24 zaar-coin zaar-loading-coin ${size}`}>
           <div className={`zaar-coin-heads ${size}`}></div>
@@ -70,7 +71,7 @@ const Home: React.FC = () => {
           alt="Zaar-flip coin"
           className="w-[430px] mt-24"
         /> */}
-        <div className="text-[60px] mt-8 font-bold text-white mix-blend-overlay">
+        <div className="text-[40px] lg:text-[60px] mt-8 font-bold text-white text-center mix-blend-overlay">
           THE FUN NETWORK
         </div>
       </div>
@@ -109,7 +110,7 @@ const Home: React.FC = () => {
 
           </Link>
 
-            <Link
+          <Link
               href="/zlinko"
               className="hover:cursor-pointer transition duration-300  "
               onMouseEnter={() => setZlinkoImageSrc("/zlinko-card-hover.png")}
@@ -117,8 +118,15 @@ const Home: React.FC = () => {
               onClick={playSound}
             >
 
-              <Image
+              {/*<Image
                 src={zlinkoImageSrc}
+                alt="Zaar Zlinko Logo"
+                width={500}
+                height={500}
+                className="text-white w-[300px]"
+              />*/}
+              <Image
+                src="/zlinko-card-disabled.png"
                 alt="Zaar Zlinko Logo"
                 width={500}
                 height={500}
@@ -129,6 +137,7 @@ const Home: React.FC = () => {
 
         </div>
       </div>
+      <Footer/>
     </div>
   );
 };

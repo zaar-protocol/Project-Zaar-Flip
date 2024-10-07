@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 export default function RootLayout({
   children,
@@ -23,6 +24,8 @@ export default function RootLayout({
   return (
     <div className="max-w-screen overflow-x-hidden no-scrollbar">
       {children}
+      
+
     </div>
   );
 }

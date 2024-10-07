@@ -5,7 +5,7 @@ export const MuteButton = () => {
     const { isMuted, toggleMute } = useMuteState();
     return (
 
-        <div className="absolute bottom-4 right-4 flex items-center gap-2">
+        <div className="hidden md:inline-flex z-10 fixed mt-4 md:bottom-4 right-4 flex items-center gap-2">
               <div className="text-yellow text-sm">
                 {!isMuted? <FaVolumeUp className="h-6 w-6"/>
                 : <FaVolumeMute className="h-6 w-6"/>}

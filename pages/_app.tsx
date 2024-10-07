@@ -12,6 +12,7 @@ import RootLayout from "./layout";
 import { createWeb3Modal } from "@web3modal/wagmi/react";
 import { ThirdwebProvider } from "thirdweb/react";
 import { MuteProvider } from './../components/MuteContext';
+import { MuteButton } from './../components/MuteButton';
 
 
 export const metadata: Metadata = {

@@ -220,13 +220,13 @@ const ControlPanel = ({
                 <button
                   disabled={dropBallTrigger || degenLevel != "Normal"}
                   onClick={() => setLocalRiskLevel(risk)}
-                  className={`text-sm px-3 py-1 rounded ${
-                    localRiskLevel === risk
+                  className={`text-sm px-3 py-1 min-h-8 rounded ${
+                    localRiskLevel === risk && degenLevel === "Normal"
                       ? "bg-gray text-light-green"
                       : "text-light-gray"
                   }${degenLevel != "Normal" ? "hover:bg-zinc-900" : ""}`}
                 >
-                  {risk}
+                  {degenLevel=="Normal" ? risk : ""}
                 </button>
               </div>
             ))}
