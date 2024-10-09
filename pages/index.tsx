@@ -70,9 +70,9 @@ const Home: React.FC = () => {
     <div>
       <Header />
       <div className="flex flex-col items-center justify-center w-full relative pb-10">
-        <Link href="https://www.coingecko.com/en/coins/zaar" target="_blank" rel="noopener noreferrer" className="absolute top-4 left-4 md:left-4 z-10 hover:text-yellow">
+        <Link href="https://www.coingecko.com/en/coins/zaar" target="_blank" rel="noopener noreferrer" className="absolute top-4 left-4 md:left-4 z-10 ">
           <div className="bg-black bg-opacity-50 px-3 py-1 rounded-full">
-            <span className="text-yellow-400 font-mono text-sm md:text-base">
+            <span className="text-yellow hover:text-white font-mono text-sm md:text-base">
               ZAAR: ${zaarPrice || '...'}
             </span>
           </div>

@@ -15,7 +15,7 @@ import { SideMenuModal } from "./SideMenuModal";
 
 const pageIcons = {
   "/": {
-    src: "/Zaar Wordmark-White.png",
+    src: "/Zaar Wordmark-Yellow.png",
     alt: "Zaar Flip Logo",
     width: 500,
     height: 500,
