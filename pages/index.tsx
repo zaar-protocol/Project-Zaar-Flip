@@ -35,16 +35,48 @@ const Home: React.FC = () => {
     const audio = new Audio("/sounds/switchgame.mp3");
     audio.play();
   };
+  const [zaarPrice, setZaarPrice] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchZaarPrice = async () => {
+      try {
+        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=protectorate-protocol&vs_currencies=usd', {
+          headers: {
+            'accept': 'application/json',
+            'x-cg-demo-api-key': 'CG-KFXmN7FmLNDrkFUMpM5xAMCV'
+          }
+        });
+        const data = await response.json();
+        setZaarPrice(data['protectorate-protocol'].usd.toFixed(4));
+      } catch (error) {
+        console.error('Error fetching Zaar price:', error);
+      }
+    };
+
+    fetchZaarPrice();
+    const interval = setInterval(fetchZaarPrice, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setBlinkerVisible((prev) => !prev);
     }, 500);
     return () => clearInterval(interval);
   }, []);
+
   return (
     <div>
       <Header />
       <div className="flex flex-col items-center justify-center w-full relative pb-10">
+        <Link href="https://www.coingecko.com/en/coins/zaar" target="_blank" rel="noopener noreferrer" className="absolute top-4 left-4 md:left-4 z-10 hover:text-yellow">
+          <div className="bg-black bg-opacity-50 px-3 py-1 rounded-full">
+            <span className="text-yellow-400 font-mono text-sm md:text-base">
+              ZAAR: ${zaarPrice || '...'}
+            </span>
+          </div>
+        </Link>
         <Image
           width={1125}
           height={414}
