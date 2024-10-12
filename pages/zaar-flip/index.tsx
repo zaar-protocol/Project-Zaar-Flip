@@ -55,6 +55,7 @@ export default function Home() {
   });
   const coinsDisplayRef = useRef(null);
   const inputRef = useRef<HTMLDivElement>(null);
+  const inputRefMobile = useRef<HTMLDivElement>(null);
   const presetRef1 = useRef<HTMLDivElement>(null);
   const presetRef2 = useRef<HTMLDivElement>(null);
   const [wagerDropdown, setWagerDropdown] = useState(false);
@@ -149,9 +150,11 @@ export default function Home() {
   }
 
   function handleWagerChange(e: React.ChangeEvent<HTMLInputElement>) {
-    let value = e.target.value.replace("$", "");
-    value = parseFloat(value).toFixed(0);
-    setWager(parseFloat(value));
+    let value = e.target.value.replace(/[^0-9.]/g, '');
+    let parsedValue = parseFloat(value);
+    if (!isNaN(parsedValue)) {
+      setWager(parsedValue);
+    }
   }
 
   function handleHalfWager() {
@@ -472,7 +475,7 @@ export default function Home() {
                   }}
                   className="gradient-button text-black px-6 py-2  hover:-translate-y-1 transition duration-700 ease-in-out rounded-sm font-bold mt-3 mx-auto block text-sm uppercase transition duration-700 ease-in-out"
                 >
-                  FLIP COIN - ${wager.toFixed(2)}
+                  FLIP COIN - ${wager.toFixed(2)} INIT
                 </button>
               </div>
             </div>
@@ -556,12 +559,38 @@ export default function Home() {
                     height={20}
                     className="mr-2"
                   />
+                  <div className="" ref={inputRefMobile}>
                   <input
-                    type="text"
-                    value={`$${wager.toFixed(2)}`}
-                    className="wager-input bg-transparent w-24 text-left pl-2 h-8 text-sm focus:outline-none"
-                    onChange={handleWagerChange}
-                  />
+                          type="text"
+                          value={`$${wager.toFixed(2)} INIT`}
+                          className="wager-input bg-transparent w-24 text-left pl-2 h-8 text-sm focus:outline-none"
+                          onChange={handleWagerChange}
+                          onFocus={() => setWagerDropdown(true)}
+                        />
+                        {/*wagerDropdown && (
+                          <div className="absolute z-10 w-36 shadow-lg mt-1">
+                            {wagerPresets.map((value) => (
+                              <div
+                                key={value}
+                                className="cursor-default w-[175px] px-2 hover:bg-gray h-8 flex items-center  bg-dark-gray flex flex-row items-center"
+                                onClick={() => {
+                                  setWager(value);
+                                  setWagerDropdown(false);
+                                }}
+                              >
+                                <Image
+                                  src="/zaar-flip-heads.png"
+                                  alt="Coin"
+                                  width={15}
+                                  height={15}
+                                  className="mr-2"
+                                />
+                                ${value.toFixed(2)} INIT
+                              </div>
+                            ))}
+                      </div>
+                    )}*/}
+                  </div>
                 </div>
                 <div className="flex">
                   <button
@@ -584,7 +613,7 @@ export default function Home() {
                 POTENTIAL TO WIN
               </div>
               <div className="bg-gray rounded-sm p-2 text-lime-green h-10 flex items-center text-sm">
-                {potentialWin}
+                {potentialWin} {' INIT'}
               </div>
             </div>
             <div className="flex justify-between">
@@ -723,8 +752,8 @@ export default function Home() {
                       />
                       <div className="" ref={inputRef}>
                         <input
-                          type="number"
-                          value={wager}
+                          type="text"
+                          value={`$${wager.toFixed(2)} INIT`}
                           className="wager-input bg-transparent w-24 text-left pl-2 h-8 text-sm focus:outline-none"
                           onChange={handleWagerChange}
                           onFocus={() => setWagerDropdown(true)}
@@ -735,7 +764,6 @@ export default function Home() {
                               <div
                                 key={value}
                                 className="cursor-default w-[175px] px-2 hover:bg-gray h-8 flex items-center  bg-dark-gray flex flex-row items-center"
-                                
                                 onClick={() => {
                                   setWager(value);
                                   setWagerDropdown(false);
@@ -748,7 +776,7 @@ export default function Home() {
                                   height={15}
                                   className="mr-2"
                                 />
-                                {value} INIT
+                                ${value.toFixed(2)} INIT
                               </div>
                             ))}
                           </div>
@@ -777,7 +805,7 @@ export default function Home() {
                   POTENTIAL TO WIN
                 </div>
                 <div className="bg-gray rounded-sm p-2 pl-4 text-lime-green h-10 flex items-center text-lg">
-                  {potentialWin}
+                  {potentialWin} {' INIT'}
                 </div>
               </div>
             </div>
@@ -914,7 +942,7 @@ export default function Home() {
             }}
             className="hidden md:block gradient-button hover:-translate-y-1 transition duration-700 ease-in-out text-black px-6 py-2 rounded-sm font-bold mt-3 mx-auto block text-sm uppercase"
           >
-            FLIP COIN - ${wager.toFixed(2)}
+            FLIP COIN - ${wager.toFixed(2)} {'INIT'}
           </button>
           
 
