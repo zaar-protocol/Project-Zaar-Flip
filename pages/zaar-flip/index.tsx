@@ -39,7 +39,7 @@ import { initiaTokenAddress } from "@/generated";
 import { zaarflipAddress } from "@/generated";
 import { MuteButton } from "@/components/MuteButton";
 import { useMuteState } from "@/components/MuteContext";
-import useSound from "use-sound";
+// import useSound from "use-sound";
 import Footer from "@/components/Footer";
 
 export default function Home() {
@@ -70,6 +70,8 @@ export default function Home() {
   const loseAudio2 = new Audio("/sounds/lose2.mp3");
   const [audioCount, setAudioCount] = useState(1);
   const { isMuted, toggleMute } = useMuteState();
+  const wagerInputRef = useRef<HTMLInputElement>(null);
+  const [testWinCounter, setTestWinCounter] = useState(0);
 
   // const { data: addAcceptedToken } = useSimulateZaarflipAddAcceptedToken({
   //   args: [initiaTokenAddress],
@@ -147,11 +149,27 @@ export default function Home() {
     }
   }
 
+  useEffect(() => {
+    if (wagerInputRef.current) {
+      wagerInputRef.current.style.width = "3ch";
+      wagerInputRef.current.style.width = `${wagerInputRef.current.scrollWidth + 8}px`;
+    }
+  }, [wager]);
+
   function handleWagerChange(e: React.ChangeEvent<HTMLInputElement>) {
-    let value = e.target.value.replace(/[^0-9.]/g, "");
-    let parsedValue = parseFloat(value);
+    let value = e.target.value.replace(/[^0-9]/g, "");
+
+    // Allow empty string (for deletion)
+    if (value === "") {
+      setWager(0);
+      return;
+    }
+
+    let parsedValue = parseInt(value, 10);
     if (!isNaN(parsedValue)) {
       setWager(parsedValue);
+    } else {
+      setWager(0);
     }
   }
 
@@ -226,7 +244,77 @@ export default function Home() {
     }
   }
 
+  const testFlipCoin = async () => {
+    const isWinning = testWinCounter % 2 === 0;
+    setTestWinCounter((prev) => prev + 1);
+    if (!isMuted) {
+      flipaudio.play();
+    }
+    if (coinsDisplayRef.current) {
+      randomFlip(
+        coinsDisplayRef.current,
+        minHeadsTails,
+        currentSide,
+        isWinning
+      );
+    }
+
+    setTimeout(
+      () => {
+        if (isWinning) {
+          if (!isMuted) {
+            if (audioCount % 2 == 1) {
+              winaudio.play();
+            } else {
+              winaudio2.play();
+            }
+          }
+          createConfetti();
+          toast.success("You won!");
+        } else {
+          if (!isMuted) {
+            if (audioCount === 1) {
+              loseaudio.play();
+              setAudioCount(2);
+            } else if (audioCount === 2) {
+              setAudioCount(3);
+            } else if (audioCount === 3) {
+              setAudioCount(4);
+            } else if (audioCount === 4) {
+              loseAudio2.play();
+              setAudioCount(5);
+            } else if (audioCount === 5) {
+              setAudioCount(6);
+            } else if (audioCount === 6) {
+              setAudioCount(1);
+            }
+          }
+          toast.error("You lost!");
+        }
+      },
+      1000 + 25 * coinsAmount
+    );
+  };
+
   async function flipCoin() {
+    if (wager === 0) {
+      toast.error("Please enter a wager.");
+      if (!isMuted) {
+        erroraudio.play();
+      }
+      return;
+    }
+
+    if (wager > wagerPresets[wagerPresets.length - 1]) {
+      toast.error(
+        `The current max wager is ${wagerPresets[wagerPresets.length - 1]} INIT.`
+      );
+      if (!isMuted) {
+        erroraudio.play();
+      }
+      return;
+    }
+
     const addr = getAccount(config).address;
     if (addr) {
       const walletBalanceUnformatted = await getBalance(config, {
@@ -464,12 +552,13 @@ export default function Home() {
                 <button
                   onClick={() => {
                     if (coinsDisplayRef.current) {
-                      flipCoin();
+                      // flipCoin();
+                      testFlipCoin();
                     }
                   }}
                   className="gradient-button text-black px-6 py-2  hover:-translate-y-1 transition duration-700 ease-in-out rounded-sm font-bold mt-3 mx-auto block text-sm uppercase transition duration-700 ease-in-out"
                 >
-                  FLIP COIN - ${wager.toFixed(2)} INIT
+                  FLIP COIN - {wager} INIT
                 </button>
               </div>
             </div>
@@ -559,7 +648,7 @@ export default function Home() {
                   <div className="" ref={inputRefMobile}>
                     <input
                       type="text"
-                      value={`$${wager.toFixed(2)} INIT`}
+                      value={wager === 0 ? "" : `${wager} INIT`}
                       className="wager-input bg-transparent w-24 text-left pl-2 h-8 text-sm focus:outline-none"
                       onChange={handleWagerChange}
                       onFocus={() => setWagerDropdown(true)}
@@ -589,16 +678,16 @@ export default function Home() {
                     )}*/}
                   </div>
                 </div>
-                <div className="flex">
+                <div className="flex items-center">
                   <button
                     onClick={handleHalfWager}
-                    className="wager-button hover:bg-gray hover:bg-lightGray px-2 py-1 rounded-sm h-8 text-sm mr-3"
+                    className="gradient-button text-black px-2 py-1 rounded-sm h-7 text-sm mr-3 transition duration-300 ease-in-out opacity-85 hover:opacity-100"
                   >
                     1/2
                   </button>
                   <button
                     onClick={handleDoubleWager}
-                    className="wager-button hover:bg-gray hover:bg-lightGray px-2 py-1 rounded-sm h-8 text-sm"
+                    className="gradient-button text-black px-[12px] py-1 rounded-sm h-7 text-sm transition duration-300 ease-in-out opacity-85 hover:opacity-100"
                   >
                     x2
                   </button>
@@ -747,14 +836,20 @@ export default function Home() {
                         height={20}
                         className="mr-2"
                       />
-                      <div className="" ref={inputRef}>
-                        <input
-                          type="text"
-                          value={`$${wager.toFixed(2)} INIT`}
-                          className="wager-input bg-transparent w-24 text-left pl-2 h-8 text-sm focus:outline-none"
-                          onChange={handleWagerChange}
-                          onFocus={() => setWagerDropdown(true)}
-                        />
+                      <div ref={inputRef}>
+                        <div className="flex items-center">
+                          <input
+                            ref={wagerInputRef}
+                            type="text"
+                            value={wager === 0 ? "" : `${wager}`}
+                            className="wager-input bg-transparent max-w-30 text-left pl-2 h-8 text-sm focus:outline-none"
+                            style={{ minWidth: "3ch" }}
+                            onChange={handleWagerChange}
+                            onFocus={() => setWagerDropdown(true)}
+                          />
+                          <span>INIT</span>
+                        </div>
+
                         {wagerDropdown && (
                           <div className="absolute z-10 w-36 shadow-lg mt-1">
                             {wagerPresets.map((value) => (
@@ -773,23 +868,23 @@ export default function Home() {
                                   height={15}
                                   className="mr-2"
                                 />
-                                ${value.toFixed(2)} INIT
+                                {value} INIT
                               </div>
                             ))}
                           </div>
                         )}
                       </div>
                     </div>
-                    <div className="flex">
+                    <div className="flex items-center">
                       <button
                         onClick={handleHalfWager}
-                        className="wager-button hover:bg-gray  px-2 py-1 rounded-sm h-8 text-sm mr-3"
+                        className="gradient-button text-black px-2 py-1 rounded-sm h-7 text-sm mr-3 transition duration-300 ease-in-out opacity-85 hover:opacity-100"
                       >
                         1/2
                       </button>
                       <button
                         onClick={handleDoubleWager}
-                        className="mybutton hover:bg-gray hover:text-md px-2 py-1 rounded-sm h-8 text-sm"
+                        className="gradient-button text-black px-[12px] py-1 rounded-sm h-7 text-sm transition duration-300 ease-in-out opacity-85 hover:opacity-100"
                       >
                         x2
                       </button>
@@ -937,12 +1032,13 @@ export default function Home() {
           <button
             onClick={() => {
               if (coinsDisplayRef.current) {
-                flipCoin();
+                // flipCoin();
+                testFlipCoin();
               }
             }}
             className="hidden md:block gradient-button hover:-translate-y-1 transition duration-700 ease-in-out text-black px-6 py-2 rounded-sm font-bold mt-3 mx-auto block text-sm uppercase"
           >
-            FLIP COIN - ${wager.toFixed(2)} {"INIT"}
+            FLIP COIN - {wager} {"INIT"}
           </button>
         </main>
       </div>

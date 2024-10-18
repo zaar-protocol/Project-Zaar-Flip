@@ -205,7 +205,7 @@ export function getLayoutClass(amount:number) {
     const odds = Math.pow(2, coinsAmount) / favorableOutcomes;
     const grossPayout = Math.trunc(wager * odds);
 
-    const fee = grossPayout * 0.04
+    const fee = Math.floor(grossPayout * 0.04);
 
     return (grossPayout - fee).toFixed(2);
   }
