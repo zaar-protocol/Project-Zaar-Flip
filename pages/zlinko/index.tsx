@@ -1,13 +1,13 @@
 import React from "react";
 import { useState, useRef, useEffect } from "react";
 import { StarField } from "@/components/star-field";
-import { Header } from "@/components/header";
+import { Header } from "@/components/Header";
 import toast, { Toaster } from "react-hot-toast";
 import ControlPanel from "@/components/zlinkoComponents/ControlPanel";
 import PlinkoBoard from "@/components/zlinkoComponents/PlinkoBoard";
 import { storedMultipliers } from "@/components/zlinkoComponents/multipliers";
 import type { Risk } from "@/components/zlinkoComponents/multipliers";
-import {FaVolumeUp, FaVolumeMute} from "react-icons/fa";
+import { FaVolumeUp, FaVolumeMute } from "react-icons/fa";
 import MuteButton from "@/components/MuteButton";
 import Footer from "@/components/Footer";
 
@@ -49,7 +49,7 @@ export default function Zlinko() {
       <Toaster />
       <Header />
       <StarField />
-      
+
       <MuteButton />
 
       <div className="max-w-6xl mx-auto flex flex-col lg:flex-row justify-center items-end gap-4 sm:mt-20">
@@ -65,7 +65,6 @@ export default function Zlinko() {
             setRiskLevel={setRiskLevel}
             dropBallTrigger={dropBallTrigger}
             setDropBallTrigger={setDropBallTrigger}
-            
           />
         </div>
         <div className="w-full lg:w-auto lg:mt-[-65px] lg:order-2 order-1 mb-8 lg:mb-0">
@@ -77,7 +76,7 @@ export default function Zlinko() {
           />
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </div>
   );
 }

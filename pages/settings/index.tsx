@@ -3,7 +3,7 @@ import React, { use } from "react";
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import { Header } from "@/components/header";
+import { Header } from "@/components/Header";
 import { FaUser } from "react-icons/fa";
 import { useAccount } from "wagmi";
 import { getAccount } from "@wagmi/core";

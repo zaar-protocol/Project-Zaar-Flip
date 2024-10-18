@@ -18,18 +18,19 @@ import { writeContract } from "@wagmi/core";
 import { useWriteZaarflipFlip } from "@/generated";
 import { config } from "@/config";
 import { abi } from "@/abis/abi";
-import { Header } from "@/components/header";
+import { Header } from "@/components/Header";
 import { HomePageBanner } from "@/components/HomePageBanner";
 import { useMuteState } from "@/components/MuteContext";
-import {MuteButton} from "@/components/MuteButton";
+import { MuteButton } from "@/components/MuteButton";
 import { Footer } from "@/components/Footer";
 
 const Home: React.FC = () => {
   const size = "w-[115px] h-[121px]  md:w-[350px] md:h-[350px]";
   const [zlinkoImageSrc, setZlinkoImageSrc] = useState("/zlinko-card.png");
-  const [zaarflipImageSrc, setZaarflipImageSrc] = useState("/zaarflip-card.png");
+  const [zaarflipImageSrc, setZaarflipImageSrc] =
+    useState("/zaarflip-card.png");
   const [blinkerVisible, setBlinkerVisible] = useState(false);
-  const {isMuted, toggleMute} = useMuteState();
+  const { isMuted, toggleMute } = useMuteState();
   const playSound = () => {
     if (isMuted) return;
     const audio = new Audio("/sounds/switchgame.mp3");
@@ -40,16 +41,19 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetchZaarPrice = async () => {
       try {
-        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=protectorate-protocol&vs_currencies=usd', {
-          headers: {
-            'accept': 'application/json',
-            'x-cg-demo-api-key': 'CG-KFXmN7FmLNDrkFUMpM5xAMCV'
+        const response = await fetch(
+          "https://api.coingecko.com/api/v3/simple/price?ids=protectorate-protocol&vs_currencies=usd",
+          {
+            headers: {
+              accept: "application/json",
+              "x-cg-demo-api-key": "CG-KFXmN7FmLNDrkFUMpM5xAMCV",
+            },
           }
-        });
+        );
         const data = await response.json();
-        setZaarPrice(data['protectorate-protocol'].usd.toFixed(4));
+        setZaarPrice(data["protectorate-protocol"].usd.toFixed(4));
       } catch (error) {
-        console.error('Error fetching Zaar price:', error);
+        console.error("Error fetching Zaar price:", error);
       }
     };
 
@@ -70,10 +74,15 @@ const Home: React.FC = () => {
     <div>
       <Header />
       <div className="flex flex-col items-center justify-center w-full relative pb-10">
-        <Link href="https://www.coingecko.com/en/coins/zaar" target="_blank" rel="noopener noreferrer" className="absolute top-4 left-4 md:left-4 z-10 ">
+        <Link
+          href="https://www.coingecko.com/en/coins/zaar"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="absolute top-4 left-4 md:left-4 z-10 "
+        >
           <div className="bg-black bg-opacity-50 px-3 py-1 rounded-full">
             <span className="text-yellow hover:text-white font-mono text-sm md:text-base">
-              ZAAR: ${zaarPrice || '...'}
+              ZAAR: ${zaarPrice || "..."}
             </span>
           </div>
         </Link>
@@ -109,67 +118,65 @@ const Home: React.FC = () => {
       </div>
       <div className="flex flex-col w-full items-center text-white text-lg mt-10">
         <div className="flex flex-row items-center justify-start gap-4 tranistion duration-100 ease-in-out w-[250px]">
-        Choose your next move
-        {blinkerVisible ? 
-        
-        <svg
-          stroke="currentColor"
-          fill="currentColor"
-          strokeWidth="0"
-          viewBox="0 0 512 512"
-          height="1em"
-          width="1em"
-          xmlns="http://www.w3.org/2000/svg"
-          className={`transition-transform duration-300 rotate-180 scale-75`}
-        >
-          <path d="M233.4 105.4c12.5-12.5 32.8-12.5 45.3 0l192 192c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 173.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l192-192z"></path>
-        </svg>
-
-        : null }
-        </div>
-        
-        <div className="flex w-full flew flex-col md:flex-row items-center justify-center gap-10 my-10 ">
-        
-        <Link
-              href="/zaar-flip"
-              className="hover:cursor-pointer "
-              onMouseEnter={() => setZaarflipImageSrc("/zaarflip-card-hover.png")}
-              onMouseLeave={() => setZaarflipImageSrc("/zaarflip-card.png")}
-              onClick={playSound}
+          Choose your next move
+          {blinkerVisible ? (
+            <svg
+              stroke="currentColor"
+              fill="currentColor"
+              strokeWidth="0"
+              viewBox="0 0 512 512"
+              height="1em"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+              className={`transition-transform duration-300 rotate-180 scale-75`}
             >
-          <Image src={zaarflipImageSrc} alt="Zaar Flip Logo" width={500} height={1000} className="w-[300px]  rounded rounded-md mb-2 text-white " />
+              <path d="M233.4 105.4c12.5-12.5 32.8-12.5 45.3 0l192 192c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 173.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l192-192z"></path>
+            </svg>
+          ) : null}
+        </div>
 
-
+        <div className="flex w-full flew flex-col md:flex-row items-center justify-center gap-10 my-10 ">
+          <Link
+            href="/zaar-flip"
+            className="hover:cursor-pointer "
+            onMouseEnter={() => setZaarflipImageSrc("/zaarflip-card-hover.png")}
+            onMouseLeave={() => setZaarflipImageSrc("/zaarflip-card.png")}
+            onClick={playSound}
+          >
+            <Image
+              src={zaarflipImageSrc}
+              alt="Zaar Flip Logo"
+              width={500}
+              height={1000}
+              className="w-[300px]  rounded rounded-md mb-2 text-white "
+            />
           </Link>
 
           <Link
-              href="/zlinko"
-              className="hover:cursor-pointer transition duration-300  "
-              onMouseEnter={() => setZlinkoImageSrc("/zlinko-card-hover.png")}
-              onMouseLeave={() => setZlinkoImageSrc("/zlinko-card.png")}
-              onClick={playSound}
-            >
-
-              {/*<Image
+            href="/zlinko"
+            className="hover:cursor-pointer transition duration-300  "
+            onMouseEnter={() => setZlinkoImageSrc("/zlinko-card-hover.png")}
+            onMouseLeave={() => setZlinkoImageSrc("/zlinko-card.png")}
+            onClick={playSound}
+          >
+            {/*<Image
                 src={zlinkoImageSrc}
                 alt="Zaar Zlinko Logo"
                 width={500}
                 height={500}
                 className="text-white w-[300px]"
               />*/}
-              <Image
-                src="/zlinko-card-disabled.png"
-                alt="Zaar Zlinko Logo"
-                width={500}
-                height={500}
-                className="text-white w-[300px]"
-              />
-           
+            <Image
+              src="/zlinko-card-disabled.png"
+              alt="Zaar Zlinko Logo"
+              width={500}
+              height={500}
+              className="text-white w-[300px]"
+            />
           </Link>
-
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </div>
   );
 };

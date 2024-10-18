@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { use, useRef, useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { useMuteState } from './MuteContext';
+import { useMuteState } from "./MuteContext";
 import { ConnectWallet } from "@/components/ConnectWallet";
 import { InitiaWallet } from "@/components/InitiaWallet";
 import { useWallet } from "@initia/react-wallet-widget";
@@ -35,7 +35,10 @@ export const SideMenuModal = () => {
   return (
     <div className="z-50">
       <button
-        onClick={()=>{toggleMenu(); playSound();}}
+        onClick={() => {
+          toggleMenu();
+          playSound();
+        }}
         className="h-[37px] flex items-center px-4 gap-3 border border-dark-gray-all rounded text-white"
       >
         MENU
@@ -61,7 +64,10 @@ export const SideMenuModal = () => {
         {isMenuOpen && (
           <div
             className="absolute -left-[40px] top-4 bg-black p-3 flex items-center justify-center rounded cursor-pointer z-50"
-            onClick={()=>{toggleMenu(); playSound();}}
+            onClick={() => {
+              toggleMenu();
+              playSound();
+            }}
           >
             <svg
               stroke="currentColor"
@@ -106,20 +112,20 @@ export const SideMenuModal = () => {
             />
           </Link>
           <div className="group hover:cursor-pointer transition duration-300 hover:scale-105 relative z-50">
-          <Link
-            href="/zlinko"
-            className="hover:cursor-pointer transition duration-300 hover:scale-105"
-            onClick={playSound}
-          >
-            <Image
-              src="/zlinko/zaar-zlinko.png"
-              alt="Zaar Zlinko Logo"
-              width={400}
-              height={400}
-              className=" w-[120px] grayscale"
-            />
-          </Link>
-          <div className="absolute left-1 text-center text-base text-gray transition duration-300 opacity-0 group-hover:opacity-100 w-full z-50">
+            <Link
+              href="/zlinko"
+              className="hover:cursor-pointer transition duration-300 hover:scale-105"
+              onClick={playSound}
+            >
+              <Image
+                src="/zlinko/zaar-zlinko.png"
+                alt="Zaar Zlinko Logo"
+                width={400}
+                height={400}
+                className=" w-[120px] grayscale"
+              />
+            </Link>
+            <div className="absolute left-1 text-center text-base text-gray transition duration-300 opacity-0 group-hover:opacity-100 w-full z-50">
               Coming soon
             </div>
           </div>
@@ -209,7 +215,10 @@ export const SideMenuModal = () => {
                 </svg>
               </Link>
             </div>
-            <Link href="https://gitbook.zaar.market/" className="hover:text-white">
+            <Link
+              href="https://gitbook.zaar.market/"
+              className="hover:text-white"
+            >
               Docs
             </Link>
             <Link href="/" className="hover:text-white">
