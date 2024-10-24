@@ -15,7 +15,7 @@ import {
 import { ConnectWallet } from "../../components/ConnectWallet";
 import toast, { Toaster } from "react-hot-toast";
 import { StarField } from "@/components/star-field";
-import { Header } from "@/components/header";
+import { Header } from "@/components/header"; // Fixed casing issue
 import { config } from "@/config";
 import { getAccount, getBalance } from "@wagmi/core";
 import { createConfetti } from "@/components/confetti";

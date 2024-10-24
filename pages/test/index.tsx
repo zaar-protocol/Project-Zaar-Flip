@@ -21,7 +21,7 @@ import { writeContract } from "@wagmi/core";
 import { useWriteZaarflipFlip } from "@/generated";
 import { config } from "@/config";
 import { abi } from "@/abis/abi";
-import { Header } from "@/components/Header";
+import { Header } from "@/components/header";
 import { parse } from "path";
 import { ethers } from "ethers"; // Add this line
 

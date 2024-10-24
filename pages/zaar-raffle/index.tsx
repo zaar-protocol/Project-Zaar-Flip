@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Head from "next/head";
-import { Header } from "@/components/Header";
+import { Header } from "@/components/header";
 import Banner from "@/components/zaarRaffleComponents/Banner";
 import RaffleDetails from "@/components/zaarRaffleComponents/RaffleDetails";
 import RaffleSteps from "@/components/zaarRaffleComponents/RaffleSteps";

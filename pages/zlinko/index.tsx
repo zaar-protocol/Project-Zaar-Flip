@@ -1,7 +1,7 @@
 import React from "react";
 import { useState, useRef, useEffect } from "react";
 import { StarField } from "@/components/star-field";
-import { Header } from "@/components/Header";
+import { Header } from "@/components/header";
 import toast, { Toaster } from "react-hot-toast";
 import ControlPanel from "@/components/zlinkoComponents/ControlPanel";
 import PlinkoBoard from "@/components/zlinkoComponents/PlinkoBoard";

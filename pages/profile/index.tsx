@@ -2,7 +2,7 @@ import Head from "next/head";
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import { StarField } from "@/components/star-field";
-import { Header } from "@/components/Header";
+import { Header } from "@/components/header";
 import Link from "next/link";
 import React from "react";
 import { useAccount, useDisconnect, useBalance } from "wagmi";

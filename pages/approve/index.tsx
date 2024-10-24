@@ -9,7 +9,7 @@ import {
 import { writeContract } from "@wagmi/core";
 import { config } from "@/config";
 import { abi } from "@/abis/abi";
-import { Header } from "@/components/Header";
+import { Header } from "@/components/header";
 import { zaarflipAddress } from "@/generated";
 
 const Test: React.FC = () => {

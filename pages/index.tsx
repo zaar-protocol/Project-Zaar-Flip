@@ -18,7 +18,7 @@ import { writeContract } from "@wagmi/core";
 import { useWriteZaarflipFlip } from "@/generated";
 import { config } from "@/config";
 import { abi } from "@/abis/abi";
-import { Header } from "@/components/Header";
+import { Header } from "@/components/header";
 import { HomePageBanner } from "@/components/HomePageBanner";
 import { useMuteState } from "@/components/MuteContext";
 import { MuteButton } from "@/components/MuteButton";
