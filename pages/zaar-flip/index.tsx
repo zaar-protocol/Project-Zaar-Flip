@@ -15,7 +15,7 @@ import {
 import { ConnectWallet } from "../../components/ConnectWallet";
 import toast, { Toaster } from "react-hot-toast";
 import { StarField } from "@/components/star-field";
-import { Header } from "@/components/Header";
+import { Header } from "@/components/header";
 import { config } from "@/config";
 import { getAccount, getBalance } from "@wagmi/core";
 import { createConfetti } from "@/components/confetti";
@@ -552,8 +552,8 @@ export default function Home() {
                 <button
                   onClick={() => {
                     if (coinsDisplayRef.current) {
-                      // flipCoin();
-                      testFlipCoin();
+                      flipCoin();
+                      //testFlipCoin();
                     }
                   }}
                   className="gradient-button text-black px-6 py-2  hover:-translate-y-1 transition duration-700 ease-in-out rounded-sm font-bold mt-3 mx-auto block text-sm uppercase transition duration-700 ease-in-out"
@@ -1032,8 +1032,8 @@ export default function Home() {
           <button
             onClick={() => {
               if (coinsDisplayRef.current) {
-                // flipCoin();
-                testFlipCoin();
+                flipCoin();
+                //testFlipCoin();
               }
             }}
             className="hidden md:block gradient-button hover:-translate-y-1 transition duration-700 ease-in-out text-black px-6 py-2 rounded-sm font-bold mt-3 mx-auto block text-sm uppercase"

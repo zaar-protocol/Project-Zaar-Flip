@@ -10,13 +10,13 @@ export default defineConfig({
     contracts: [
         {
             name: "zaarflip",
-            address: "0x19b95Ef8a6B4C4CcbdEaa76Fe03eB86C89b6AB6C",
+            address: "0x397BFd2415B7688D9e65748c5E8066284284345E",
             abi:abi
         },
         {
             name:"initiaToken",
             abi:erc20Abi,
-            address:"0xd5dedc655a3000df6318151940b3311f7a4cc931",
+            address:"0x58dA30dA557A48ab0c6941699baFFA01401aea64",
         },
         {
             name: "erc20",
