@@ -42,6 +42,13 @@ const pageIcons = {
     height: 500,
     className: "md:ml-4 w-[90px] h-[40px]",
   },
+  "/staking": {
+    src: "/StakingHero.png",
+    alt: "Zaar Staking",
+    width: 500,
+    height: 500,
+    className: "md:ml-4 w-[90px] h-[40px]",
+  },
 } as const;
 
 type PageIconKey = keyof typeof pageIcons;
@@ -64,16 +71,16 @@ export const Header = () => {
     <header className="flex flex-row items-center justify-between w-screen  mb-0 relative z-20 px-2 py-2 pr-8 max-h-[67px]">
       <nav className="hidden  md:flex space-x-8 pl-5 uppercase text-sm ">
         <Link href="/zaar-flip" className="hover:cursor-pointer">
-          <Image
+          {page != "/staking" && <Image
             src={currentIcon.src}
             alt={currentIcon.alt}
             width={currentIcon.width}
             height={currentIcon.height}
-            className={currentIcon.className}
-          />
+              className={currentIcon.className }
+            />
+          }
         </Link>
       </nav>
-
       <div className="flex items-center space-x-6 mr-4">
         {/* <ConnectButton
           client={client}

@@ -171,6 +171,20 @@ export const SideMenuModal = () => {
             EARN XP
           </Link>
           <Link
+            href="/staking"
+            className="hover:cursor-pointer transition duration-300 hover:text-white"
+            onClick={playSound}
+          >
+            STAKING
+          </Link>
+          <Link
+            href="/bridge"
+            className="hover:cursor-pointer transition duration-300 hover:text-white"
+            onClick={playSound}
+          >
+            BRIDGE
+          </Link>
+          <Link
             href="/profile"
             className="hover:cursor-pointer transition duration-300 hover:text-white"
             onClick={playSound}

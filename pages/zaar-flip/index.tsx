@@ -39,6 +39,8 @@ import { initiaTokenAddress } from "@/generated";
 import { zaarflipAddress } from "@/generated";
 import { MuteButton } from "@/components/MuteButton";
 import { useMuteState } from "@/components/MuteContext";
+import { useWatchContractEvent } from 'wagmi';
+import { abi } from '@/abis/abi';
 // import useSound from "use-sound";
 import Footer from "@/components/Footer";
 
@@ -89,6 +91,17 @@ export default function Home() {
   //   return;
   // }
 
+    useWatchContractEvent({
+      address: zaarflipAddress,
+      abi,
+      eventName: 'GameResult',
+      onLogs(logs) {
+        console.log('New logs!', logs)
+      },
+      poll: true,
+    });
+  
+
   const testFlipper = useSimulateZaarflipFlip({
     args: [
       BigInt(wager ? wager : 0),
@@ -103,7 +116,7 @@ export default function Home() {
   //get prepared function to flip
   const { data: flip }: { data: any } = useSimulateZaarflipFlip({
     args: [
-      BigInt(wager ? wager : 0),
+      parseEther(BigInt(wager ? wager : 0).toString()),
       BigInt(coinsAmount),
       BigInt(minHeadsTails),
       initiaTokenAddress,
@@ -234,16 +247,27 @@ export default function Home() {
     console.log(flip!.request);
     try {
       let myhash = await writeContract(config, flip!.request);
+
+      
+      
       console.log("myhash: ", myhash);
       let receipt = await waitForTransactionReceipt(config, { hash: myhash });
       console.log("receipt: ", receipt);
+      
       return true;
     } catch (error) {
       console.log(error);
       return false;
     }
   }
-
+  const result = useWatchContractEvent({
+    address: zaarflipAddress,
+    abi,
+    eventName: 'GameResult',
+    onLogs(logs) {
+      console.log('New logs!', logs)
+    },
+  }); 
   const testFlipCoin = async () => {
     const isWinning = testWinCounter % 2 === 0;
     setTestWinCounter((prev) => prev + 1);
@@ -363,7 +387,7 @@ export default function Home() {
       const flippedSuccessfully = await flipContract();
 
       setLoadingModalIsOpen(false);
-
+      
       if (flippedSuccessfully) {
         const postWalletBalanceUnformatted = await getBalance(config, {
           address: addr,
@@ -374,10 +398,9 @@ export default function Home() {
 
         console.log("Initial Wallet Balance: ", walletBalanceUnformatted);
         console.log("Post Wallet Balance: ", postWalletBalanceUnformatted);
-
         console.log("Wager: ", wager);
 
-        const outcome = walletBalance - postWalletBalance < wager;
+        const outcome = walletBalance < postWalletBalance;
 
         const winnings = outcome ? postWalletBalance - walletBalance : 0;
 

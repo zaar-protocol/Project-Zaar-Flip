@@ -208,11 +208,322 @@ export const initiaTokenAbi = [
 ] as const
 
 export const initiaTokenAddress =
-  '0x58dA30dA557A48ab0c6941699baFFA01401aea64' as const
+  '0x93c62ba8eED298EA48F5B8Bca373C52515029eB7' as const
 
 export const initiaTokenConfig = {
   address: initiaTokenAddress,
   abi: initiaTokenAbi,
+} as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// plinko
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const plinkoAbi = [
+  {
+    type: 'constructor',
+    inputs: [
+      { name: '_feePercentage', type: 'uint256' },
+      { name: '_vrfProvider', type: 'address' },
+      { name: '_stakingContract', type: 'address' },
+      { name: '_useVRF', type: 'bool' },
+      { name: '_liquidityEdge', type: 'uint256' },
+      { name: '_manager', type: 'address' },
+      { name: '_managerWinFeePercentage', type: 'uint256' },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'feePercentage',
+    outputs: [{ name: '', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'liquidityEdge',
+    outputs: [{ name: '', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'managerWinFeePercentage',
+    outputs: [{ name: '', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'manager',
+    outputs: [{ name: '', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'useVRF',
+    outputs: [{ name: '', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'vrfProvider',
+    outputs: [{ name: '', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'stakingContract',
+    outputs: [{ name: '', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'MAX_ROWS',
+    outputs: [{ name: '', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', type: 'uint256' }],
+    name: 'multipliers',
+    outputs: [{ name: '', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', type: 'address' }],
+    name: 'acceptedTokens',
+    outputs: [{ name: '', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', type: 'address' }],
+    name: 'vrfConsumers',
+    outputs: [{ name: '', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', type: 'string' }],
+    name: 'pendingGames',
+    outputs: [
+      { name: 'player', type: 'address' },
+      { name: 'betAmount', type: 'uint256' },
+      { name: 'rows', type: 'uint256' },
+      { name: 'token', type: 'address' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', type: 'string' }],
+    name: 'isGamePending',
+    outputs: [{ name: '', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'betAmount', type: 'uint256' },
+      { name: 'rows', type: 'uint256' },
+    ],
+    name: 'calculatePayout',
+    outputs: [
+      { name: 'grossPayout', type: 'uint256' },
+      { name: 'netPayout', type: 'uint256' },
+      { name: 'fee', type: 'uint256' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'betAmount', type: 'uint256' },
+      { name: 'rows', type: 'uint256' },
+      { name: 'token', type: 'address' },
+    ],
+    name: 'play',
+    outputs: [{ name: '', type: 'string' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'seed', type: 'string' }],
+    name: 'completeGame',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_multipliers', type: 'uint256[]' }],
+    name: 'setMultipliers',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'token', type: 'address' }],
+    name: 'addAcceptedToken',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'token', type: 'address' }],
+    name: 'removeAcceptedToken',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_feePercentage', type: 'uint256' }],
+    name: 'setFeePercentage',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_liquidityEdge', type: 'uint256' }],
+    name: 'setLiquidityEdge',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_manager', type: 'address' }],
+    name: 'setManager',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_managerWinFeePercentage', type: 'uint256' }],
+    name: 'setManagerWinFeePercentage',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_useVRF', type: 'bool' }],
+    name: 'toggleRandomness',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getMultipliers',
+    outputs: [{ name: '', type: 'uint256[]' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'player', type: 'address', indexed: true },
+      { name: 'won', type: 'bool', indexed: false },
+      { name: 'payout', type: 'uint256', indexed: false },
+      { name: 'multiplier', type: 'uint256', indexed: false },
+      { name: 'landingPosition', type: 'uint256', indexed: false },
+    ],
+    name: 'GameResult',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'gameId', type: 'string', indexed: true },
+      { name: 'player', type: 'address', indexed: true },
+      { name: 'betAmount', type: 'uint256', indexed: false },
+      { name: 'rows', type: 'uint256', indexed: false },
+      { name: 'token', type: 'address', indexed: false },
+    ],
+    name: 'GameCreated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [{ name: 'seed', type: 'string', indexed: false }],
+    name: 'RandomnessRequested',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [{ name: 'useVRF', type: 'bool', indexed: false }],
+    name: 'RandomnessToggled',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [{ name: 'newMultipliers', type: 'uint256[]', indexed: false }],
+    name: 'MultipliersUpdated',
+  },
+  { type: 'receive', stateMutability: 'payable' },
+] as const
+
+export const plinkoAddress =
+  '0x944330f3D4A425BEB9A24B8BAdd054f7B749e2f8' as const
+
+export const plinkoConfig = { address: plinkoAddress, abi: plinkoAbi } as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// staking
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const stakingAbi = [
+  {
+    type: 'function',
+    inputs: [
+      { name: 'token', type: 'address' },
+      { name: 'user', type: 'address' },
+    ],
+    name: 'stakedBalances',
+    outputs: [{ name: '', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'user', type: 'address' },
+      { name: 'token', type: 'address' },
+    ],
+    name: 'earned',
+    outputs: [{ name: '', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'token', type: 'address' }],
+    name: 'totalStaked',
+    outputs: [{ name: '', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'user', type: 'address' },
+      { name: 'token', type: 'address' },
+    ],
+    name: 'timeUntilUnstake',
+    outputs: [{ name: '', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+] as const
+
+export const stakingAddress =
+  '0x9cF6061275daCeAA92Bf7cDc0df343F768112082' as const
+
+export const stakingConfig = {
+  address: stakingAddress,
+  abi: stakingAbi,
 } as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -417,7 +728,7 @@ export const zaarflipAbi = [
 ] as const
 
 export const zaarflipAddress =
-  '0x397BFd2415B7688D9e65748c5E8066284284345E' as const
+  '0x654BEa0369fAcD0c0Fcc6b42b5A99815bB3f3Ce1' as const
 
 export const zaarflipConfig = {
   address: zaarflipAddress,
@@ -736,6 +1047,459 @@ export const useWatchInitiaTokenTransferEvent =
     abi: initiaTokenAbi,
     address: initiaTokenAddress,
     eventName: 'Transfer',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plinkoAbi}__
+ */
+export const useReadPlinko = /*#__PURE__*/ createUseReadContract({
+  abi: plinkoAbi,
+  address: plinkoAddress,
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"feePercentage"`
+ */
+export const useReadPlinkoFeePercentage = /*#__PURE__*/ createUseReadContract({
+  abi: plinkoAbi,
+  address: plinkoAddress,
+  functionName: 'feePercentage',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"liquidityEdge"`
+ */
+export const useReadPlinkoLiquidityEdge = /*#__PURE__*/ createUseReadContract({
+  abi: plinkoAbi,
+  address: plinkoAddress,
+  functionName: 'liquidityEdge',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"managerWinFeePercentage"`
+ */
+export const useReadPlinkoManagerWinFeePercentage =
+  /*#__PURE__*/ createUseReadContract({
+    abi: plinkoAbi,
+    address: plinkoAddress,
+    functionName: 'managerWinFeePercentage',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"manager"`
+ */
+export const useReadPlinkoManager = /*#__PURE__*/ createUseReadContract({
+  abi: plinkoAbi,
+  address: plinkoAddress,
+  functionName: 'manager',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"useVRF"`
+ */
+export const useReadPlinkoUseVrf = /*#__PURE__*/ createUseReadContract({
+  abi: plinkoAbi,
+  address: plinkoAddress,
+  functionName: 'useVRF',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"vrfProvider"`
+ */
+export const useReadPlinkoVrfProvider = /*#__PURE__*/ createUseReadContract({
+  abi: plinkoAbi,
+  address: plinkoAddress,
+  functionName: 'vrfProvider',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"stakingContract"`
+ */
+export const useReadPlinkoStakingContract = /*#__PURE__*/ createUseReadContract(
+  { abi: plinkoAbi, address: plinkoAddress, functionName: 'stakingContract' },
+)
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"MAX_ROWS"`
+ */
+export const useReadPlinkoMaxRows = /*#__PURE__*/ createUseReadContract({
+  abi: plinkoAbi,
+  address: plinkoAddress,
+  functionName: 'MAX_ROWS',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"multipliers"`
+ */
+export const useReadPlinkoMultipliers = /*#__PURE__*/ createUseReadContract({
+  abi: plinkoAbi,
+  address: plinkoAddress,
+  functionName: 'multipliers',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"acceptedTokens"`
+ */
+export const useReadPlinkoAcceptedTokens = /*#__PURE__*/ createUseReadContract({
+  abi: plinkoAbi,
+  address: plinkoAddress,
+  functionName: 'acceptedTokens',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"vrfConsumers"`
+ */
+export const useReadPlinkoVrfConsumers = /*#__PURE__*/ createUseReadContract({
+  abi: plinkoAbi,
+  address: plinkoAddress,
+  functionName: 'vrfConsumers',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"pendingGames"`
+ */
+export const useReadPlinkoPendingGames = /*#__PURE__*/ createUseReadContract({
+  abi: plinkoAbi,
+  address: plinkoAddress,
+  functionName: 'pendingGames',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"isGamePending"`
+ */
+export const useReadPlinkoIsGamePending = /*#__PURE__*/ createUseReadContract({
+  abi: plinkoAbi,
+  address: plinkoAddress,
+  functionName: 'isGamePending',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"calculatePayout"`
+ */
+export const useReadPlinkoCalculatePayout = /*#__PURE__*/ createUseReadContract(
+  { abi: plinkoAbi, address: plinkoAddress, functionName: 'calculatePayout' },
+)
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"getMultipliers"`
+ */
+export const useReadPlinkoGetMultipliers = /*#__PURE__*/ createUseReadContract({
+  abi: plinkoAbi,
+  address: plinkoAddress,
+  functionName: 'getMultipliers',
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plinkoAbi}__
+ */
+export const useWritePlinko = /*#__PURE__*/ createUseWriteContract({
+  abi: plinkoAbi,
+  address: plinkoAddress,
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"play"`
+ */
+export const useWritePlinkoPlay = /*#__PURE__*/ createUseWriteContract({
+  abi: plinkoAbi,
+  address: plinkoAddress,
+  functionName: 'play',
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"completeGame"`
+ */
+export const useWritePlinkoCompleteGame = /*#__PURE__*/ createUseWriteContract({
+  abi: plinkoAbi,
+  address: plinkoAddress,
+  functionName: 'completeGame',
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"setMultipliers"`
+ */
+export const useWritePlinkoSetMultipliers =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: plinkoAbi,
+    address: plinkoAddress,
+    functionName: 'setMultipliers',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"addAcceptedToken"`
+ */
+export const useWritePlinkoAddAcceptedToken =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: plinkoAbi,
+    address: plinkoAddress,
+    functionName: 'addAcceptedToken',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"removeAcceptedToken"`
+ */
+export const useWritePlinkoRemoveAcceptedToken =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: plinkoAbi,
+    address: plinkoAddress,
+    functionName: 'removeAcceptedToken',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"setFeePercentage"`
+ */
+export const useWritePlinkoSetFeePercentage =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: plinkoAbi,
+    address: plinkoAddress,
+    functionName: 'setFeePercentage',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"setLiquidityEdge"`
+ */
+export const useWritePlinkoSetLiquidityEdge =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: plinkoAbi,
+    address: plinkoAddress,
+    functionName: 'setLiquidityEdge',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"setManager"`
+ */
+export const useWritePlinkoSetManager = /*#__PURE__*/ createUseWriteContract({
+  abi: plinkoAbi,
+  address: plinkoAddress,
+  functionName: 'setManager',
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"setManagerWinFeePercentage"`
+ */
+export const useWritePlinkoSetManagerWinFeePercentage =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: plinkoAbi,
+    address: plinkoAddress,
+    functionName: 'setManagerWinFeePercentage',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"toggleRandomness"`
+ */
+export const useWritePlinkoToggleRandomness =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: plinkoAbi,
+    address: plinkoAddress,
+    functionName: 'toggleRandomness',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plinkoAbi}__
+ */
+export const useSimulatePlinko = /*#__PURE__*/ createUseSimulateContract({
+  abi: plinkoAbi,
+  address: plinkoAddress,
+})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"play"`
+ */
+export const useSimulatePlinkoPlay = /*#__PURE__*/ createUseSimulateContract({
+  abi: plinkoAbi,
+  address: plinkoAddress,
+  functionName: 'play',
+})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"completeGame"`
+ */
+export const useSimulatePlinkoCompleteGame =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: plinkoAbi,
+    address: plinkoAddress,
+    functionName: 'completeGame',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"setMultipliers"`
+ */
+export const useSimulatePlinkoSetMultipliers =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: plinkoAbi,
+    address: plinkoAddress,
+    functionName: 'setMultipliers',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"addAcceptedToken"`
+ */
+export const useSimulatePlinkoAddAcceptedToken =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: plinkoAbi,
+    address: plinkoAddress,
+    functionName: 'addAcceptedToken',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"removeAcceptedToken"`
+ */
+export const useSimulatePlinkoRemoveAcceptedToken =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: plinkoAbi,
+    address: plinkoAddress,
+    functionName: 'removeAcceptedToken',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"setFeePercentage"`
+ */
+export const useSimulatePlinkoSetFeePercentage =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: plinkoAbi,
+    address: plinkoAddress,
+    functionName: 'setFeePercentage',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"setLiquidityEdge"`
+ */
+export const useSimulatePlinkoSetLiquidityEdge =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: plinkoAbi,
+    address: plinkoAddress,
+    functionName: 'setLiquidityEdge',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"setManager"`
+ */
+export const useSimulatePlinkoSetManager =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: plinkoAbi,
+    address: plinkoAddress,
+    functionName: 'setManager',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"setManagerWinFeePercentage"`
+ */
+export const useSimulatePlinkoSetManagerWinFeePercentage =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: plinkoAbi,
+    address: plinkoAddress,
+    functionName: 'setManagerWinFeePercentage',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plinkoAbi}__ and `functionName` set to `"toggleRandomness"`
+ */
+export const useSimulatePlinkoToggleRandomness =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: plinkoAbi,
+    address: plinkoAddress,
+    functionName: 'toggleRandomness',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plinkoAbi}__
+ */
+export const useWatchPlinkoEvent = /*#__PURE__*/ createUseWatchContractEvent({
+  abi: plinkoAbi,
+  address: plinkoAddress,
+})
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plinkoAbi}__ and `eventName` set to `"GameResult"`
+ */
+export const useWatchPlinkoGameResultEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: plinkoAbi,
+    address: plinkoAddress,
+    eventName: 'GameResult',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plinkoAbi}__ and `eventName` set to `"GameCreated"`
+ */
+export const useWatchPlinkoGameCreatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: plinkoAbi,
+    address: plinkoAddress,
+    eventName: 'GameCreated',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plinkoAbi}__ and `eventName` set to `"RandomnessRequested"`
+ */
+export const useWatchPlinkoRandomnessRequestedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: plinkoAbi,
+    address: plinkoAddress,
+    eventName: 'RandomnessRequested',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plinkoAbi}__ and `eventName` set to `"RandomnessToggled"`
+ */
+export const useWatchPlinkoRandomnessToggledEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: plinkoAbi,
+    address: plinkoAddress,
+    eventName: 'RandomnessToggled',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plinkoAbi}__ and `eventName` set to `"MultipliersUpdated"`
+ */
+export const useWatchPlinkoMultipliersUpdatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: plinkoAbi,
+    address: plinkoAddress,
+    eventName: 'MultipliersUpdated',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__
+ */
+export const useReadStaking = /*#__PURE__*/ createUseReadContract({
+  abi: stakingAbi,
+  address: stakingAddress,
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"stakedBalances"`
+ */
+export const useReadStakingStakedBalances = /*#__PURE__*/ createUseReadContract(
+  { abi: stakingAbi, address: stakingAddress, functionName: 'stakedBalances' },
+)
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"earned"`
+ */
+export const useReadStakingEarned = /*#__PURE__*/ createUseReadContract({
+  abi: stakingAbi,
+  address: stakingAddress,
+  functionName: 'earned',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"totalStaked"`
+ */
+export const useReadStakingTotalStaked = /*#__PURE__*/ createUseReadContract({
+  abi: stakingAbi,
+  address: stakingAddress,
+  functionName: 'totalStaked',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"timeUntilUnstake"`
+ */
+export const useReadStakingTimeUntilUnstake =
+  /*#__PURE__*/ createUseReadContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'timeUntilUnstake',
   })
 
 /**
