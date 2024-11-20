@@ -10,7 +10,6 @@ import type { Risk } from "@/components/zlinkoComponents/multipliers";
 import { FaVolumeUp, FaVolumeMute } from "react-icons/fa";
 import MuteButton from "@/components/MuteButton";
 import Footer from "@/components/Footer";
-
 import { 
   useSimulatePlinkoPlay,
   useReadInitiaTokenAllowance,
@@ -39,6 +38,9 @@ export default function Zlinko() {
   const { isMuted, toggleMute } = useMuteState();
   const [approveModalIsOpen, setApproveModalIsOpen] = useState(false);
   const [loadingModalIsOpen, setLoadingModalIsOpen] = useState(false);
+  const [endBucket, setEndBucket] = useState<number>(4);
+  const [trajectoryArray, setTrajectoryArray] = useState<number[]>(Array(rows).fill(0));
+  const [runContractTrigger, setRunContractTrigger] = useState<boolean>(false);
 
   const fullMultipliers = (halfMultipliers: number[]) => {
     let reversePart = halfMultipliers.slice(0, -1).reverse();
@@ -47,6 +49,12 @@ export default function Zlinko() {
     }
     return halfMultipliers.concat(reversePart);
   };
+  useEffect(() => {
+    console.log("working");
+    //setEndBucket(2);
+    setRunContractTrigger(false);
+    setDropBallTrigger(true);
+  }, [runContractTrigger]);
 
   useEffect(() => {
     console.log(degenLevel);
@@ -233,6 +241,7 @@ export default function Zlinko() {
 
       <div className="max-w-6xl mx-auto flex flex-col lg:flex-row justify-center items-end gap-4 sm:mt-20">
         <div className="w-full lg:w-auto lg:order-1 order-2">
+          <button onClick={playPlinko} className="bg-white text-black px-4 py-2 rounded-md">Play</button>
           <ControlPanel
             betAmount={betAmount}
             setBetAmount={setBetAmount}
@@ -244,6 +253,7 @@ export default function Zlinko() {
             setRiskLevel={setRiskLevel}
             dropBallTrigger={dropBallTrigger}
             setDropBallTrigger={setDropBallTrigger}
+            setRunContractTrigger={setRunContractTrigger}
           />
         </div>
         <div className="w-full lg:w-auto lg:mt-[-65px] lg:order-2 order-1 mb-8 lg:mb-0">
@@ -252,6 +262,7 @@ export default function Zlinko() {
             multipliers={multipliers}
             dropBallTrigger={dropBallTrigger}
             setDropBallTrigger={setDropBallTrigger}
+            trajectory={trajectoryArray}
           />
         </div>
       </div>

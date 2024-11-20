@@ -52,9 +52,9 @@ export default function Bridge() {
                     
                     
                 </div>
-                <div className="flex flex-col md:flex-row w-full w-[90%] md:w-[70%] lg:w-[60%] max-w-[1500px] items-center justify-center gap-4">
+                <div className="flex flex-col md:flex-row w-full w-full md:w-[70%] lg:w-[50%] max-w-[700px] items-center justify-center gap-4">
                    
-                   <div className="flex flex-col items-center justify-center w-[50%] h-full ">
+                   <div className="flex flex-col items-center justify-center w-[90%]  h-full ">
                     <div className="bg-black bg-opacity-70 text-yellow flex flex-row items-start justify-start w-full">
                         <div className="flex flex-col ">
                             <button 
@@ -80,7 +80,7 @@ export default function Bridge() {
                                             <p className="text-white  text-lg md:text-2xl uppercase">Ethereum</p>
                                         </div>
                                     </div>
-                                    <Image className=" pt-[40px]" src="/arrow.png" alt="Bridge Zaar" width={30} height={30} />
+                                    <Image className="w-[20px] h-[25px] lg:w-[25px] lg:h-[30px] mt-[40px] " src="/arrow.png" alt="Bridge Zaar" width={30} height={30} />
                                     <div className="flex flex-col gap-4">
                                         <p className="text-white text-lg md:text-2xl">To </p>
                                         <div className="flex flex-row items-center justify-center gap-4">

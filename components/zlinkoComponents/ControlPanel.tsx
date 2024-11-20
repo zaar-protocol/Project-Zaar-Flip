@@ -15,6 +15,7 @@ interface ControlPanelProps {
   setRiskLevel: React.Dispatch<React.SetStateAction<string>>;
   dropBallTrigger: boolean;
   setDropBallTrigger: React.Dispatch<React.SetStateAction<boolean>>;
+  setRunContractTrigger: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ControlPanel = ({
@@ -28,6 +29,8 @@ const ControlPanel = ({
   setRiskLevel,
   dropBallTrigger,
   setDropBallTrigger,
+  setRunContractTrigger,
+
 }: ControlPanelProps) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [localRiskLevel, setLocalRiskLevel] = useState(riskLevel || "Low");
@@ -45,7 +48,13 @@ const ControlPanel = ({
   const dropaudio = new Audio("/sounds/flip.mp3");
   const squishaudio = new Audio("/sounds/squish.mp3");
   const { isMuted, toggleMute } = useMuteState();
-
+  function handleDropBall(){
+    setRunContractTrigger(true);
+    if(!isMuted ){
+      dropaudio.play(); 
+    }
+    //setDropBallTrigger(true);
+  }
 
   return (
     <div className="bg-transparent rounded-sm p-4 space-y-4 max-w-xs mx-auto mb-20 md:mb-0">
@@ -253,11 +262,7 @@ const ControlPanel = ({
       <button
         className="hidden lg:block w-full gradient-button text-black font-bold py-2 rounded hover:bg-yellow uppercase"
         disabled={dropBallTrigger}
-        onClick={() => {
-          if(!isMuted ){
-            dropaudio.play(); 
-          }
-          setDropBallTrigger(true);}}
+        onClick={handleDropBall}
       >
         Drop 1 Ball
       </button>

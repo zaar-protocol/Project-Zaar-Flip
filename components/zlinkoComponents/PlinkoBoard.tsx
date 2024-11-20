@@ -8,6 +8,7 @@ interface PlinkoBoardProps {
   multipliers: number[];
   dropBallTrigger: boolean;
   setDropBallTrigger: React.Dispatch<React.SetStateAction<boolean>>;
+  trajectory: number[];
 }
 
 interface Peg {
@@ -20,6 +21,7 @@ const PlinkoBoard = ({
   multipliers,
   dropBallTrigger,
   setDropBallTrigger,
+  trajectory,
 }: PlinkoBoardProps) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [pegs, setPegs] = useState<{ x: number; y: number }[]>([]);
@@ -41,7 +43,7 @@ const PlinkoBoard = ({
   const multiplierRefs = useRef<(HTMLDivElement | null)[]>([]);
   const squishaudio = new Audio("/sounds/squish.mp3");
   const { isMuted, toggleMute } = useMuteState();
-
+  
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -49,7 +51,6 @@ const PlinkoBoard = ({
         prevCountdowns.map((count) => (count > 0 ? count - 500 : 0))
       );
     }, 500);
-
     return () => clearInterval(interval);
   }, []);
 
@@ -59,6 +60,7 @@ const PlinkoBoard = ({
     },
     []
   );
+
 
   const handleBallLanding = (multiplierIndex: number) => {
     if(!isMuted)
@@ -222,10 +224,6 @@ const PlinkoBoard = ({
           rows /
           totalTime -
         (g * totalTime) / 2;
-
-      const trajectory = Array.from({ length: rows }, () =>
-        Math.random() < 0.5 ? 0 : 1
-      );
 
       const dropY = y;
 
