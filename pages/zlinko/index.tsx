@@ -10,15 +10,21 @@ import type { Risk } from "@/components/zlinkoComponents/multipliers";
 import { FaVolumeUp, FaVolumeMute } from "react-icons/fa";
 import MuteButton from "@/components/MuteButton";
 import Footer from "@/components/Footer";
-import { 
+import {
   useSimulatePlinkoPlay,
   useReadInitiaTokenAllowance,
   useSimulatePlinkoAddAcceptedToken,
   initiaTokenAddress,
   plinkoAddress,
-  plinkoAbi, } from "@/generated";
+  plinkoAbi,
+} from "@/generated";
 import { useAccount, useWatchContractEvent } from "wagmi";
-import { getBalance, getAccount, waitForTransactionReceipt, writeContract } from "wagmi/actions";
+import {
+  getBalance,
+  getAccount,
+  waitForTransactionReceipt,
+  writeContract,
+} from "wagmi/actions";
 import { useMuteState } from "@/components/MuteContext";
 import { parseEther } from "viem";
 import { formatEther } from "viem";
@@ -39,7 +45,9 @@ export default function Zlinko() {
   const [approveModalIsOpen, setApproveModalIsOpen] = useState(false);
   const [loadingModalIsOpen, setLoadingModalIsOpen] = useState(false);
   const [endBucket, setEndBucket] = useState<number>(4);
-  const [trajectoryArray, setTrajectoryArray] = useState<number[]>(Array(rows).fill(0));
+  const [trajectoryArray, setTrajectoryArray] = useState<number[]>(
+    Array(rows).fill(0)
+  );
   const [runContractTrigger, setRunContractTrigger] = useState<boolean>(false);
 
   const fullMultipliers = (halfMultipliers: number[]) => {
@@ -52,8 +60,10 @@ export default function Zlinko() {
   useEffect(() => {
     console.log("working");
     //setEndBucket(2);
+    if (runContractTrigger) {
+      setDropBallTrigger(true);
+    }
     setRunContractTrigger(false);
-    setDropBallTrigger(true);
   }, [runContractTrigger]);
 
   useEffect(() => {
@@ -72,11 +82,8 @@ export default function Zlinko() {
 
   const { address: addr } = useAccount();
 
-  const {data: play}: {data: any} = useSimulatePlinkoPlay({
-    args: [BigInt(betAmount),
-      BigInt(rows),
-      initiaTokenAddress,
-    ],
+  const { data: play }: { data: any } = useSimulatePlinkoPlay({
+    args: [BigInt(betAmount), BigInt(rows), initiaTokenAddress],
   });
   console.log("play: ", play);
   const { data: allowance, refetch: refetchAllowance } =
@@ -94,7 +101,7 @@ export default function Zlinko() {
       console.log("myhash: ", myhash);
       let receipt = await waitForTransactionReceipt(config, { hash: myhash });
       console.log("receipt: ", receipt);
-      
+
       return true;
     } catch (error) {
       console.log(error);
@@ -104,11 +111,11 @@ export default function Zlinko() {
   const result = useWatchContractEvent({
     address: plinkoAddress,
     abi: plinkoAbi,
-    eventName: 'GameResult',
+    eventName: "GameResult",
     onLogs(logs) {
-      console.log('New logs!', logs)
+      console.log("New logs!", logs);
     },
-  }); 
+  });
 
   async function playPlinko() {
     if (betAmount === 0) {
@@ -116,7 +123,6 @@ export default function Zlinko() {
       return;
     }
 
-    
     const addr = getAccount(config).address;
     if (addr) {
       const walletBalanceUnformatted = await getBalance(config, {
@@ -128,10 +134,10 @@ export default function Zlinko() {
 
       if (walletBalance <= betAmount) {
         toast.error("Insufficient funds. Please add Init to your wallet.");
-        
+
         return;
       }
-      
+
       const { data: newAllowance } = await refetchAllowance();
 
       console.log("Allowance Page: ", newAllowance);
@@ -161,7 +167,7 @@ export default function Zlinko() {
       const playedSuccessfully = await playContract();
 
       setLoadingModalIsOpen(false);
-      
+
       if (playedSuccessfully) {
         const postWalletBalanceUnformatted = await getBalance(config, {
           address: addr,
@@ -189,9 +195,9 @@ export default function Zlinko() {
         //     setTimeout(() => {
         //       if (outcome) {
         //         toast.success("Congratulations you won!");
-               
+
         //       } else {
-                
+
         //         }
         //         toast.error("You lost.");
         //       }
@@ -210,12 +216,10 @@ export default function Zlinko() {
         toast.error("Error with flip. Transaction did not complete.");
       }
     } else {
-      
       toast.error("Please connect your wallet first");
       return;
     }
   }
-
 
   return (
     <div className="relative w-screen h-screen no-scrollbar">
@@ -241,7 +245,12 @@ export default function Zlinko() {
 
       <div className="max-w-6xl mx-auto flex flex-col lg:flex-row justify-center items-end gap-4 sm:mt-20">
         <div className="w-full lg:w-auto lg:order-1 order-2">
-          <button onClick={playPlinko} className="bg-white text-black px-4 py-2 rounded-md">Play</button>
+          <button
+            onClick={playPlinko}
+            className="bg-white text-black px-4 py-2 rounded-md"
+          >
+            Play
+          </button>
           <ControlPanel
             betAmount={betAmount}
             setBetAmount={setBetAmount}
