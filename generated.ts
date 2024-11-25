@@ -470,7 +470,7 @@ export const plinkoAbi = [
 ] as const
 
 export const plinkoAddress =
-  '0x944330f3D4A425BEB9A24B8BAdd054f7B749e2f8' as const
+  '0x6283dA52Bce2D01C885d6977A5746fF7eA2e555D' as const
 
 export const plinkoConfig = { address: plinkoAddress, abi: plinkoAbi } as const
 

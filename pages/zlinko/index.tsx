@@ -26,10 +26,10 @@ import {
   writeContract,
 } from "wagmi/actions";
 import { useMuteState } from "@/components/MuteContext";
-import { parseEther } from "viem";
+import { parseEther, parseUnits } from "viem";
 import { formatEther } from "viem";
 import { config } from "@/config";
-import ApproveModal from "@/components/approveModal";
+import ApproveModal from "@/components/zlinkoApproveModal";
 import LoadingModal from "@/components/loadingModal";
 export default function Zlinko() {
   const [betAmount, setBetAmount] = useState<number>(1);
@@ -59,6 +59,7 @@ export default function Zlinko() {
   };
   useEffect(() => {
     console.log("working");
+    playPlinko();
     //setEndBucket(2);
     if (runContractTrigger) {
       setDropBallTrigger(true);

@@ -27,7 +27,7 @@ export default defineConfig({
         {
             name:"plinko",
             abi:plinkoAbi,
-            address:"0x944330f3D4A425BEB9A24B8BAdd054f7B749e2f8",
+            address:"0x6283dA52Bce2D01C885d6977A5746fF7eA2e555D",
         },
         {
             name: "erc20",
