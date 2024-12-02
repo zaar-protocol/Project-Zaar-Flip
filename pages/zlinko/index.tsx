@@ -31,6 +31,10 @@ import { formatEther } from "viem";
 import { config } from "@/config";
 import ApproveModal from "@/components/zlinkoApproveModal";
 import LoadingModal from "@/components/loadingModal";
+import { getContract, prepareEvent, watchContractEvents } from "thirdweb";
+import { client } from "@/client";
+import { thirdwebInitiaChain } from "@/thirdweb.config";
+
 export default function Zlinko() {
   const [betAmount, setBetAmount] = useState<number>(1);
   const [degenLevel, setDegenLevel] = useState<string>("Normal");
@@ -49,6 +53,10 @@ export default function Zlinko() {
     Array(rows).fill(0)
   );
   const [runContractTrigger, setRunContractTrigger] = useState<boolean>(false);
+  const [gameResultPromise, setGameResultPromise] = useState<{
+    resolve: (value: number) => void;
+    reject: (reason?: any) => void;
+  } | null>(null);
 
   const fullMultipliers = (halfMultipliers: number[]) => {
     let reversePart = halfMultipliers.slice(0, -1).reverse();
@@ -58,17 +66,14 @@ export default function Zlinko() {
     return halfMultipliers.concat(reversePart);
   };
   useEffect(() => {
-    console.log("working");
-    playPlinko();
     //setEndBucket(2);
     if (runContractTrigger) {
-      setDropBallTrigger(true);
+      playPlinko();
     }
     setRunContractTrigger(false);
   }, [runContractTrigger]);
 
   useEffect(() => {
-    console.log(degenLevel);
     let halfMultipliers;
     if (degenLevel != "Normal") {
       halfMultipliers = storedMultipliers[degenLevel as Risk][0];
@@ -86,11 +91,18 @@ export default function Zlinko() {
   const { data: play }: { data: any } = useSimulatePlinkoPlay({
     args: [BigInt(betAmount), BigInt(rows), initiaTokenAddress],
   });
-  console.log("play: ", play);
+  // console.log("play: ", play);
+
+  // const playPlaceholder = useSimulatePlinkoPlay({
+  //   args: [BigInt(betAmount), BigInt(rows), initiaTokenAddress],
+  // });
+  // console.log("playPlaceholder: ", playPlaceholder);
+
   const { data: allowance, refetch: refetchAllowance } =
     useReadInitiaTokenAllowance({
       args: [addr ? addr : "0x00000000000000000", plinkoAddress],
     });
+
   async function playContract() {
     if (!play || !play.request) {
       console.error("Error, play contract is null.");
@@ -109,14 +121,66 @@ export default function Zlinko() {
       return false;
     }
   }
-  const result = useWatchContractEvent({
+
+  // event GameResult(address indexed player, bool won, uint256 payout, uint256 multiplier, uint256 landingPosition);
+  // emit GameResult(game.player, true, netPayout, multiplier, landingPosition);
+
+  const plinkoContract = getContract({
     address: plinkoAddress,
     abi: plinkoAbi,
-    eventName: "GameResult",
-    onLogs(logs) {
-      console.log("New logs!", logs);
+    client: client,
+    chain: thirdwebInitiaChain,
+  });
+
+  const events = watchContractEvents({
+    contract: plinkoContract,
+    onEvents: (events) => {
+      try {
+        if (events[0].eventName === "GameResult") {
+          const args = events[0].args as { landingPosition?: BigInt };
+          if (args.landingPosition) {
+            const landingPosition = Number(args.landingPosition);
+            console.log("Landing Position: ", landingPosition);
+
+            setEndBucket(landingPosition);
+            calculateRandomTrajectory(landingPosition);
+            setDropBallTrigger(true);
+
+            if (gameResultPromise) {
+              gameResultPromise.resolve(landingPosition);
+              setGameResultPromise(null);
+            }
+          }
+        }
+      } catch (error) {
+        if (gameResultPromise) {
+          gameResultPromise.reject(error);
+          setGameResultPromise(null);
+        }
+        console.error("Error in event handler:", error);
+      }
     },
   });
+
+  useEffect(() => {
+    console.log("endBucket updated to: ", endBucket);
+  }, [endBucket]);
+
+  function calculateRandomTrajectory(endBucket: number) {
+    const newTrajectory = Array(rows).fill(0);
+    newTrajectory.fill(1, 0, endBucket);
+    for (let i = 0; i < rows; i++) {
+      const j = Math.floor(Math.random() * rows);
+      [newTrajectory[i], newTrajectory[j]] = [
+        newTrajectory[j],
+        newTrajectory[i],
+      ];
+    }
+    setTrajectoryArray(newTrajectory);
+
+    //calculate random trajectory based on result
+    //set trajectory array
+  }
 
   async function playPlinko() {
     if (betAmount === 0) {
@@ -131,7 +195,6 @@ export default function Zlinko() {
         token: initiaTokenAddress,
       });
       const walletBalance = Number(walletBalanceUnformatted.value);
-      console.log("WalletBalance: ", walletBalance);
 
       if (walletBalance <= betAmount) {
         toast.error("Insufficient funds. Please add Init to your wallet.");
@@ -140,19 +203,6 @@ export default function Zlinko() {
       }
 
       const { data: newAllowance } = await refetchAllowance();
-
-      console.log("Allowance Page: ", newAllowance);
-
-      console.log("formatEther(newAllowance): ", formatEther(newAllowance!));
-      console.log(
-        "Number(formatEther(newAllowance)): ",
-        Number(formatEther(newAllowance!))
-      );
-      console.log("betAmount: ", betAmount);
-      console.log(
-        "Number(formatEther(newAllowance)) < betAmount: ",
-        Number(formatEther(newAllowance!)) < betAmount
-      );
 
       if (
         !newAllowance ||
@@ -165,60 +215,56 @@ export default function Zlinko() {
 
       setLoadingModalIsOpen(true);
 
+      const eventPromise = new Promise<number>((resolve, reject) => {
+        setGameResultPromise({ resolve, reject });
+      });
+
       const playedSuccessfully = await playContract();
 
       setLoadingModalIsOpen(false);
 
       if (playedSuccessfully) {
+        const landingPosition = await eventPromise;
         const postWalletBalanceUnformatted = await getBalance(config, {
           address: addr,
           token: initiaTokenAddress,
         });
 
         const postWalletBalance = Number(postWalletBalanceUnformatted.value);
-
-        console.log("Initial Wallet Balance: ", walletBalanceUnformatted);
-        console.log("Post Wallet Balance: ", postWalletBalanceUnformatted);
-        console.log("Bet Amount: ", betAmount);
-
         const outcome = walletBalance < postWalletBalance;
-
         const winnings = outcome ? postWalletBalance - walletBalance : 0;
 
-        // fetch(
-        //   `./api/addEvent?ownerAddress=${addr}&coins=${betAmount}&winnings=${winnings}&wager=${betAmount}&outcome=${outcome}`
-        // )
-        //   .then((response) => response.json())
-        //   .then((data) => {
-        //     console.log(data);
-        //   })
-        //   .then(() => {
-        //     setTimeout(() => {
-        //       if (outcome) {
-        //         toast.success("Congratulations you won!");
-
-        //       } else {
-
-        //         }
-        //         toast.error("You lost.");
-        //       }
-        //     }, 1000);
-        //   });
-
-        // if (coinsDisplayRef.current) {
-        //   randomFlip(
-        //     coinsDisplayRef.current,
-        //     minHeadsTails,
-        //     currentSide,
-        //     outcome
-        //   );
-        // }
+        await recordGameResult(
+          addr,
+          betAmount,
+          winnings,
+          outcome,
+          riskLevel,
+          landingPosition
+        );
       } else {
-        toast.error("Error with flip. Transaction did not complete.");
+        toast.error("Error with drop. Transaction did not complete.");
       }
     } else {
       toast.error("Please connect your wallet first");
       return;
+    }
+  }
+
+  async function recordGameResult(
+    addr: string,
+    betAmount: number,
+    winnings: number,
+    outcome: boolean,
+    riskLevel: string,
+    landingPosition: number
+  ) {
+    try {
+      await fetch(
+        `./api/addZlinkoEvent?ownerAddress=${addr}&wager=${betAmount}&winnings=${winnings}&outcome=${outcome}&risk=${riskLevel}&multiplier=${multipliers[landingPosition]}`
+      );
+    } catch (error) {
+      console.error("Fetch error:", error);
     }
   }
 
@@ -246,12 +292,6 @@ export default function Zlinko() {
 
       <div className="max-w-6xl mx-auto flex flex-col lg:flex-row justify-center items-end gap-4 sm:mt-20">
         <div className="w-full lg:w-auto lg:order-1 order-2">
-          <button
-            onClick={playPlinko}
-            className="bg-white text-black px-4 py-2 rounded-md"
-          >
-            Play
-          </button>
           <ControlPanel
             betAmount={betAmount}
             setBetAmount={setBetAmount}

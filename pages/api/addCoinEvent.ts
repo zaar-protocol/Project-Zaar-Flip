@@ -9,7 +9,7 @@ import { ChallengeKey } from '../../components/challengeComponents/checkProgress
 // import { initiaTokenAddress } from '../../generated';
 // import { config } from '../../config';
 // import { formatEther } from 'viem';
-// import { calculateRakebackPercentage } from '../../lib/calculateRakebackPercentage';
+// import { calculateRakebackPercentage } from '@/lib/calculateRakebackPercentage';
 
 // type Event = { id: number; authorAddress: string; createdAt: Date; coins: number; wager: number; winnings: number; outcome: boolean; };
 
@@ -34,12 +34,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   //await initializeCors(req, res); // Initialize CORS
   try {
 
-    const ownerAddress = req.query.ownerAddress?.toString() || "";
-    const newWinnings = Number(req.query.winnings) || 0;
-    const newWager = Number(req.query.wager) || 0;
-    const newOutcome = Boolean(req.query.outcome === 'true') || false;
-    const newGameType = String(req.query.gameType) || "";
-    const fee = Number(req.query.fee) || 0; // New line to accept fee from query params
+    const ownerAddress = req.query.ownerAddress?.toString() || ""; 
+    const newWinnings = Number(req.query.winnings) || 0; 
+    const newWager = Number(req.query.wager) || 0; 
+    const newOutcome = Boolean(req.query.outcome === 'true') || false; 
+    const newSide = String(req.query.side) || "";
+    
+    const fee = Math.floor(newWager * 0.01); // Assuming 1% fee
 
     const today = new Date();
     const todayStart = new Date();
@@ -77,6 +78,26 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     // }
 
     }
+
+    //create an event
+  const newEvent = await prisma.event.create({
+    data: {
+      winnings: newWinnings,
+      wager: newWager,
+      outcome: newOutcome,
+      authorAddress: ownerAddress,
+      gameType: "Flip",
+      fee: fee,
+    },
+  });
+
+  await prisma.flipEvent.create({
+    data: {
+      coinSide: newSide,
+      eventId: newEvent.id
+    }
+  })
+    
     //try to find the user's profile
     //update or create it
     const user = await prisma.profile.upsert({
@@ -84,7 +105,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       update: {
         winnings: { increment: newWinnings },
         waged: { increment: newWager },
-        events: { create: { winnings: newWinnings, wager: newWager, outcome: newOutcome, gameType: newGameType, fee: fee } },
       },
       create: {
         authorAddress: ownerAddress,
@@ -94,21 +114,19 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         email: "",
         profPicUrl: "",
         bannerPicUrl: "",
-        events: { create: { winnings: newWinnings, wager: newWager, outcome: newOutcome, gameType: newGameType, fee: fee } },
         waged: newWager,
-        startingBalance: 0,
+        startingBalance: startBalance || 0,
       },
-      include: {challengeWins: true, events: true}
+      select: { winnings: true, waged: true, events: true, challengeWins: true, startingBalance: true }
     });
 
+    // Calculate rakeback
     // const rakebackPercentage = calculateRakebackPercentage(user.waged);
     // const rakebackAmount = fee * rakebackPercentage;
 
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
-
     // Upsert rakeback for the day
+    // today.setHours(0, 0, 0, 0);
+
     // await prisma.rakeback.upsert({
     //   where: {
     //     authorAddress_date: {
@@ -127,7 +145,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     //   },
     // });
 
-
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
 
     const winnersCount = await prisma.challengeWinner.count({
       where: {
@@ -138,7 +158,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       },
     });
 
-    if (winnersCount >= 5) {
+    if (winnersCount >= 3) {
       return res.status(200).json({
         eventCreated: true,
         challengeWon: false,
@@ -194,3 +214,4 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 export default allowCors(handler);
+

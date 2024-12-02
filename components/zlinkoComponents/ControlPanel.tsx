@@ -1,8 +1,8 @@
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { Tooltip } from "../tooltip";
-import { useMuteState } from '@/components/MuteContext';
-
+import { useMuteState } from "@/components/MuteContext";
+import { Footer } from "../Footer";
 
 interface ControlPanelProps {
   betAmount: number;
@@ -30,7 +30,6 @@ const ControlPanel = ({
   dropBallTrigger,
   setDropBallTrigger,
   setRunContractTrigger,
-
 }: ControlPanelProps) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [localRiskLevel, setLocalRiskLevel] = useState(riskLevel || "Low");
@@ -48,10 +47,10 @@ const ControlPanel = ({
   const dropaudio = new Audio("/sounds/flip.mp3");
   const squishaudio = new Audio("/sounds/squish.mp3");
   const { isMuted, toggleMute } = useMuteState();
-  function handleDropBall(){
+  function handleDropBall() {
     setRunContractTrigger(true);
-    if(!isMuted ){
-      dropaudio.play(); 
+    if (!isMuted) {
+      dropaudio.play();
     }
     //setDropBallTrigger(true);
   }
@@ -61,10 +60,11 @@ const ControlPanel = ({
       <button
         className="lg:hidden w-full gradient-button text-black font-bold py-2 rounded hover:bg-yellow uppercase"
         onClick={() => {
-          if(!isMuted ){
-          dropaudio.play(); 
+          if (!isMuted) {
+            dropaudio.play();
           }
-          setDropBallTrigger(true);}}
+          setDropBallTrigger(true);
+        }}
       >
         Drop 1 Ball
       </button>
@@ -235,7 +235,7 @@ const ControlPanel = ({
                       : "text-light-gray"
                   }${degenLevel != "Normal" ? "hover:bg-zinc-900" : ""}`}
                 >
-                  {degenLevel=="Normal" ? risk : ""}
+                  {degenLevel == "Normal" ? risk : ""}
                 </button>
               </div>
             ))}

@@ -13,14 +13,32 @@ model Xp {
 }
 
 model Event {
-  id            Int      @id @default(autoincrement())
-  user          Profile  @relation(fields: [authorAddress], references: [authorAddress])
+  id            Int        @id @default(autoincrement())
+  user          Profile    @relation(fields: [authorAddress], references: [authorAddress])
   authorAddress String
-  createdAt     DateTime @default(now())
-  coins         Int
+  createdAt     DateTime   @default(now())
   wager         Int
   winnings      Int
+  fee           Int        @default(0)
   outcome       Boolean
+  gameType      String     @default("Flip")
+  FlipEvent     FlipEvent?
+  PlinkoEvent   PlinkoEvent?
+}
+
+model FlipEvent {
+  id            Int         @id @default(autoincrement())
+  eventId       Int         @unique
+  event         Event       @relation(fields: [eventId], references: [id])
+  coinSide      String
+}
+
+model PlinkoEvent {
+  id            Int         @id @default(autoincrement())
+  eventId       Int         @unique
+  event         Event       @relation(fields: [eventId], references: [id])
+  risk          String
+  multiplier    Decimal     @db.Decimal(10, 2) //10 total digits, 2 decimal places @default(1.00)
 }
 
 model Profile {

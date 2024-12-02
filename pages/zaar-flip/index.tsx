@@ -39,8 +39,8 @@ import { initiaTokenAddress } from "@/generated";
 import { zaarflipAddress } from "@/generated";
 import { MuteButton } from "@/components/MuteButton";
 import { useMuteState } from "@/components/MuteContext";
-import { useWatchContractEvent } from 'wagmi';
-import { abi } from '@/abis/abi';
+import { useWatchContractEvent } from "wagmi";
+import { abi } from "@/abis/abi";
 // import useSound from "use-sound";
 import Footer from "@/components/Footer";
 
@@ -91,16 +91,15 @@ export default function Home() {
   //   return;
   // }
 
-    useWatchContractEvent({
-      address: zaarflipAddress,
-      abi,
-      eventName: 'GameResult',
-      onLogs(logs) {
-        console.log('New logs!', logs)
-      },
-      poll: true,
-    });
-  
+  useWatchContractEvent({
+    address: zaarflipAddress,
+    abi,
+    eventName: "GameResult",
+    onLogs(logs) {
+      console.log("New logs!", logs);
+    },
+    poll: true,
+  });
 
   const testFlipper = useSimulateZaarflipFlip({
     args: [
@@ -248,12 +247,10 @@ export default function Home() {
     try {
       let myhash = await writeContract(config, flip!.request);
 
-      
-      
       console.log("myhash: ", myhash);
       let receipt = await waitForTransactionReceipt(config, { hash: myhash });
       console.log("receipt: ", receipt);
-      
+
       return true;
     } catch (error) {
       console.log(error);
@@ -263,11 +260,11 @@ export default function Home() {
   const result = useWatchContractEvent({
     address: zaarflipAddress,
     abi,
-    eventName: 'GameResult',
+    eventName: "GameResult",
     onLogs(logs) {
-      console.log('New logs!', logs)
+      console.log("New logs!", logs);
     },
-  }); 
+  });
   const testFlipCoin = async () => {
     const isWinning = testWinCounter % 2 === 0;
     setTestWinCounter((prev) => prev + 1);
@@ -387,7 +384,7 @@ export default function Home() {
       const flippedSuccessfully = await flipContract();
 
       setLoadingModalIsOpen(false);
-      
+
       if (flippedSuccessfully) {
         const postWalletBalanceUnformatted = await getBalance(config, {
           address: addr,
@@ -405,7 +402,7 @@ export default function Home() {
         const winnings = outcome ? postWalletBalance - walletBalance : 0;
 
         fetch(
-          `./api/addEvent?ownerAddress=${addr}&coins=${coinsAmount}&winnings=${winnings}&wager=${wager}&outcome=${outcome}`
+          `./api/addCoinEvent?ownerAddress=${addr}&wager=${wager}&winnings=${winnings}&outcome=${outcome}&side=${currentSide}`
         )
           .then((response) => response.json())
           .then((data) => {

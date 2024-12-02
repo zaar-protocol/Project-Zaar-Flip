@@ -1,17 +1,8 @@
-// pages/api/getWatchlist.ts
 import { NextApiRequest, NextApiResponse } from 'next';
 import prisma from '@/lib/prisma';
 import { dailyChallenges } from '@/components/challengeComponents/dailyChallenges';
 import { checkProgressFunctions } from '@/components/challengeComponents/checkProgressFunctions';
 import { ChallengeKey } from '../../components/challengeComponents/checkProgressFunctions';
-// import { challengeKeys } from '../components/challengeComponents/checkProgressFunctions';
-// import { getBalance } from 'wagmi/actions';
-// import { initiaTokenAddress } from '../../generated';
-// import { config } from '../../config';
-// import { formatEther } from 'viem';
-// import { calculateRakebackPercentage } from '../../lib/calculateRakebackPercentage';
-
-// type Event = { id: number; authorAddress: string; createdAt: Date; coins: number; wager: number; winnings: number; outcome: boolean; };
 
 const allowCors = (fn: (req: NextApiRequest, res: NextApiResponse) => Promise<void>) => async (req: NextApiRequest, res: NextApiResponse) => {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -26,20 +17,15 @@ const allowCors = (fn: (req: NextApiRequest, res: NextApiResponse) => Promise<vo
   return await fn(req, res);
 };
 
-// function isValidEthereumAddress(address: string): boolean {
-//   return /^0x[a-fA-F0-9]{40}$/.test(address);
-// }
-
 async function handler(req: NextApiRequest, res: NextApiResponse) {
-  //await initializeCors(req, res); // Initialize CORS
   try {
-
     const ownerAddress = req.query.ownerAddress?.toString() || "";
     const newWinnings = Number(req.query.winnings) || 0;
     const newWager = Number(req.query.wager) || 0;
     const newOutcome = Boolean(req.query.outcome === 'true') || false;
-    const newGameType = String(req.query.gameType) || "";
-    const fee = Number(req.query.fee) || 0; // New line to accept fee from query params
+    const risk = String(req.query.risk) || "";
+    const multiplier = Number(req.query.multiplier) || 1.00;
+    const fee = Math.floor(newWager * 0.01);
 
     const today = new Date();
     const todayStart = new Date();
@@ -63,28 +49,34 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const startBalance = 0;
     if (todaysEvents.length === 0) {
       console.log("First event of the day")
-      
-      // Validate and use the address
-      
-    // if (isValidEthereumAddress(ownerAddress)) {
-    //   const balance = await getBalance(config, {
-    //     address: ownerAddress as `0x${string}`, // Type assertion
-    //     token: initiaTokenAddress,
-    //   });
-    //   startBalance = Number(formatEther(balance.value))
-    // } else {
-    //   throw new Error('Invalid Ethereum address format');
-    // }
-
     }
-    //try to find the user's profile
-    //update or create it
+
+    // Create event
+    const newEvent = await prisma.event.create({
+      data: {
+        winnings: newWinnings,
+        wager: newWager,
+        outcome: newOutcome,
+        authorAddress: ownerAddress,
+        gameType: "Plinko",
+        fee: fee,
+      },
+    });
+
+    // Create plinko event
+    await prisma.plinkoEvent.create({
+      data: {
+        risk: risk,
+        multiplier: multiplier,
+        eventId: newEvent.id
+      }
+    });
+    
     const user = await prisma.profile.upsert({
       where: { authorAddress: ownerAddress },
       update: {
         winnings: { increment: newWinnings },
         waged: { increment: newWager },
-        events: { create: { winnings: newWinnings, wager: newWager, outcome: newOutcome, gameType: newGameType, fee: fee } },
       },
       create: {
         authorAddress: ownerAddress,
@@ -94,40 +86,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         email: "",
         profPicUrl: "",
         bannerPicUrl: "",
-        events: { create: { winnings: newWinnings, wager: newWager, outcome: newOutcome, gameType: newGameType, fee: fee } },
         waged: newWager,
-        startingBalance: 0,
+        startingBalance: startBalance || 0,
       },
-      include: {challengeWins: true, events: true}
+      select: { winnings: true, waged: true, events: true, challengeWins: true, startingBalance: true }
     });
-
-    // const rakebackPercentage = calculateRakebackPercentage(user.waged);
-    // const rakebackAmount = fee * rakebackPercentage;
 
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
-
-    // Upsert rakeback for the day
-    // await prisma.rakeback.upsert({
-    //   where: {
-    //     authorAddress_date: {
-    //       authorAddress: ownerAddress,
-    //       date: today,
-    //     },
-    //   },
-    //   update: {
-    //     amount: { increment: rakebackAmount },
-    //   },
-    //   create: {
-    //     authorAddress: ownerAddress,
-    //     date: today,
-    //     amount: rakebackAmount,
-    //     claimed: false,
-    //   },
-    // });
-
-
 
     const winnersCount = await prisma.challengeWinner.count({
       where: {
@@ -138,7 +105,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       },
     });
 
-    if (winnersCount >= 5) {
+    if (winnersCount >= 3) {
       return res.status(200).json({
         eventCreated: true,
         challengeWon: false,
@@ -167,7 +134,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const progress = checkProgressFunctions[todaysChallenge.title as ChallengeKey](user.events, Number(user.startingBalance));
 
     if (todaysChallenge.steps === progress) {
-
       await prisma.challengeWinner.create({
         data: {
           challengeId: todaysChallenge.title,
@@ -193,4 +159,5 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     res.status(500).json({ error: 'Internal server error' });
   }
 }
-export default allowCors(handler);
+
+export default allowCors(handler); 

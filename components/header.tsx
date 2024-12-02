@@ -71,14 +71,15 @@ export const Header = () => {
     <header className="flex flex-row items-center justify-between w-screen  mb-0 relative z-20 px-2 py-2 pr-8 max-h-[67px]">
       <nav className="hidden  md:flex space-x-8 pl-5 uppercase text-sm ">
         <Link href="/zaar-flip" className="hover:cursor-pointer">
-          {page != "/staking" && <Image
-            src={currentIcon.src}
-            alt={currentIcon.alt}
-            width={currentIcon.width}
-            height={currentIcon.height}
-              className={currentIcon.className }
+          {page != "/staking" && (
+            <Image
+              src={currentIcon.src}
+              alt={currentIcon.alt}
+              width={currentIcon.width}
+              height={currentIcon.height}
+              className={currentIcon.className}
             />
-          }
+          )}
         </Link>
       </nav>
       <div className="flex items-center space-x-6 mr-4">
@@ -87,10 +88,10 @@ export const Header = () => {
           chain={thirdwebInitiaChain}
           accountAbstraction={{ chain: thirdwebInitiaChain, sponsorGas: false }}
         /> */}
-        {/* <ThirdWebWallet />  */}
+        {/* <ThirdWebWallet /> */}
         {/* <Web3ModalButton /> */}
         <InitiaWallet />
-        {/*<ConnectWallet />*/}
+        {/* <ConnectWallet /> */}
         <SideMenuModal />
       </div>
     </header>
