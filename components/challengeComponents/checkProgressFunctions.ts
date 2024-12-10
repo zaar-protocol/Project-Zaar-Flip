@@ -158,7 +158,7 @@ export const checkProgressFunctions: Record<ChallengeKey, CheckProgressFunction>
       if (
         total == 1000 ||
         event.createdAt <= oneHourAgo ||
-        (event.coins == 0 &&
+        (event.gameType === "Flip" &&
           event.wager == 0 &&
           event.winnings == 0 &&
           !event.outcome)
@@ -188,7 +188,7 @@ export const checkProgressFunctions: Record<ChallengeKey, CheckProgressFunction>
       if (
         total == 500 ||
         event.createdAt <= oneHourAgo ||
-        (event.coins == 0 &&
+        (event.gameType === "Flip" &&
           event.wager == 0 &&
           event.winnings == 0 &&
           !event.outcome)

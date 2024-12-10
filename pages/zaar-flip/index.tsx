@@ -112,6 +112,8 @@ export default function Home() {
 
   console.log("Test Flipper: ", testFlipper);
 
+  console.log(BigInt(minHeadsTails));
+
   //get prepared function to flip
   const { data: flip }: { data: any } = useSimulateZaarflipFlip({
     args: [
