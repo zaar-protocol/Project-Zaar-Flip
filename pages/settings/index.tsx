@@ -13,6 +13,8 @@ import { StarField } from "@/components/star-field";
 import { type PutBlobResult } from "@vercel/blob";
 import Head from "next/head";
 import { Metadata } from "next";
+import { useWallet } from "@initia/react-wallet-widget";
+
 export const metadata: Metadata = {
   title: "Settings",
 };
@@ -31,6 +33,7 @@ export const Settings = () => {
   const inputFileRef = useRef<HTMLInputElement>(null);
   const [blob, setBlob] = useState<PutBlobResult | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const { wallet } = useWallet();
   //const inputFileRef = useRef(null);
 
   useEffect(() => {
@@ -59,6 +62,11 @@ export const Settings = () => {
     }
   }, [address, isConnected]);
   function updateProfile() {
+    console.log(address, isConnected);
+    if (!wallet) {
+      toast.error("Please connect your wallet");
+      return;
+    }
     const sendVanity =
       newVanity === ""
         ? currentVanity === "Set New Vanity"
@@ -93,10 +101,13 @@ export const Settings = () => {
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
+        if (data.error) {
+          toast.error("Error: unable to update profile");
+        } else {
+          toast.success("Profile Updated Successfully");
+        }
       })
-      .then(() => {
-        toast.success("Profile Updated Successfully");
-      });
+      .then((data) => {});
   }
   const handleNewUserNameChange = (event: {
     target: { value: React.SetStateAction<string> };
@@ -169,10 +180,7 @@ export const Settings = () => {
     <div className="h-screen pl-4">
       <Head>
         <title>Zaar Flip</title>
-        <meta
-          name="description"
-          content="A first-in-class NFT trading platform for traders of every caliber."
-        />
+        <meta name="description" content="The fun network." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Toaster />

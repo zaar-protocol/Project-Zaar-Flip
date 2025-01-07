@@ -152,28 +152,28 @@ const Home: React.FC = () => {
             />
           </Link>
 
-          <Link
+          {/* <Link
             href="/zlinko"
             className="hover:cursor-pointer transition duration-300  "
             onMouseEnter={() => setZlinkoImageSrc("/zlinko-card-hover.png")}
             onMouseLeave={() => setZlinkoImageSrc("/zlinko-card.png")}
             onClick={playSound}
-          >
-            {/*<Image
+          > */}
+          {/*<Image
                 src={zlinkoImageSrc}
                 alt="Zaar Zlinko Logo"
                 width={500}
                 height={500}
                 className="text-white w-[300px]"
               />*/}
-            <Image
-              src="/zlinko-card-disabled.png"
-              alt="Zaar Zlinko Logo"
-              width={500}
-              height={500}
-              className="text-white w-[300px]"
-            />
-          </Link>
+          <Image
+            src="/zlinko-card-disabled.png"
+            alt="Zaar Zlinko Logo"
+            width={500}
+            height={500}
+            className="text-white w-[300px]"
+          />
+          {/* </Link> */}
         </div>
       </div>
       <Footer />

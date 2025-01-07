@@ -52,7 +52,7 @@ model Profile {
   waged           Int
   events          Event[]
   challengeWins   ChallengeWinner[]
-  startingBalance Int
+  startingBalance Decimal @db.Decimal(50, 2)
 }
 
 model ChallengeWinner {

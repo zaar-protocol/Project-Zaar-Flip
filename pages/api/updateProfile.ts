@@ -45,16 +45,21 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         address: ownerAddress as `0x${string}`, // Type assertion
         token: initiaTokenAddress,
       });
-      startingBalance = Number(balance.value)
+      startingBalance = parseFloat(balance.value.toString());
     } else {
       throw new Error('Invalid Ethereum address format');
     }
 
+    console.log("userName: ", userName, " type: ", typeof userName);
+    console.log("newBio: ", newBio, " type: ", typeof newBio);
+    console.log("newEmail: ", newEmail, " type: ", typeof newEmail);
+    console.log("newProfPicURL: ", newProfPicURL, " type: ", typeof newProfPicURL);
+    console.log("newBannerPicURL: ", newBannerPicURL, " type: ", typeof newBannerPicURL);
 
     const userData = await prisma.profile.upsert({
         where: { authorAddress: ownerAddress },
         update: { uName: userName, bio: newBio, email: newEmail, profPicUrl: newProfPicURL, bannerPicUrl: newBannerPicURL},
-        create: { uName: userName, bio: newBio, authorAddress: ownerAddress, email: newEmail, profPicUrl: newProfPicURL, bannerPicUrl: newBannerPicURL, winnings:0, waged:0, startingBalance: startingBalance } ,
+        create: { uName: userName, bio: newBio, authorAddress: ownerAddress, email: newEmail, profPicUrl: newProfPicURL, bannerPicUrl: newBannerPicURL, winnings:0, waged:0, startingBalance:0 } ,
     });
     res.status(200).json(userData);
   } catch (error) {

@@ -52,7 +52,6 @@ const ControlPanel = ({
     if (!isMuted) {
       dropaudio.play();
     }
-    //setDropBallTrigger(true);
   }
 
   return (

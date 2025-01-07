@@ -13,7 +13,8 @@ export default function RootLayout({
     if (
       pathname === "/challenges" ||
       pathname === "/" ||
-      pathname === "/zaar-raffle"
+      pathname === "/zaar-raffle" ||
+      pathname === "/profile"
     ) {
       document.body.style.overflowY = "visible";
     } else {
@@ -24,8 +25,6 @@ export default function RootLayout({
   return (
     <div className="max-w-screen overflow-x-hidden no-scrollbar">
       {children}
-      
-
     </div>
   );
 }

@@ -14,6 +14,8 @@ import { FaEthereum } from "react-icons/fa";
 import { encode } from "base64-arraybuffer";
 import { EventBox } from "@/components/profileComponents/event-box";
 import { Metadata } from "next";
+import { useWallet } from "@initia/react-wallet-widget";
+
 export const metadata: Metadata = {
   title: "Profile",
 };
@@ -27,14 +29,20 @@ export default function Profile() {
   const [currentProfileImage, setCurrentProfileImage] = useState<string>("");
   const [currentEmail, setCurrentEmail] = useState<string>("");
   const [currentProfileBanner, setCurrentProfileBanner] = useState<string>("");
-  const addr = getAccount(config).address;
+
   const [history, setHistory] = useState<any[]>([]);
   const [winnings, setWinning] = useState(0);
   const [waged, setWaged] = useState(0);
   const [wins, setWins] = useState<any[]>([]);
   const [losses, setLosses] = useState<any[]>([]);
+
+  const { wallet } = useWallet();
+  const addr = wallet
+    ? getAccount(config).address || "0x0000000000000000000000000000000000000000"
+    : "0x0000000000000000000000000000000000000000";
+
   useEffect(() => {
-    if (!addr) return; // If address is null or undefined, do nothing
+    if (!wallet) return; // If address is null or undefined, do nothing
     // Fetch profile data and generate profile image
     fetch(`./api/getProfile?ownerAddress=${addr}`)
       .then((response) => response.json())
@@ -73,9 +81,9 @@ export default function Profile() {
       .catch((error) => {
         console.error("Error fetching profile data:", error);
       });
-  }, [addr]);
+  }, [addr, wallet]);
   return (
-    <div className="pl-4 h-screen overflow-hidden z-20 no-scrollbar">
+    <div className="pl-4 h-screen overflow-x-hidden z-20 no-scrollbar">
       <Header />
       <StarField />
       <div className=" container container-fluid mt-[60px] container-fluid mx-auto py-6 pt-0">
@@ -117,7 +125,8 @@ export default function Profile() {
                       <div className="border-r border-dark-gray-r pb-4 sm:pb-0 last:border-r-0">
                         <p className="text-gray text-sm mb-2">RANK</p>
                         <p className="text-light-green font-bold text-lg sm:text-2xl">
-                          #{Math.floor(history?.length / 10) || 1}
+                          --
+                          {/* #{Math.floor(history?.length / 10) || 1} */}
                         </p>
                       </div>
                       <div className="border-r border-dark-gray-r pb-4 sm:pb-0 last:border-r-0">
@@ -132,7 +141,7 @@ export default function Profile() {
                       <div className="border-r border-dark-gray-r pb-4 sm:pb-0 last:border-r-0">
                         <p className="text-gray text-sm mb-2">PROFIT</p>
                         <p className="text-light-green font-bold text-lg sm:text-2xl">
-                          ${winnings - waged}
+                          {winnings - waged}
                         </p>
                       </div>
                       <div>
@@ -195,9 +204,8 @@ export default function Profile() {
                               : "/profile.jpg"
                           }
                           wager={box.wager}
-                          coinsAmount={box.coins}
-                          minHeads={box.minHeads}
                           outcome={box.outcome}
+                          winnings={box.winnings}
                         />
                       ))}
                   </div>
@@ -214,9 +222,8 @@ export default function Profile() {
                             : "/profile.jpg"
                         }
                         wager={box.wager}
-                        coinsAmount={box.coins}
-                        minHeads={box.minHeads}
                         outcome={box.outcome}
+                        winnings={box.winnings}
                       />
                     ))}
                   </div>
@@ -233,9 +240,8 @@ export default function Profile() {
                             : "/profile.jpg"
                         }
                         wager={box.wager}
-                        coinsAmount={box.coins}
-                        minHeads={box.minHeads}
                         outcome={box.outcome}
+                        winnings={box.winnings}
                       />
                     ))}
                   </div>

@@ -84,7 +84,7 @@ export const SideMenuModal = () => {
           </div>
         )}
 
-        <div className="bg-black border-l-gray border-l-2 flex flex-col items-center pt-24 gap-8 h-full text-lg text-[#E3BF00] z-50">
+        <div className="bg-black border-l-gray border-l-2 flex flex-col items-center pt-24 gap-8 h-full text-lg text-[#E3BF00] z-50 overflow-y-auto">
           <Link
             href="/"
             className="hover:cursor-pointer transition duration-300 hover:scale-105"
@@ -112,19 +112,19 @@ export const SideMenuModal = () => {
             />
           </Link>
           <div className="group hover:cursor-pointer transition duration-300 hover:scale-105 relative z-50">
-            <Link
+            {/* <Link
               href="/zlinko"
               className="hover:cursor-pointer transition duration-300 hover:scale-105"
               onClick={playSound}
-            >
-              <Image
-                src="/zlinko/zaar-zlinko.png"
-                alt="Zaar Zlinko Logo"
-                width={400}
-                height={400}
-                className=" w-[120px] grayscale"
-              />
-            </Link>
+            > */}
+            <Image
+              src="/zlinko/zaar-zlinko.png"
+              alt="Zaar Zlinko Logo"
+              width={400}
+              height={400}
+              className=" w-[120px] grayscale"
+            />
+            {/* </Link> */}
             <div className="absolute left-1 text-center text-base text-gray transition duration-300 opacity-0 group-hover:opacity-100 w-full z-50">
               Coming soon
             </div>
@@ -142,14 +142,20 @@ export const SideMenuModal = () => {
             </div>
           </div>
 
-          <Link
-            href="/challenges"
-            className="hover:cursor-pointer transition duration-300 hover:text-white"
-            onClick={playSound}
-          >
+          <div className="group hover:cursor-pointer text-gray opacity-80 hover:opacity-100 transition duration-300 hover:scale-105 relative z-50">
+            {/* <Link
+              href="/challenges"
+              className="hover:cursor-pointer transition duration-300 hover:text-white"
+              onClick={playSound}
+            > */}
             CHALLENGES
-          </Link>
-          <Link
+            {/* </Link>  */}
+            <div className="absolute left-2 text-center text-base text-gray transition duration-300 opacity-0 group-hover:opacity-100">
+              Coming soon
+            </div>
+          </div>
+
+          {/* <Link
             href="/"
             className="hidden hover:cursor-pointer transition duration-300 hover:text-white"
             onClick={playSound}
@@ -169,21 +175,27 @@ export const SideMenuModal = () => {
             onClick={playSound}
           >
             EARN XP
-          </Link>
-          <Link
+          </Link> */}
+          {/* <div className="group hover:cursor-pointer text-gray opacity-80 hover:opacity-100 transition duration-300 hover:scale-105 relative z-50">
+            <Link
             href="/staking"
             className="hover:cursor-pointer transition duration-300 hover:text-white"
             onClick={playSound}
           >
             STAKING
-          </Link>
-          <Link
+            </Link>
+            <div className="min-w-[100px] absolute -left-4 text-center text-base text-gray transition duration-300 opacity-0 group-hover:opacity-100">
+              Coming soon
+            </div>
+          </div> */}
+
+          {/* <Link
             href="/bridge"
             className="hover:cursor-pointer transition duration-300 hover:text-white"
             onClick={playSound}
           >
             BRIDGE
-          </Link>
+          </Link> */}
           <Link
             href="/profile"
             className="hover:cursor-pointer transition duration-300 hover:text-white"
@@ -200,7 +212,7 @@ export const SideMenuModal = () => {
           </Link>
           <div className="grow mb-5 flex flex-col justify-end items-center gap-3 text-sm text-gray z-50">
             <div className="flex items-center gap-5 mb-1">
-              <Link href="/" className="hover:text-white">
+              <Link href="https://x.com/zaar_gg" className="hover:text-white">
                 <svg
                   className="fill-gray"
                   width="17"
@@ -214,7 +226,10 @@ export const SideMenuModal = () => {
                   />
                 </svg>
               </Link>
-              <Link href="/" className="hover:text-white">
+              <Link
+                href="https://discord.com/invite/kSjrBEGnmf"
+                className="hover:text-white"
+              >
                 <svg
                   className="fill-gray"
                   width="15"
@@ -235,10 +250,16 @@ export const SideMenuModal = () => {
             >
               Docs
             </Link>
-            <Link href="/" className="hover:text-white">
+            <Link
+              href="https://gitbook.zaar.market/"
+              className="hover:text-white"
+            >
               Privacy
             </Link>
-            <Link href="/" className="hover:text-white">
+            <Link
+              href="https://gitbook.zaar.market/"
+              className="hover:text-white"
+            >
               Terms
             </Link>
           </div>
