@@ -404,7 +404,7 @@ export default function Home() {
         const winnings = outcome ? postWalletBalance - walletBalance : 0;
 
         fetch(
-          `./api/addCoinEvent?ownerAddress=${addr}&wager=${wager}&winnings=${winnings}&outcome=${outcome}&side=${currentSide}`
+          `./api/addCoinEvent?ownerAddress=${addr}&wager=${wager}&winnings=${wager + Number(formatEther(BigInt(winnings)))}&outcome=${outcome}&side=${currentSide}`
         )
           .then((response) => response.json())
           .then((data) => {
