@@ -75,22 +75,6 @@ export default function Home() {
   const wagerInputRef = useRef<HTMLInputElement>(null);
   const [testWinCounter, setTestWinCounter] = useState(0);
 
-  // const { data: addAcceptedToken } = useSimulateZaarflipAddAcceptedToken({
-  //   args: [initiaTokenAddress],
-  // });
-
-  // console.log("addAcceptedToken: ", addAcceptedToken);
-
-  // async function callAddAcceptedToken() {
-  //   try {
-  //     let myhash = await writeContract(config, addAcceptedToken!.request);
-  //     let receipt = await waitForTransactionReceipt(config, { hash: myhash });
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  //   return;
-  // }
-
   useWatchContractEvent({
     address: zaarflipAddress,
     abi,
@@ -114,7 +98,6 @@ export default function Home() {
 
   console.log(BigInt(minHeadsTails));
 
-  //get prepared function to flip
   const { data: flip }: { data: any } = useSimulateZaarflipFlip({
     args: [
       parseEther(BigInt(wager ? wager : 0).toString()),

@@ -99,6 +99,12 @@ export const SideMenuModal = () => {
             />
           </Link>
           <Link
+            href="/faucet"
+            className="text-black flex flex-row items-center justify-center px-4 py-2 text-sm rounded-sm font-bold uppercase gradient-button transition duration-500"
+          >
+            Testnet Faucet
+          </Link>
+          <Link
             href="/zaar-flip"
             className="hover:cursor-pointer transition duration-300 hover:scale-105"
             onClick={playSound}
@@ -111,6 +117,7 @@ export const SideMenuModal = () => {
               className="text-white w-[120px]"
             />
           </Link>
+
           <div className="group hover:cursor-pointer transition duration-300 hover:scale-105 relative z-50">
             {/* <Link
               href="/zlinko"
@@ -210,6 +217,7 @@ export const SideMenuModal = () => {
           >
             SETTINGS
           </Link>
+
           <div className="grow mb-5 flex flex-col justify-end items-center gap-3 text-sm text-gray z-50">
             <div className="flex items-center gap-5 mb-1">
               <Link href="https://x.com/zaar_gg" className="hover:text-white">

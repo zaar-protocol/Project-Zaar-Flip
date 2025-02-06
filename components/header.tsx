@@ -83,15 +83,7 @@ export const Header = () => {
         </Link>
       </nav>
       <div className="flex items-center space-x-6 mr-4">
-        {/* <ConnectButton
-          client={client}
-          chain={thirdwebInitiaChain}
-          accountAbstraction={{ chain: thirdwebInitiaChain, sponsorGas: false }}
-        /> */}
-        {/* <ThirdWebWallet /> */}
-        {/* <Web3ModalButton /> */}
         <InitiaWallet />
-        {/* <ConnectWallet /> */}
         <SideMenuModal />
       </div>
     </header>
