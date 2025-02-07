@@ -47,33 +47,21 @@ const Faucet = () => {
       return;
     }
 
-    const canClaim = await checkRecentTransfer(address);
-    if (!canClaim) {
-      toast.error(
-        "Address has received tokens recently. Please wait 24 hours between claims."
-      );
-      return;
-    }
-
     try {
-      const account = privateKeyToAccount(
-        process.env.NEXT_PUBLIC_FAUCET_KEY as `0x${string}`
-      );
-      const walletClient = createWalletClient({
-        account,
-        chain: initia,
-        transport: http(),
-      });
+      const response = await fetch(`/api/dispenseFunds?address=${address}`);
+      const data = await response.json();
 
-      await walletClient.writeContract({
-        address: initiaTokenAddress,
-        abi: initiaTokenAbi,
-        functionName: "transfer",
-        args: [address as `0x${string}`, parseEther("100")],
-      });
+      if (!response.ok) {
+        toast.error(data.error || "Failed to dispense funds");
+        return;
+      }
+
+      toast.success("Funds dispensed! Transaction: " + data.hash);
     } catch (error) {
       console.error(error);
-      toast.error("Failed to dispense funds");
+      toast.error(
+        error instanceof Error ? error.message : "Failed to dispense funds"
+      );
     }
   };
 
