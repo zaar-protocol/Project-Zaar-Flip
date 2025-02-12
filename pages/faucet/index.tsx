@@ -48,8 +48,10 @@ const Faucet = () => {
     }
 
     try {
+      toast.loading("Dispensing funds...");
       const response = await fetch(`/api/dispenseFunds?address=${address}`);
       const data = await response.json();
+      toast.dismiss();
 
       if (!response.ok) {
         toast.error(data.error || "Failed to dispense funds");
