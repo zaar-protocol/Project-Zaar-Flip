@@ -12,6 +12,7 @@ interface ApproveModalProps {
   onClose: () => void;
   allowance: number;
   wager: number;
+  refetchFlip: () => void;
 }
 
 const ApproveModal: React.FC<ApproveModalProps> = ({
@@ -19,6 +20,7 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
   onClose,
   allowance,
   wager,
+  refetchFlip,
 }) => {
   const [approveAmount, setApproveAmount] = useState<bigint>(
     BigInt(wager ? wager : 0)
@@ -43,6 +45,7 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
       toast.loading("Transaction Processing.");
       let receipt = await waitForTransactionReceipt(config, { hash: myhash });
       console.log("Receipt: ", receipt);
+      await refetchFlip();
       toast.dismiss();
     } catch (error) {
       console.log(error);

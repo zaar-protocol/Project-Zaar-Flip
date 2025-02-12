@@ -97,14 +97,15 @@ export default function Home() {
     ],
   });
   console.log("testFlipper: ", testFlipper);
-  const { data: flip }: { data: any } = useSimulateZaarflipFlip({
-    args: [
-      parseEther(BigInt(wager ? wager : 0).toString()),
-      BigInt(coinsAmount),
-      BigInt(minHeadsTails),
-      initiaTokenAddress,
-    ],
-  });
+  const { data: flip, refetch: refetchFlip }: { data: any; refetch: any } =
+    useSimulateZaarflipFlip({
+      args: [
+        parseEther(BigInt(wager ? wager : 0).toString()),
+        BigInt(coinsAmount),
+        BigInt(minHeadsTails),
+        initiaTokenAddress,
+      ],
+    });
 
   const { address: addr } = useAccount();
 
@@ -333,7 +334,7 @@ export default function Home() {
 
     if (wager > wagerPresets[wagerPresets.length - 1]) {
       toast.error(
-        `The current max wager is ${wagerPresets[wagerPresets.length - 1]} INIT.`
+        `The current max wager is ${wagerPresets[wagerPresets.length - 1]} fZAAR.`
       );
       if (!isMuted) {
         erroraudio.play();
@@ -498,6 +499,7 @@ export default function Home() {
         }}
         allowance={allowance ? Number(formatEther(allowance)) : 0}
         wager={wager}
+        refetchFlip={refetchFlip}
       />
 
       <LoadingModal
@@ -583,7 +585,7 @@ export default function Home() {
                   }}
                   className="gradient-button text-black px-6 py-2  hover:-translate-y-1 transition duration-700 ease-in-out rounded-sm font-bold mt-3 mx-auto block text-sm uppercase transition duration-700 ease-in-out"
                 >
-                  FLIP COIN - {wager} INIT
+                  FLIP COIN - {wager} fZAAR
                 </button>
               </div>
             </div>
@@ -673,7 +675,7 @@ export default function Home() {
                   <div className="" ref={inputRefMobile}>
                     <input
                       type="text"
-                      value={wager === 0 ? "" : `${wager} INIT`}
+                      value={wager === 0 ? "" : `${wager} fZAAR`}
                       className="wager-input bg-transparent w-24 text-left pl-2 h-8 text-sm focus:outline-none"
                       onChange={handleWagerChange}
                       onFocus={() => setWagerDropdown(true)}
@@ -696,7 +698,7 @@ export default function Home() {
                                   height={15}
                                   className="mr-2"
                                 />
-                                ${value.toFixed(2)} INIT
+                                ${value.toFixed(2)} fZAAR
                               </div>
                             ))}
                       </div>
@@ -724,7 +726,7 @@ export default function Home() {
                 POTENTIAL TO WIN
               </div>
               <div className="bg-gray rounded-sm p-2 text-lime-green h-10 flex items-center text-sm">
-                {potentialWin} {" INIT"}
+                {potentialWin} {" fZAAR"}
               </div>
             </div>
             <div className="flex justify-between">
@@ -872,7 +874,7 @@ export default function Home() {
                             onChange={handleWagerChange}
                             onFocus={() => setWagerDropdown(true)}
                           />
-                          <span>INIT</span>
+                          <span>fZAAR</span>
                         </div>
 
                         {wagerDropdown && (
@@ -893,7 +895,7 @@ export default function Home() {
                                   height={15}
                                   className="mr-2"
                                 />
-                                {value} INIT
+                                {value} fZAAR
                               </div>
                             ))}
                           </div>
@@ -922,7 +924,7 @@ export default function Home() {
                   POTENTIAL TO WIN
                 </div>
                 <div className="bg-gray rounded-sm p-2 pl-4 text-lime-green h-10 flex items-center text-lg">
-                  {potentialWin} {" INIT"}
+                  {potentialWin} {" fZAAR"}
                 </div>
               </div>
             </div>
@@ -1063,7 +1065,7 @@ export default function Home() {
             }}
             className="hidden md:block gradient-button hover:-translate-y-1 transition duration-700 ease-in-out text-black px-6 py-2 rounded-sm font-bold mt-3 mx-auto block text-sm uppercase"
           >
-            FLIP COIN - {wager} {"INIT"}
+            FLIP COIN - {wager} {"fZAAR"}
           </button>
         </main>
       </div>
