@@ -99,12 +99,6 @@ export const SideMenuModal = () => {
             />
           </Link>
           <Link
-            href="/faucet"
-            className="text-black flex flex-row items-center justify-center px-4 py-2 text-sm rounded-sm font-bold uppercase gradient-button transition duration-500"
-          >
-            Testnet Faucet
-          </Link>
-          <Link
             href="/zaar-flip"
             className="hover:cursor-pointer transition duration-300 hover:scale-105"
             onClick={playSound}

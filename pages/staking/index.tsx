@@ -257,3 +257,7 @@
 //     </div>
 //   );
 // }
+
+export default function Staking() {
+  return <div>Staking Coming Soon...</div>;
+}

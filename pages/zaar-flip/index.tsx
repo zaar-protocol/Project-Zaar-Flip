@@ -9,15 +9,13 @@ import {
   flipCoins,
   WinChanceType,
   randomFlip,
-  startFlipping,
-  stopFlipping,
 } from "../../components/zaarFlipUtils";
 import { ConnectWallet } from "../../components/ConnectWallet";
 import toast, { Toaster } from "react-hot-toast";
 import { StarField } from "@/components/star-field";
 import { Header } from "@/components/header"; // Fixed casing issue
 import { config } from "@/config";
-import { getAccount, getBalance } from "@wagmi/core";
+import { getAccount, getBalance, watchContractEvent } from "@wagmi/core";
 import { createConfetti } from "@/components/confetti";
 import { Tooltip } from "@/components/tooltip";
 import { FaChevronUp, FaChevronDown } from "react-icons/fa6";
@@ -30,7 +28,7 @@ import {
 } from "@/generated";
 import { writeContract } from "@wagmi/core";
 import { waitForTransactionReceipt } from "@wagmi/core";
-import { formatEther } from "viem";
+import { formatEther, Log, parseEventLogs } from "viem";
 import { parseEther } from "viem";
 import { useAccount } from "wagmi";
 import ApproveModal from "@/components/approveModal";
@@ -43,6 +41,21 @@ import { useWatchContractEvent } from "wagmi";
 import { abi } from "@/abis/abi";
 // import useSound from "use-sound";
 import Footer from "@/components/Footer";
+import { FlipAbi } from "@/abis/Flip-abi";
+
+interface GameResultEvent {
+  eventName: "GameResult";
+  args: {
+    player: `0x${string}`;
+    won: boolean;
+    payout: bigint;
+  };
+}
+
+interface GameResult {
+  won: boolean;
+  payout: bigint;
+}
 
 export default function Home() {
   const [currentSide, setCurrentSide] = useState("heads");
@@ -75,29 +88,15 @@ export default function Home() {
   const wagerInputRef = useRef<HTMLInputElement>(null);
   const [testWinCounter, setTestWinCounter] = useState(0);
 
-  useWatchContractEvent({
-    address: zaarflipAddress,
-    abi,
-    eventName: "GameResult",
-    onLogs(logs) {
-      console.log("New logs!", logs);
-    },
-    poll: true,
-  });
-
   const testFlipper = useSimulateZaarflipFlip({
     args: [
-      BigInt(wager ? wager : 0),
+      parseEther(BigInt(wager ? wager : 0).toString()),
       BigInt(coinsAmount),
       BigInt(minHeadsTails),
       initiaTokenAddress,
     ],
   });
-
-  console.log("Test Flipper: ", testFlipper);
-
-  console.log(BigInt(minHeadsTails));
-
+  console.log("testFlipper: ", testFlipper);
   const { data: flip }: { data: any } = useSimulateZaarflipFlip({
     args: [
       parseEther(BigInt(wager ? wager : 0).toString()),
@@ -106,8 +105,6 @@ export default function Home() {
       initiaTokenAddress,
     ],
   });
-
-  console.log("Flip: ", flip);
 
   const { address: addr } = useAccount();
 
@@ -233,23 +230,46 @@ export default function Home() {
       let myhash = await writeContract(config, flip!.request);
 
       console.log("myhash: ", myhash);
+
       let receipt = await waitForTransactionReceipt(config, { hash: myhash });
       console.log("receipt: ", receipt);
 
-      return true;
+      const resultLogs = parseEventLogs({
+        abi: FlipAbi,
+        eventName: "GameResult",
+        logs: receipt.logs,
+      }) as unknown as GameResultEvent[];
+
+      // const result: GameResult = await new Promise((resolve) => {
+      //   const unwatch = watchContractEvent(config, {
+      //     address: zaarflipAddress,
+      //     abi: FlipAbi,
+      //     eventName: "GameResult",
+      //     onLogs: (logs: Array<Log>) => {
+      //       const gameLogs = logs as unknown as GameResultEvent[];
+      //       console.log("Game Logs: ", gameLogs);
+      //       for (const log of gameLogs) {
+      //         if (log.args.player.toLowerCase() === addr?.toLowerCase()) {
+      //           unwatch();
+      //           console.log("Logs: ", logs);
+      //           resolve({
+      //             won: gameLogs[0]?.args.won,
+      //             payout: gameLogs[0]?.args.payout,
+      //           });
+      //         }
+      //       }
+      //     },
+      //     poll: true,
+      //   });
+      // });
+
+      return resultLogs[0].args;
     } catch (error) {
       console.log(error);
       return false;
     }
   }
-  const result = useWatchContractEvent({
-    address: zaarflipAddress,
-    abi,
-    eventName: "GameResult",
-    onLogs(logs) {
-      console.log("New logs!", logs);
-    },
-  });
+
   const testFlipCoin = async () => {
     const isWinning = testWinCounter % 2 === 0;
     setTestWinCounter((prev) => prev + 1);
@@ -366,11 +386,13 @@ export default function Home() {
 
       setLoadingModalIsOpen(true);
 
-      const flippedSuccessfully = await flipContract();
+      const result = await flipContract();
 
       setLoadingModalIsOpen(false);
 
-      if (flippedSuccessfully) {
+      if (result) {
+        const outcome = result.won;
+
         const postWalletBalanceUnformatted = await getBalance(config, {
           address: addr,
           token: initiaTokenAddress,
@@ -382,12 +404,10 @@ export default function Home() {
         console.log("Post Wallet Balance: ", postWalletBalanceUnformatted);
         console.log("Wager: ", wager);
 
-        const outcome = walletBalance < postWalletBalance;
-
-        const winnings = outcome ? postWalletBalance - walletBalance : 0;
+        const winnings = Number(formatEther(result.payout));
 
         fetch(
-          `./api/addCoinEvent?ownerAddress=${addr}&wager=${wager}&winnings=${wager + Number(formatEther(BigInt(winnings)))}&outcome=${outcome}&side=${currentSide}`
+          `./api/addCoinEvent?ownerAddress=${addr}&wager=${wager}&winnings=${winnings}&outcome=${outcome}&side=${currentSide}`
         )
           .then((response) => response.json())
           .then((data) => {
@@ -425,7 +445,7 @@ export default function Home() {
                 }
                 toast.error("You lost.");
               }
-            }, 1000);
+            }, 150 * coinsAmount);
           });
 
         if (coinsDisplayRef.current) {

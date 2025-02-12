@@ -56,7 +56,7 @@ const Faucet = () => {
         return;
       }
 
-      toast.success("Funds dispensed! Transaction: " + data.hash);
+      toast.success("Funds dispensed!");
     } catch (error) {
       console.error(error);
       toast.error(
@@ -76,7 +76,7 @@ const Faucet = () => {
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)]">
         <div className="w-full max-w-md p-6 space-y-4">
           <h1 className="text-4xl font-bold text-center text-white mb-8">
-            Initia Faucet
+            Zaar Testnet Faucet
           </h1>
           <input
             type="text"
@@ -91,7 +91,7 @@ const Faucet = () => {
             disabled={loading}
             className="text-black flex flex-row items-center justify-center space-x-2 px-4 py-2 text-sm rounded-sm font-bold uppercase gradient-button transition duration-500 w-full"
           >
-            {loading ? "Dispensing..." : "Get 100 INIT"}
+            {loading ? "Dispensing..." : "Get 100 Testnet Zaar"}
           </button>
         </div>
       </div>

@@ -2,9 +2,11 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { createWalletClient, getContract, http, parseEther } from 'viem';
 import { mnemonicToAccount } from 'viem/accounts';
 import { initia } from '@/config';
-import { initiaTokenAddress, initiaTokenAbi } from '@/generated';
+import { initiaTokenAbi } from '@/generated';
 import { publicClient } from '@/client';
 
+
+const zaarTokenAddress = "0x6ed1637781269560b204c27Cd42d95e057C4BE44";
 const allowCors = (fn: (req: NextApiRequest, res: NextApiResponse) => Promise<void>) => async (req: NextApiRequest, res: NextApiResponse) => {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -26,32 +28,40 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       return res.status(400).json({ error: 'Invalid address format' });
     }
 
-    // Create account from mnemonic first to get the address
     const account = mnemonicToAccount(process.env.FAUCET_MNEMONIC as string);
     const faucetAddress = account.address;
 
-    // Check recent transfers
-    const contract = getContract({
-      address: initiaTokenAddress,
-      abi: initiaTokenAbi,
-      client: publicClient,
+    // Get current block
+    const currentBlock = await publicClient.getBlockNumber();
+    
+    // Look back ~24 hours worth of blocks (assuming 1 minute block time)
+    const fromBlock = currentBlock - BigInt(1440) > BigInt(0) ? currentBlock - BigInt(1440) : BigInt(0); // 24 * 60
+
+    console.log("fromBlock: ", fromBlock);
+    console.log("currentBlock: ", currentBlock);
+
+    const logs = await publicClient.getLogs({
+      address: zaarTokenAddress,
+      event: {
+        type: 'event',
+        name: 'Transfer',
+        inputs: [
+          { type: 'address', name: 'from', indexed: true },
+          { type: 'address', name: 'to', indexed: true },
+          { type: 'uint256', name: 'value', indexed: false }
+        ]
+      },
+      args: {
+        from: faucetAddress,
+        to: address as `0x${string}`
+      },
+      fromBlock,
+      toBlock: currentBlock
     });
 
-    const events = await contract.getEvents.Transfer({
-      from: faucetAddress,
-      to: address as `0x${string}`,
-    });
-
-    if (events.length > 0) {
-      const latestEvent = events[events.length - 1];
-      const block = await publicClient.getBlock({
-        blockNumber: latestEvent.blockNumber,
-      });
-      const hoursSinceLastTransfer = (Date.now() / 1000 - Number(block.timestamp)) / 3600;
-
-      if (hoursSinceLastTransfer < 24) {
-        return res.status(400).json({ error: 'Please wait 24 hours between claims' });
-      }
+    if (logs.length > 0) {
+      console.log("logs: ", logs);
+      return res.status(400).json({ error: 'Please wait 24 hours between claims.' });
     }
 
     // Create wallet from mnemonic
@@ -63,7 +73,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     // Send tokens
     const hash = await walletClient.writeContract({
-      address: initiaTokenAddress,
+      address: zaarTokenAddress,
       abi: initiaTokenAbi,
       functionName: 'transfer',
       args: [address as `0x${string}`, parseEther('100')]

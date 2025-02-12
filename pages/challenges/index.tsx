@@ -121,3 +121,7 @@
 //     </div>
 //   );
 // }
+
+export default function Challenges() {
+  return <div>Challenges Coming Soon...</div>;
+}

@@ -148,3 +148,7 @@
 //     </div>
 //   );
 // }
+
+export default function Bridge() {
+  return <div>Bridge Coming Soon...</div>;
+}

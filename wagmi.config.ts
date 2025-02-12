@@ -12,17 +12,17 @@ export default defineConfig({
         {
             name: "zaarflip",
             abi:abi,
-            address: "0x654BEa0369fAcD0c0Fcc6b42b5A99815bB3f3Ce1",
+            address: "0xe0E2858078C46bbF58973D2fFAE44ebD537a365F",
         },
         {
             name:"initiaToken",
             abi:erc20Abi,
-            address:"0x93c62ba8eED298EA48F5B8Bca373C52515029eB7",
+            address:"0x6ed1637781269560b204c27Cd42d95e057C4BE44",
         },
         {
             name:"staking", 
             abi:zaarStakingAbi,
-            address:"0x9cF6061275daCeAA92Bf7cDc0df343F768112082",
+            address:"0x7E943A1DbDC631A00109cf2d98639a6B3442ed0c",
         },
         {
             name:"plinko",

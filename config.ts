@@ -5,12 +5,12 @@ import { Config, createConfig, http } from 'wagmi';
 import { authConnector } from '@web3modal/wagmi'
 
 export const initia = {
-  id: 4303131403034904,
-  name: 'initia',
-  nativeCurrency: { name: 'GAS', symbol: 'GAS', decimals: 18 },
+  id: 3710952917853191,
+  name: 'zaar-testnet-3',
+  nativeCurrency: { name: 'MTK', symbol: 'MTK', decimals: 18 },
   rpcUrls: {
     default: {
-      http: ['https://json-rpc.minievm-2.initia.xyz'], // Use array of URLs
+      http: ['https://jsonrpc-1-zaar-testnet-3.anvil.initia.xyz'], // Use array of URLs
     },
   },
   
@@ -19,7 +19,7 @@ export const initia = {
 export const config: Config = createConfig({
   chains: [initia],
   transports: {
-    [initia.id]: http('https://json-rpc.minievm-2.initia.xyz'),
+    [initia.id]: http('https://jsonrpc-1-zaar-testnet-3.anvil.initia.xyz'),
   },
   connectors: [
     authConnector({

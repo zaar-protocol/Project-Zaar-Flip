@@ -320,3 +320,7 @@
 //     </div>
 //   );
 // }
+
+export default function Zlinko() {
+  return <div>Zlinko Coming Soon...</div>;
+}
