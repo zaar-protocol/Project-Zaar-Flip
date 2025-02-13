@@ -1,18 +1,23 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaWallet, FaSignOutAlt, FaTimes } from "react-icons/fa";
 import { useWallet } from "@initia/react-wallet-widget";
-import { useAccount, useDisconnect } from "wagmi";
+import { useAccount, useBalance, useDisconnect } from "wagmi";
 import { useMuteState } from "./MuteContext";
-
+import { formatEther } from "viem";
+import { OctagonAlert } from "lucide-react";
 export const InitiaWallet = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentVanity, setCurrentVanity] = useState("");
   const [currentProfileImage, setCurrentProfileImage] = useState<string>("");
 
-  const { wallet, onboard, disconnect: initiaDisconnect } = useWallet();
-  const { address: wagmiAddress, isConnected } = useAccount();
+  const { wallet, onboard, disconnect: initiaDisconnect, view } = useWallet();
+  const { address: wagmiAddress, isConnected, chainId } = useAccount();
   const { disconnect: wagmiDisconnect } = useDisconnect();
   const { isMuted } = useMuteState();
+
+  const balance = useBalance({
+    address: wagmiAddress,
+  });
 
   const playSound = () => {
     if (isMuted) return;
@@ -118,13 +123,28 @@ export const InitiaWallet = () => {
             playSound();
             onboard();
           }}
-          className="bg-yellow text-black flex flex-row items-center justify-center space-x-2 px-4 py-2 text-sm rounded-sm font-bold uppercase gradient-button hover:bg-white border-2 transition duration-500"
+          className="h-full text-black flex flex-row items-center justify-center space-x-2 px-4 py-2 text-sm rounded-sm font-bold uppercase gradient-button transition duration-500"
         >
           <FaWallet />
           <p>Connect</p>
         </button>
       ) : (
-        <>
+        <div className="flex items-center gap-2 md:gap-6">
+          {chainId === 3710952917853191 ? (
+            <div className="flex items-center justify-center px-4 py-2 text-sm rounded-sm font-bold uppercase text-black gradient-button transition duration-500 whitespace-nowrap">
+              {Number(formatEther(balance.data?.value || BigInt(0))).toFixed(2)}{" "}
+              fZAAR
+            </div>
+          ) : (
+            <button className="h-[24px] w-[24px] min-w-[24px] text-white text-sm font-bold flex items-center justify-center relative">
+              <OctagonAlert
+                size={24}
+                fill="red"
+                className="absolute top-0 left-0"
+              />
+              <OctagonAlert size={24} className="absolute top-0 left-0" />
+            </button>
+          )}
           <button
             onClick={() => setIsModalOpen(true)}
             className="flex items-center justify-center rounded cursor-pointer px-2 py-2 text-sm font-medium text-gray-300 border border-dark-gray-all md:flex w-full gap-2 min-w-[100px] hover:bg-gray-700 transition duration-300"
@@ -132,7 +152,7 @@ export const InitiaWallet = () => {
             {currentVanity || displayAddr(wagmiAddress || "")}
           </button>
           {isModalOpen && <Modal />}
-        </>
+        </div>
       )}
     </div>
   );

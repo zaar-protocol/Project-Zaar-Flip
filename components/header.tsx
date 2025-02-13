@@ -83,9 +83,9 @@ export const Header = () => {
         </Link>
       </nav>
       <div className="flex items-center space-x-2 md:space-x-6 md:mr-4">
-        <Link href="/faucet">
+        <Link href="/faucet" className="h-full">
           <button
-            className="h-9 flex items-center px-4 rounded-sm font-medium uppercase gap-2
+            className="h-full flex items-center py-2 px-4 rounded-sm text-sm font-bold uppercase gap-2
   bg-gradient-to-r from-[#E0E0E0] via-[#F5F5F5] to-[#BDBDBD]
   text-zinc-800
   shadow-sm
