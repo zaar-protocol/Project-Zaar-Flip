@@ -12,7 +12,6 @@ export const initia = {
       http: ['https://jsonrpc-1-zaar-testnet-3.anvil.initia.xyz'], // Use array of URLs
     },
   },
-  
 } as const satisfies Chain
 
 export const config: Config = createConfig({
@@ -21,7 +20,6 @@ export const config: Config = createConfig({
     [initia.id]: http('https://jsonrpc-1-zaar-testnet-3.anvil.initia.xyz'),
   },
   ssr: true,
-
 })
 
 // export const config = getDefaultConfig({
