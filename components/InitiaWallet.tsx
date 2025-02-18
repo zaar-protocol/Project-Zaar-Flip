@@ -1,34 +1,47 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaWallet, FaSignOutAlt, FaTimes } from "react-icons/fa";
 import { useWallet } from "@initia/react-wallet-widget";
-import { useAccount, useBalance, useDisconnect } from "wagmi";
+import { useAccount, useBalance, useDisconnect, useSwitchChain } from "wagmi";
 import { useMuteState } from "./MuteContext";
 import { formatEther } from "viem";
 import { OctagonAlert, AlertOctagon } from "lucide-react";
 
-const NetworkModal = ({ onClose }: { onClose: () => void }) => (
-  <div
-    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-    onClick={(e) => {
-      if (e.target === e.currentTarget) {
-        onClose();
-      }
-    }}
-  >
-    <div className="bg-dark-gray p-6 rounded-lg shadow-xl relative max-w-sm">
-      <button
-        onClick={onClose}
-        className="absolute top-2 right-2 hover:text-white"
-      >
-        <FaTimes />
-      </button>
-      <div className="text-center text-gray-300 my-4">
-        This app doesn&apos;t support your current network. Please switch to
-        <span className="text-white"> zaar-test-3</span>.
+const NetworkModal = ({ onClose }: { onClose: () => void }) => {
+  const { switchChain } = useSwitchChain();
+
+  return (
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div className="bg-dark-gray p-6 rounded-lg shadow-xl relative max-w-sm">
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 hover:text-white"
+        >
+          <FaTimes />
+        </button>
+        <div className="text-center text-gray-300 my-4">
+          This app doesn&apos;t support your current network. Please switch to
+          <span className="text-white"> zaar-test-3</span>.
+        </div>
+        <button
+          onClick={() => {
+            switchChain({ chainId: 3710952917853191 });
+            onClose();
+          }}
+          className="w-full gradient-button text-black py-2 px-4 rounded-sm hover:opacity-90 transition duration-300"
+        >
+          Switch Network
+        </button>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 export const InitiaWallet = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
