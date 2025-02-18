@@ -23,7 +23,7 @@ const NetworkModal = ({ onClose }: { onClose: () => void }) => (
         <FaTimes />
       </button>
       <div className="text-center text-gray-300 my-4">
-        This app doesn't support your current network. Please switch to
+        This app doesn&apos;t support your current network. Please switch to
         <span className="text-white"> zaar-test-3</span>.
       </div>
     </div>
