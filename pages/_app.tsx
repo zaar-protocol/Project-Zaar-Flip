@@ -54,7 +54,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <MuteProvider>
         <WagmiProvider config={config}>
           <QueryClientProvider client={client}>
-            <WalletWidgetProvider chainId="2594729740794688">
+            <WalletWidgetProvider chainId="3710952917853191">
               <ThirdwebProvider>
                 <Head>
                   <title>Zaar</title>
