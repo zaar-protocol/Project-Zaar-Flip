@@ -55,13 +55,11 @@ function MyApp({ Component, pageProps }: AppProps) {
         <WagmiProvider config={config}>
           <QueryClientProvider client={client}>
             <WalletWidgetProvider chainId="zaar-testnet-3">
-              <ThirdwebProvider>
-                <Head>
-                  <title>Zaar</title>
-                  <link rel="icon" href="/favicon.ico" />
-                </Head>
-                <Component {...pageProps} />
-              </ThirdwebProvider>
+              <Head>
+                <title>Zaar</title>
+                <link rel="icon" href="/favicon.ico" />
+              </Head>
+              <Component {...pageProps} />
             </WalletWidgetProvider>
           </QueryClientProvider>
         </WagmiProvider>
