@@ -18,8 +18,7 @@ import {
 } from "thirdweb/react";
 import { client } from "@/client";
 import { thirdwebInitiaChain } from "@/thirdweb.config";
-import { useMuteState } from './MuteContext';
-
+import { useMuteState } from "./MuteContext";
 
 export const ThirdWebWallet = () => {
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
@@ -95,7 +94,10 @@ export const ThirdWebWallet = () => {
     <div>
       {!wallet ? (
         <button
-          onClick={()=>{playSound(); handleConnect(); }}
+          onClick={() => {
+            playSound();
+            handleConnect();
+          }}
           className="bg-yellow text-black flex flex-row items-center justify-center space-x-2 px-4 py-2 text-sm rounded-sm font-bold uppercase gradient-button hover:bg-white border-2 transition duration-500"
         >
           <FaWallet />
@@ -111,13 +113,18 @@ export const ThirdWebWallet = () => {
           >
             <button
               type="button"
-              onClick={()=>{playSound(); detailsModal.open({ client, theme: "dark" }); }}
+              onClick={() => {
+                playSound();
+                detailsModal.open({ client, theme: "dark" });
+              }}
               className="flex items-center justify-center rounded cursor-pointer px-2 py-2 text-sm font-medium text-gray-700 border border-dark-gray-all md:flex w-full gap-2 min-w-[100px]"
               ref={buttonRef}
               aria-expanded={profileMenuOpen}
               aria-haspopup="true"
             >
-              <div className=" text-yellow-400 h-5">{currentVanity || displayAddr(wagmiAddress? wagmiAddress : "")}</div>
+              <div className=" text-yellow-400 h-5">
+                {currentVanity || displayAddr(wagmiAddress ? wagmiAddress : "")}
+              </div>
             </button>
             {/*<div
               className={`relative z-[100] absolute left-0  w-full bg-black border border-dark-gray-all rounded-sm shadow-lg transition-opacity duration-300 ${profileMenuOpen ? "block opacity-100 visible" : "hidden opacity-0 invisible"} uppercase`}

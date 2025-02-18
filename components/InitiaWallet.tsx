@@ -156,6 +156,15 @@ export const InitiaWallet = () => {
         </button>
       ) : (
         <div className="flex items-center gap-2 md:gap-6">
+          <button
+            onClick={() => {
+              console.log("Initia Wallet: ", wallet);
+              console.log("Wagmi Address: ", wagmiAddress);
+              console.log("Wagmi chain ID: ", chainId);
+            }}
+          >
+            Log
+          </button>
           {chainId === 3710952917853191 ? (
             <div className="flex items-center justify-center px-4 py-2 text-sm rounded-sm font-bold uppercase text-black gradient-button transition duration-500 whitespace-nowrap">
               {Number(formatEther(balance.data?.value || BigInt(0))).toFixed(2)}{" "}
