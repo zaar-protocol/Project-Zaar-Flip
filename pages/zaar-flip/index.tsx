@@ -14,7 +14,7 @@ import { ConnectWallet } from "../../components/ConnectWallet";
 import toast, { Toaster } from "react-hot-toast";
 import { StarField } from "@/components/star-field";
 import { Header } from "@/components/header"; // Fixed casing issue
-import { config } from "@/config";
+import { config, initia } from "@/config";
 import { getAccount, getBalance, watchContractEvent } from "@wagmi/core";
 import { createConfetti } from "@/components/confetti";
 import { Tooltip } from "@/components/tooltip";
@@ -87,7 +87,7 @@ export default function Home() {
   const { isMuted, toggleMute } = useMuteState();
   const wagerInputRef = useRef<HTMLInputElement>(null);
   const [testWinCounter, setTestWinCounter] = useState(0);
-
+  const { chainId } = useAccount();
   const testFlipper = useSimulateZaarflipFlip({
     args: [
       parseEther(BigInt(wager ? wager : 0).toString()),
@@ -95,6 +95,7 @@ export default function Home() {
       BigInt(minHeadsTails),
       initiaTokenAddress,
     ],
+    chainId: initia.id,
   });
   console.log("testFlipper: ", testFlipper);
   const { data: flip, refetch: refetchFlip }: { data: any; refetch: any } =
@@ -105,6 +106,7 @@ export default function Home() {
         BigInt(minHeadsTails),
         initiaTokenAddress,
       ],
+      chainId: initia.id,
     });
 
   const { address: addr } = useAccount();
@@ -326,6 +328,14 @@ export default function Home() {
   async function flipCoin() {
     if (wager === 0) {
       toast.error("Please enter a wager.");
+      if (!isMuted) {
+        erroraudio.play();
+      }
+      return;
+    }
+
+    if (chainId !== 3710952917853191) {
+      toast.error("Unsupported network. Please switch to zaar-test-3.");
       if (!isMuted) {
         erroraudio.play();
       }

@@ -4,11 +4,37 @@ import { useWallet } from "@initia/react-wallet-widget";
 import { useAccount, useBalance, useDisconnect } from "wagmi";
 import { useMuteState } from "./MuteContext";
 import { formatEther } from "viem";
-import { OctagonAlert } from "lucide-react";
+import { OctagonAlert, AlertOctagon } from "lucide-react";
+
+const NetworkModal = ({ onClose }: { onClose: () => void }) => (
+  <div
+    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    onClick={(e) => {
+      if (e.target === e.currentTarget) {
+        onClose();
+      }
+    }}
+  >
+    <div className="bg-dark-gray p-6 rounded-lg shadow-xl relative max-w-sm">
+      <button
+        onClick={onClose}
+        className="absolute top-2 right-2 hover:text-white"
+      >
+        <FaTimes />
+      </button>
+      <div className="text-center text-gray-300 my-4">
+        This app doesn't support your current network. Please switch to
+        <span className="text-white"> zaar-test-3</span>.
+      </div>
+    </div>
+  </div>
+);
+
 export const InitiaWallet = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentVanity, setCurrentVanity] = useState("");
   const [currentProfileImage, setCurrentProfileImage] = useState<string>("");
+  const [isNetworkModalOpen, setIsNetworkModalOpen] = useState(false);
 
   const { wallet, onboard, disconnect: initiaDisconnect, view } = useWallet();
   const { address: wagmiAddress, isConnected, chainId } = useAccount();
@@ -136,13 +162,16 @@ export const InitiaWallet = () => {
               fZAAR
             </div>
           ) : (
-            <button className="h-[24px] w-[24px] min-w-[24px] text-white text-sm font-bold flex items-center justify-center relative">
-              <OctagonAlert
+            <button
+              onClick={() => setIsNetworkModalOpen(true)}
+              className="h-[24px] w-[24px] min-w-[24px] text-white text-sm font-bold flex items-center justify-center relative"
+            >
+              <AlertOctagon
                 size={24}
                 fill="red"
                 className="absolute top-0 left-0"
               />
-              <OctagonAlert size={24} className="absolute top-0 left-0" />
+              <AlertOctagon size={24} className="absolute top-0 left-0" />
             </button>
           )}
           <button
@@ -152,6 +181,9 @@ export const InitiaWallet = () => {
             {currentVanity || displayAddr(wagmiAddress || "")}
           </button>
           {isModalOpen && <Modal />}
+          {isNetworkModalOpen && (
+            <NetworkModal onClose={() => setIsNetworkModalOpen(false)} />
+          )}
         </div>
       )}
     </div>
