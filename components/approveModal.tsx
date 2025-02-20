@@ -28,8 +28,6 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
 
   useEffect(() => {
     setApproveAmount(BigInt(wager ? wager : 0));
-    console.log("Allowance Modal: ", allowance);
-    console.log("Wager: ", wager);
   }, [wager, allowance, isOpen]);
 
   const { data: approve }: { data: any } = useSimulateInitiaTokenApprove({
@@ -39,12 +37,10 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
   async function approver() {
     const toastId = toast.loading("Waiting on confirmation from your wallet.");
     try {
-      console.log("Approve: ", approve);
       let myhash = await writeContract(config, approve!.request);
       toast.dismiss(toastId);
       toast.loading("Transaction Processing.");
       let receipt = await waitForTransactionReceipt(config, { hash: myhash });
-      console.log("Receipt: ", receipt);
       await refetchFlip();
       toast.dismiss();
     } catch (error) {
@@ -56,7 +52,6 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
 
   const handleApproveClick = async () => {
     if (approve) {
-      console.log(approveAmount);
       await approver();
       onClose();
     }

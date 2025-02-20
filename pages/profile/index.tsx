@@ -47,14 +47,12 @@ export default function Profile() {
     fetch(`./api/getProfile?ownerAddress=${addr}`)
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         if (data?.uName) setCurrentVanity(data.uName);
         if (data?.profPicUrl) setCurrentProfileImage(data.profPicUrl);
         if (data?.email) setCurrentEmail(data.email);
         if (data?.bannerPicUrl) setCurrentProfileBanner(data.bannerPicUrl);
         if (data?.winnings) setWinning(data.winnings);
         if (data?.waged) setWaged(data.waged);
-        console.log(data);
       })
       .catch((error) => {
         console.error("Error fetching profile data:", error);
@@ -75,7 +73,6 @@ export default function Profile() {
         }
         setWins(newWins);
         setLosses(newLosses);
-        console.log(data);
         setHistory(data);
       })
       .catch((error) => {

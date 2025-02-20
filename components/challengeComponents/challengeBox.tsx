@@ -73,7 +73,6 @@ export default function ChallengeBox({ challenge }: { challenge: challenge }) {
       fetch(`/api/getProfile?ownerAddress=${address}`)
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
           if (data == null) {
             fetch(`/api/updateProfile?ownerAddress=${address}`);
           } else {

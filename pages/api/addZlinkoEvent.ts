@@ -48,7 +48,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     const startBalance = 0;
     if (todaysEvents.length === 0) {
-      console.log("First event of the day")
     }
 
     // Create event

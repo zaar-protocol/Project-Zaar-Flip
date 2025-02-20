@@ -50,12 +50,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       throw new Error('Invalid Ethereum address format');
     }
 
-    console.log("userName: ", userName, " type: ", typeof userName);
-    console.log("newBio: ", newBio, " type: ", typeof newBio);
-    console.log("newEmail: ", newEmail, " type: ", typeof newEmail);
-    console.log("newProfPicURL: ", newProfPicURL, " type: ", typeof newProfPicURL);
-    console.log("newBannerPicURL: ", newBannerPicURL, " type: ", typeof newBannerPicURL);
-
     const userData = await prisma.profile.upsert({
         where: { authorAddress: ownerAddress },
         update: { uName: userName, bio: newBio, email: newEmail, profPicUrl: newProfPicURL, bannerPicUrl: newBannerPicURL},

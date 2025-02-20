@@ -14,7 +14,6 @@ export const EventBox = ({
   outcome: boolean;
   winnings: number;
 }) => {
-  console.log(date);
   const d = new Date(date);
   const today = new Date();
   const timeAgo = Math.floor(

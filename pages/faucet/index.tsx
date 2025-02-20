@@ -1,18 +1,36 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { parseEther } from "viem";
 import toast, { Toaster } from "react-hot-toast";
 import { Header } from "@/components/header";
 import { StarField } from "@/components/star-field";
 import { initiaTokenAddress, initiaTokenAbi } from "@/generated";
-import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import {
+  useWriteContract,
+  useWaitForTransactionReceipt,
+  useAccount,
+} from "wagmi";
 import { getContract } from "viem";
 import { publicClient } from "@/client";
 import { createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { initia } from "@/config";
+import { useAddress } from "@initia/react-wallet-widget";
+import { useBalanceContext } from "@/contexts/BalanceContext";
 
 const Faucet = () => {
-  const [address, setAddress] = useState("");
+  const { address: wagmiAddress } = useAccount();
+  const initiaAddress = useAddress();
+  const [address, setAddress] = useState(wagmiAddress || initiaAddress || "");
+  const { refetchBalance } = useBalanceContext();
+
+  // Update address when wallet connects/disconnects
+  useEffect(() => {
+    if (wagmiAddress) {
+      setAddress(wagmiAddress);
+    } else if (initiaAddress) {
+      setAddress(initiaAddress);
+    }
+  }, [wagmiAddress, initiaAddress]);
 
   const { data: hash, writeContract, isPending } = useWriteContract();
   const { isLoading: isConfirming } = useWaitForTransactionReceipt({ hash });
@@ -42,7 +60,10 @@ const Faucet = () => {
   };
 
   const dispenseFunds = async () => {
-    if (!address.match(/^0x[a-fA-F0-9]{40}$/) && !address.match(/^init[a-zA-Z0-9]{38,39}$/)) {
+    if (
+      !address.match(/^0x[a-fA-F0-9]{40}$/) &&
+      !address.match(/^init[a-zA-Z0-9]{38,39}$/)
+    ) {
       toast.error("Invalid Ethereum address");
       return;
     }
@@ -59,6 +80,7 @@ const Faucet = () => {
       }
 
       toast.success("Funds dispensed!");
+      await refetchBalance();
     } catch (error) {
       console.error(error);
       toast.error(

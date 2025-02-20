@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaWallet, FaSignOutAlt, FaTimes } from "react-icons/fa";
-import { useAddress,useWallet } from "@initia/react-wallet-widget";
+import { useAddress, useWallet } from "@initia/react-wallet-widget";
 import { useAccount, useBalance, useDisconnect, useSwitchChain } from "wagmi";
 import { useMuteState } from "./MuteContext";
 import { formatEther } from "viem";
 import { OctagonAlert, AlertOctagon } from "lucide-react";
-import { bech32 } from 'bech32';
+import { bech32 } from "bech32";
 
 const NetworkModal = ({ onClose }: { onClose: () => void }) => {
   const { switchChain } = useSwitchChain();
@@ -62,7 +62,7 @@ export const InitiaWallet = () => {
   const convertInitiaAddress = () => {
     if (initiaAddress?.match(/^init[a-zA-Z0-9]{38,39}$/)) {
       const { words: decodedWords } = bech32.decode(initiaAddress);
-      return '0x' + Buffer.from(bech32.fromWords(decodedWords)).toString('hex');
+      return "0x" + Buffer.from(bech32.fromWords(decodedWords)).toString("hex");
     }
     return initiaAddress;
   };
@@ -169,7 +169,7 @@ export const InitiaWallet = () => {
   );
 
   return (
-    <div>
+    <>
       {!wallet ? (
         <button
           onClick={() => {
@@ -183,7 +183,8 @@ export const InitiaWallet = () => {
         </button>
       ) : (
         <div className="flex items-center gap-2 md:gap-6">
-          {(chainId === 3710952917853191 || wallet?.name === "Initia Wallet" )? (
+          {chainId === 3710952917853191 ||
+          initiaAddress?.startsWith("init1") ? (
             <div className="flex items-center justify-center px-4 py-2 text-sm rounded-sm font-bold uppercase text-black gradient-button transition duration-500 whitespace-nowrap">
               {Number(formatEther(balance.data?.value || BigInt(0))).toFixed(2)}{" "}
               fZAAR
@@ -202,7 +203,10 @@ export const InitiaWallet = () => {
             </button>
           )}
           <button
-            onClick={() => setIsModalOpen(true)}
+            // onClick={() => setIsModalOpen(true)}
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              view(e);
+            }}
             className="flex items-center justify-center rounded cursor-pointer px-2 py-2 text-sm font-medium text-gray-300 border border-dark-gray-all md:flex w-full gap-2 min-w-[100px] hover:bg-gray-700 transition duration-300"
           >
             {currentVanity || displayAddr(wagmiAddress || initiaAddress || "")}
@@ -213,6 +217,6 @@ export const InitiaWallet = () => {
           )}
         </div>
       )}
-    </div>
+    </>
   );
 };

@@ -6,7 +6,13 @@ import { Config, createConfig, http } from 'wagmi';
 export const initia = {
   id: 3710952917853191,
   name: 'zaar-testnet-3',
-  nativeCurrency: { name: 'MTK', symbol: 'MTK', decimals: 18 },
+  nativeCurrency: { name: 'fZAAR', symbol: 'fZAAR', decimals: 18 },
+  blockExplorers: {
+    default: {
+      name: 'Initia Scan',
+      url: 'https://scan.testnet.initia.xyz/zaar-testnet-3',
+    },
+  },
   rpcUrls: {
     default: {
       http: ['https://jsonrpc-1-zaar-testnet-3.anvil.initia.xyz'], // Use array of URLs

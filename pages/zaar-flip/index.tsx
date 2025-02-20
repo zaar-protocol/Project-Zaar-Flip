@@ -37,16 +37,23 @@ import { initiaTokenAddress } from "@/generated";
 import { zaarflipAddress } from "@/generated";
 import { MuteButton } from "@/components/MuteButton";
 import { useMuteState } from "@/components/MuteContext";
-import { bech32 } from 'bech32';
+import { bech32 } from "bech32";
 import { useAddress, useWallet } from "@initia/react-wallet-widget";
 import { useWatchContractEvent } from "wagmi";
 import { abi } from "@/abis/abi";
-import { MsgSend } from "cosmjs-types/cosmos/bank/v1beta1/tx"
-import { MsgExecute, Wallet, LCDClient, MnemonicKey, bcs } from '@initia/initia.js'
+import { MsgSend } from "cosmjs-types/cosmos/bank/v1beta1/tx";
+import {
+  MsgExecute,
+  Wallet,
+  LCDClient,
+  MnemonicKey,
+  bcs,
+} from "@initia/initia.js";
 
 // import useSound from "use-sound";
 import Footer from "@/components/Footer";
 import { FlipAbi } from "@/abis/Flip-abi";
+import { useBalanceContext } from "@/contexts/BalanceContext";
 
 interface GameResultEvent {
   eventName: "GameResult";
@@ -93,16 +100,6 @@ export default function Home() {
   const wagerInputRef = useRef<HTMLInputElement>(null);
   const [testWinCounter, setTestWinCounter] = useState(0);
   const { chainId } = useAccount();
-  const testFlipper = useSimulateZaarflipFlip({
-    args: [
-      parseEther(BigInt(wager ? wager : 0).toString()),
-      BigInt(coinsAmount),
-      BigInt(minHeadsTails),
-      initiaTokenAddress,
-    ],
-    chainId: initia.id,
-  });
-  console.log("testFlipper: ", testFlipper);
   const { data: flip, refetch: refetchFlip }: { data: any; refetch: any } =
     useSimulateZaarflipFlip({
       args: [
@@ -120,15 +117,19 @@ export default function Home() {
   const convertInitiaAddress = () => {
     if (initiaAddress?.match(/^init[a-zA-Z0-9]{38,39}$/)) {
       const { words: decodedWords } = bech32.decode(initiaAddress);
-      return '0x' + Buffer.from(bech32.fromWords(decodedWords)).toString('hex');
+      return "0x" + Buffer.from(bech32.fromWords(decodedWords)).toString("hex");
     }
     return initiaAddress;
   };
   const { wallet } = useWallet();
+  const { refetchBalance } = useBalanceContext();
 
   const { data: allowance, refetch: refetchAllowance } =
     useReadInitiaTokenAllowance({
-      args: [addr ? addr : convertInitiaAddress() || "0x00000000000000000", zaarflipAddress],
+      args: [
+        addr ? addr : convertInitiaAddress() || "0x00000000000000000",
+        zaarflipAddress,
+      ],
     });
 
   const wagerPresets = [10, 50, 100, 500, 1000, 5000];
@@ -238,61 +239,15 @@ export default function Home() {
     }
   }, [coinsAmount]);
 
-  // async function initiaFlipContract() {
-  //   try {
-  //     // Initialize LCD client
-  //     const lcd = new LCDClient('https://lcd.testnet.initia.xyz', {
-  //       chainId: 'zaar-test-3',
-  //       gasPrices: '0.15uinit',
-  //       gasAdjustment: '2.0'
-  //     });
-  
-  //     // Create the flip message
-  //     const msg = new MsgExecute(
-  //       initiaAddress!, // sender address
-  //       zaarflipAddress, // contract address
-  //       'zaarflip', // module name
-  //       'flip', // function name
-  //       [], // type arguments
-  //       [
-  //         bcs.u64().serialize(BigInt(parseEther(wager.toString()))).toBase64(), // wager amount
-  //         bcs.u64().serialize(BigInt(coinsAmount)).toBase64(), // coins amount
-  //         bcs.u64().serialize(BigInt(minHeadsTails)).toBase64(), // min heads/tails
-  //         bcs.address().serialize(initiaTokenAddress).toBase64() // token address
-  //       ]
-  //     );
-  
-  //     if (!wallet) {
-  //       throw new Error("Wallet not connected");
-  //     }
-  
-  //     // Create and sign transaction
-  //     const signedTx = await wallet.createAndSignTx({
-  //       msgs: [msg],
-  //       memo: 'Zaar Flip Game',
-  //     });
-  
-  //     // Broadcast transaction
-  //     const result = await lcd.tx.broadcast(signedTx);
-  //     console.log("result: ", result);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
-
   async function flipContract() {
     if (!flip || !flip.request) {
       console.error("Error, flip contract is null.");
       return false;
     }
-    console.log(flip!.request);
     try {
       let myhash = await writeContract(config, flip!.request);
 
-      console.log("myhash: ", myhash);
-
       let receipt = await waitForTransactionReceipt(config, { hash: myhash });
-      console.log("receipt: ", receipt);
 
       const resultLogs = parseEventLogs({
         abi: FlipAbi,
@@ -330,58 +285,6 @@ export default function Home() {
     }
   }
 
-  const testFlipCoin = async () => {
-    const isWinning = testWinCounter % 2 === 0;
-    setTestWinCounter((prev) => prev + 1);
-    if (!isMuted) {
-      flipaudio.play();
-    }
-    if (coinsDisplayRef.current) {
-      randomFlip(
-        coinsDisplayRef.current,
-        minHeadsTails,
-        currentSide,
-        isWinning
-      );
-    }
-
-    setTimeout(
-      () => {
-        if (isWinning) {
-          if (!isMuted) {
-            if (audioCount % 2 == 1) {
-              winaudio.play();
-            } else {
-              winaudio2.play();
-            }
-          }
-          createConfetti();
-          toast.success("You won!");
-        } else {
-          if (!isMuted) {
-            if (audioCount === 1) {
-              loseaudio.play();
-              setAudioCount(2);
-            } else if (audioCount === 2) {
-              setAudioCount(3);
-            } else if (audioCount === 3) {
-              setAudioCount(4);
-            } else if (audioCount === 4) {
-              loseAudio2.play();
-              setAudioCount(5);
-            } else if (audioCount === 5) {
-              setAudioCount(6);
-            } else if (audioCount === 6) {
-              setAudioCount(1);
-            }
-          }
-          toast.error("You lost!");
-        }
-      },
-      1000 + 25 * coinsAmount
-    );
-  };
-
   async function flipCoin() {
     if (wager === 0) {
       toast.error("Please enter a wager.");
@@ -391,7 +294,7 @@ export default function Home() {
       return;
     }
 
-    if (chainId !== 3710952917853191 && wallet?.name !== "Initia Wallet") {
+    if (chainId !== 3710952917853191 && !initiaAddress?.startsWith("init")) {
       toast.error("Unsupported network. Please switch to zaar-test-3.");
       if (!isMuted) {
         erroraudio.play();
@@ -416,7 +319,6 @@ export default function Home() {
         token: initiaTokenAddress,
       });
       const walletBalance = Number(walletBalanceUnformatted.value);
-      console.log("WalletBalance: ", walletBalance);
 
       if (walletBalance <= wager) {
         toast.error("Insufficient funds. Please add Init to your wallet.");
@@ -429,19 +331,6 @@ export default function Home() {
         flipaudio.play();
       }
       const { data: newAllowance } = await refetchAllowance();
-
-      console.log("Allowance Page: ", newAllowance);
-
-      console.log("formatEther(newAllowance): ", formatEther(newAllowance!));
-      console.log(
-        "Number(formatEther(newAllowance)): ",
-        Number(formatEther(newAllowance!))
-      );
-      console.log("wager: ", wager);
-      console.log(
-        "Number(formatEther(newAllowance)) < wager: ",
-        Number(formatEther(newAllowance!)) < wager
-      );
 
       if (
         !newAllowance ||
@@ -459,6 +348,7 @@ export default function Home() {
       setLoadingModalIsOpen(false);
 
       if (result) {
+        await refetchBalance();
         const outcome = result.won;
 
         const postWalletBalanceUnformatted = await getBalance(config, {
@@ -466,21 +356,12 @@ export default function Home() {
           token: initiaTokenAddress,
         });
 
-        const postWalletBalance = Number(postWalletBalanceUnformatted.value);
-
-        console.log("Initial Wallet Balance: ", walletBalanceUnformatted);
-        console.log("Post Wallet Balance: ", postWalletBalanceUnformatted);
-        console.log("Wager: ", wager);
-
         const winnings = Number(formatEther(result.payout));
 
         fetch(
           `./api/addCoinEvent?ownerAddress=${addr || convertInitiaAddress()}&wager=${wager}&winnings=${winnings}&outcome=${outcome}&side=${currentSide}`
         )
           .then((response) => response.json())
-          .then((data) => {
-            console.log(data);
-          })
           .then(() => {
             setTimeout(() => {
               if (outcome) {
@@ -535,13 +416,6 @@ export default function Home() {
       return;
     }
   }
-  /*const buttons = document.querySelectorAll("button");
-
-  buttons.forEach(button => {
-    button.addEventListener("click", () => {
-      audio.play();
-    });
-  });*/
 
   return (
     <div className=" h-screen w-screen overflow-x-hidden no-scrollbar relative flex flex-col items-center justify-start pb-10 ">

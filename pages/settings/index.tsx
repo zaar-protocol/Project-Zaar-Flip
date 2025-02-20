@@ -62,7 +62,6 @@ export const Settings = () => {
     }
   }, [address, isConnected]);
   function updateProfile() {
-    console.log(address, isConnected);
     if (!wallet) {
       toast.error("Please connect your wallet");
       return;
@@ -100,7 +99,6 @@ export const Settings = () => {
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         if (data.error) {
           toast.error("Error: unable to update profile");
         } else {
@@ -146,7 +144,6 @@ export const Settings = () => {
 
       setBlob(newBlob);
       setNewProfileImage(newBlob.url);
-      console.log(newBlob);
     } catch (error) {
       toast.error("Upload failed");
     } finally {
@@ -173,7 +170,6 @@ export const Settings = () => {
 
     setBlob(newBlob);
     setNewProfileBanner(newBlob.url);
-    console.log(newBlob);
   };
 
   return (
