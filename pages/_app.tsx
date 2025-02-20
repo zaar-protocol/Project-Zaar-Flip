@@ -33,7 +33,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <MuteProvider>
         <WagmiProvider config={config}>
           <QueryClientProvider client={client}>
-            <WalletWidgetProvider chainId="zaar-testnet-3">
+            <WalletWidgetProvider  chainId="zaar-testnet-3" filterWallet={(wallet) => wallet.type !== "initia"}>
               <Head>
                 <title>Zaar</title>
                 <link rel="icon" href="/favicon.ico" />

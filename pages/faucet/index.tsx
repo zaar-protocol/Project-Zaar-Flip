@@ -42,7 +42,7 @@ const Faucet = () => {
   };
 
   const dispenseFunds = async () => {
-    if (!address.match(/^0x[a-fA-F0-9]{40}$/)) {
+    if (!address.match(/^0x[a-fA-F0-9]{40}$/) && !address.match(/^init[a-zA-Z0-9]{38,39}$/)) {
       toast.error("Invalid Ethereum address");
       return;
     }

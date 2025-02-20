@@ -37,8 +37,13 @@ import { initiaTokenAddress } from "@/generated";
 import { zaarflipAddress } from "@/generated";
 import { MuteButton } from "@/components/MuteButton";
 import { useMuteState } from "@/components/MuteContext";
+import { bech32 } from 'bech32';
+import { useAddress, useWallet } from "@initia/react-wallet-widget";
 import { useWatchContractEvent } from "wagmi";
 import { abi } from "@/abis/abi";
+import { MsgSend } from "cosmjs-types/cosmos/bank/v1beta1/tx"
+import { MsgExecute, Wallet, LCDClient, MnemonicKey, bcs } from '@initia/initia.js'
+
 // import useSound from "use-sound";
 import Footer from "@/components/Footer";
 import { FlipAbi } from "@/abis/Flip-abi";
@@ -108,12 +113,22 @@ export default function Home() {
       ],
       chainId: initia.id,
     });
-
+  //for regular wallets
   const { address: addr } = useAccount();
+  //for initia wallets
+  const initiaAddress = useAddress();
+  const convertInitiaAddress = () => {
+    if (initiaAddress?.match(/^init[a-zA-Z0-9]{38,39}$/)) {
+      const { words: decodedWords } = bech32.decode(initiaAddress);
+      return '0x' + Buffer.from(bech32.fromWords(decodedWords)).toString('hex');
+    }
+    return initiaAddress;
+  };
+  const { wallet } = useWallet();
 
   const { data: allowance, refetch: refetchAllowance } =
     useReadInitiaTokenAllowance({
-      args: [addr ? addr : "0x00000000000000000", zaarflipAddress],
+      args: [addr ? addr : convertInitiaAddress() || "0x00000000000000000", zaarflipAddress],
     });
 
   const wagerPresets = [10, 50, 100, 500, 1000, 5000];
@@ -222,6 +237,48 @@ export default function Home() {
       setMinHeadsTails(coinsAmount);
     }
   }, [coinsAmount]);
+
+  // async function initiaFlipContract() {
+  //   try {
+  //     // Initialize LCD client
+  //     const lcd = new LCDClient('https://lcd.testnet.initia.xyz', {
+  //       chainId: 'zaar-test-3',
+  //       gasPrices: '0.15uinit',
+  //       gasAdjustment: '2.0'
+  //     });
+  
+  //     // Create the flip message
+  //     const msg = new MsgExecute(
+  //       initiaAddress!, // sender address
+  //       zaarflipAddress, // contract address
+  //       'zaarflip', // module name
+  //       'flip', // function name
+  //       [], // type arguments
+  //       [
+  //         bcs.u64().serialize(BigInt(parseEther(wager.toString()))).toBase64(), // wager amount
+  //         bcs.u64().serialize(BigInt(coinsAmount)).toBase64(), // coins amount
+  //         bcs.u64().serialize(BigInt(minHeadsTails)).toBase64(), // min heads/tails
+  //         bcs.address().serialize(initiaTokenAddress).toBase64() // token address
+  //       ]
+  //     );
+  
+  //     if (!wallet) {
+  //       throw new Error("Wallet not connected");
+  //     }
+  
+  //     // Create and sign transaction
+  //     const signedTx = await wallet.createAndSignTx({
+  //       msgs: [msg],
+  //       memo: 'Zaar Flip Game',
+  //     });
+  
+  //     // Broadcast transaction
+  //     const result = await lcd.tx.broadcast(signedTx);
+  //     console.log("result: ", result);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
 
   async function flipContract() {
     if (!flip || !flip.request) {
@@ -334,7 +391,7 @@ export default function Home() {
       return;
     }
 
-    if (chainId !== 3710952917853191) {
+    if (chainId !== 3710952917853191 && wallet?.name !== "Initia Wallet") {
       toast.error("Unsupported network. Please switch to zaar-test-3.");
       if (!isMuted) {
         erroraudio.play();
@@ -353,9 +410,9 @@ export default function Home() {
     }
 
     const addr = getAccount(config).address;
-    if (addr) {
+    if (addr || convertInitiaAddress()) {
       const walletBalanceUnformatted = await getBalance(config, {
-        address: addr,
+        address: addr || convertInitiaAddress() || "0x00000000000000000",
         token: initiaTokenAddress,
       });
       const walletBalance = Number(walletBalanceUnformatted.value);
@@ -405,7 +462,7 @@ export default function Home() {
         const outcome = result.won;
 
         const postWalletBalanceUnformatted = await getBalance(config, {
-          address: addr,
+          address: addr || convertInitiaAddress(),
           token: initiaTokenAddress,
         });
 
@@ -418,7 +475,7 @@ export default function Home() {
         const winnings = Number(formatEther(result.payout));
 
         fetch(
-          `./api/addCoinEvent?ownerAddress=${addr}&wager=${wager}&winnings=${winnings}&outcome=${outcome}&side=${currentSide}`
+          `./api/addCoinEvent?ownerAddress=${addr || convertInitiaAddress()}&wager=${wager}&winnings=${winnings}&outcome=${outcome}&side=${currentSide}`
         )
           .then((response) => response.json())
           .then((data) => {

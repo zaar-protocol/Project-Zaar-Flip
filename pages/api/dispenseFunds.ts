@@ -4,6 +4,8 @@ import { mnemonicToAccount } from 'viem/accounts';
 import { initia } from '@/config';
 import { initiaTokenAbi } from '@/generated';
 import { publicClient } from '@/client';
+import { bech32 } from 'bech32';
+
 
 
 const zaarTokenAddress = "0x6ed1637781269560b204c27Cd42d95e057C4BE44";
@@ -22,9 +24,17 @@ const allowCors = (fn: (req: NextApiRequest, res: NextApiResponse) => Promise<vo
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const address = req.query.address as string;
+    let address = req.query.address as string;
+    //if address is bech32, convert to hex
+    console.log("checking address: ", address);
+    if (address?.match(/^init[a-zA-Z0-9]{38,39}$/)) {
+      console.log("address is bech32");
+      const { words: decodedWords } = bech32.decode(address);
+      address = '0x' + Buffer.from(bech32.fromWords(decodedWords)).toString('hex');
+      console.log(address);
+    }
     
-    if (!address?.match(/^0x[a-fA-F0-9]{40}$/)) {
+    if (!address?.match(/^0x[a-fA-F0-9]{40}$/) && !address?.match(/^init[a-zA-Z0-9]{38,39}$/)) {
       return res.status(400).json({ error: 'Invalid address format' });
     }
 
@@ -70,6 +80,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       chain: initia,
       transport: http()
     });
+    
 
     // Send tokens
     const hash = await walletClient.writeContract({
