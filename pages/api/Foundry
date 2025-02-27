@@ -1,0 +1,5 @@
+wallet address: 0x4954002C228cf6eA76b1Ed92DF964744BB3b5A57
+private key: 79d32c4d721e1bcdf6d8c03f5e716da79bb3dee1e4dbd976f2c81b0797df9ba0
+token address: 0x6f3790E91caf7B020f178aaB4482a2B1B5E9f45C
+
+cast send 0x6f3790E91caf7B020f178aaB4482a2B1B5E9f45C "mint(address,uint256)" 0x4954002C228cf6eA76b1Ed92DF964744BB3b5A57 10000000000000000000000000000 --rpc-url https://jsonrpc-0-zaar-testnet-4.anvil.asia-southeast.initia.xyz --private-key 79d32c4d721e1bcdf6d8c03f5e716da79bb3dee1e4dbd976f2c81b0797df9ba0

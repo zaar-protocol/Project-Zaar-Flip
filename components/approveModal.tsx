@@ -4,8 +4,15 @@ import toast, { Toaster } from "react-hot-toast";
 import { writeContract, waitForTransactionReceipt } from "@wagmi/core";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { parseEther } from "viem";
+import { erc20Abi, parseEther } from "viem";
 import { zaarflipAddress } from "@/generated";
+import { useAccount, useBalance } from "wagmi";
+import { erc20ContractInterface } from "@/utils/contractInterface";
+import { useAddress, useWallet } from "@initia/react-wallet-widget";
+import { ethers } from "ethers";
+import { JsonRpcProvider } from "ethers";
+import { useBalanceContext } from "@/contexts/BalanceContext";
+import { convertInitiaAddress } from "@/utils/convertInitiaAddress";
 
 interface ApproveModalProps {
   isOpen: boolean;
@@ -25,6 +32,17 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
   const [approveAmount, setApproveAmount] = useState<bigint>(
     BigInt(wager ? wager : 0)
   );
+  const { address: wagmiAddress } = useAccount();
+  const { requestEthereumTx } = useWallet();
+  const initiaAddress = useAddress();
+
+  const balance = useBalance({
+    address: wagmiAddress || convertInitiaAddress(initiaAddress || ""),
+    token: "0x6ed1637781269560b204c27Cd42d95e057C4BE44",
+  });
+
+  const presetAmounts = [10, 50, 100, 1000, 10000, 100000] as const;
+  type PresetAmount = (typeof presetAmounts)[number];
 
   useEffect(() => {
     setApproveAmount(BigInt(wager ? wager : 0));
@@ -36,6 +54,7 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
 
   async function approver() {
     const toastId = toast.loading("Waiting on confirmation from your wallet.");
+
     try {
       let myhash = await writeContract(config, approve!.request);
       toast.dismiss(toastId);
@@ -47,11 +66,14 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
       console.log(error);
       toast.dismiss();
     }
-    return;
   }
 
   const handleApproveClick = async () => {
-    if (approve) {
+    if (approve || initiaAddress?.startsWith("init")) {
+      if (balance.data?.value && approveAmount > balance.data?.value) {
+        toast.error("Insufficient balance.");
+        return;
+      }
       await approver();
       onClose();
     }
@@ -86,10 +108,6 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
         <div>
           Current allowance: <span className="text-red">{allowance}</span>
         </div>
-        {/* <div
-          Funds needing approval:{" "}
-          <span className="text-red">{wager - allowance}</span>
-        </div> */}
 
         {/* Input field for approveAmount */}
         <div className="mt-4">
@@ -99,6 +117,23 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
           >
             Set Allowance:
           </label>
+          <div className="mt-4 mb-6 grid grid-cols-3 gap-3">
+            {presetAmounts.map((amount) => (
+              <button
+                key={amount}
+                onClick={() => setApproveAmount(BigInt(amount))}
+                className={`
+                  bg-gray-800 hover:bg-gray-700 
+                  font-medium py-2 px-4 rounded-md 
+                  transition-colors duration-200 
+                  text-gray-300 hover:text-white
+                  border border-gray-700 hover:border-gray-600
+                `}
+              >
+                {`${amount} fZAAR`}
+              </button>
+            ))}
+          </div>
           <div className="flex items-center">
             <Image
               src="/zaar-flip-heads.png"

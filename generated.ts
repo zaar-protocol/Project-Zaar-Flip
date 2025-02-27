@@ -208,7 +208,7 @@ export const initiaTokenAbi = [
 ] as const
 
 export const initiaTokenAddress =
-  '0x6ed1637781269560b204c27Cd42d95e057C4BE44' as const
+  '0x6f3790E91caf7B020f178aaB4482a2B1B5E9f45C' as const
 
 export const initiaTokenConfig = {
   address: initiaTokenAddress,
@@ -519,7 +519,7 @@ export const stakingAbi = [
 ] as const
 
 export const stakingAddress =
-  '0x7E943A1DbDC631A00109cf2d98639a6B3442ed0c' as const
+  '0x78856b40369957A22b01e83a3727e6871Cc11539' as const
 
 export const stakingConfig = {
   address: stakingAddress,
@@ -728,7 +728,7 @@ export const zaarflipAbi = [
 ] as const
 
 export const zaarflipAddress =
-  '0xe0E2858078C46bbF58973D2fFAE44ebD537a365F' as const
+  '0x87F5f5c39649D3B9fc35E3448b27D536Bb1bF639' as const
 
 export const zaarflipConfig = {
   address: zaarflipAddress,

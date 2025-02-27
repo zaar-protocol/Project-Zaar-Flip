@@ -13,8 +13,9 @@ import { createWeb3Modal } from "@web3modal/wagmi/react";
 import { ThirdwebProvider } from "thirdweb/react";
 import { MuteProvider } from "./../components/MuteContext";
 import { MuteButton } from "./../components/MuteButton";
-import { BalanceContext } from "@/contexts/BalanceContext";
+import { BalanceContext, BalanceProvider } from "@/contexts/BalanceContext";
 import { useBalance } from "wagmi";
+import { initiaTokenAddress } from "@/generated";
 
 export const metadata: Metadata = {
   title: {
@@ -35,19 +36,11 @@ function MyApp({ Component, pageProps }: AppProps) {
       <MuteProvider>
         <WagmiProvider config={config}>
           <QueryClientProvider client={client}>
-            <BalanceWrapper>
+            <BalanceProvider>
               <WalletWidgetProvider
-                chainId="zaar-testnet-3"
+                chainId="zaar-testnet-4"
                 filterWallet={(wallet) => {
-                  return (
-                    wallet.type !== "initia" &&
-                    wallet.name !== "Keplr" &&
-                    wallet.name !== "Ctrl" &&
-                    wallet.name !== "Ledger" &&
-                    wallet.name !== "Leap" &&
-                    wallet.name !== "Ctrl Wallet" &&
-                    wallet.name !== "Leap Wallet"
-                  );
+                  return wallet.type === "evm";
                 }}
               >
                 <Head>
@@ -56,22 +49,11 @@ function MyApp({ Component, pageProps }: AppProps) {
                 </Head>
                 <Component {...pageProps} />
               </WalletWidgetProvider>
-            </BalanceWrapper>
+            </BalanceProvider>
           </QueryClientProvider>
         </WagmiProvider>
       </MuteProvider>
     </RootLayout>
-  );
-}
-
-// Create a wrapper component that uses the balance hook
-function BalanceWrapper({ children }: { children: React.ReactNode }) {
-  const balance = useBalance();
-
-  return (
-    <BalanceContext.Provider value={{ refetchBalance: balance.refetch }}>
-      {children}
-    </BalanceContext.Provider>
   );
 }
 

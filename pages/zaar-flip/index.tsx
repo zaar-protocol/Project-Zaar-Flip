@@ -294,7 +294,7 @@ export default function Home() {
       return;
     }
 
-    if (chainId !== 3710952917853191 && !initiaAddress?.startsWith("init")) {
+    if (chainId !== 2285582334439122 && !initiaAddress?.startsWith("init")) {
       toast.error("Unsupported network. Please switch to zaar-test-3.");
       if (!isMuted) {
         erroraudio.play();
@@ -348,7 +348,6 @@ export default function Home() {
       setLoadingModalIsOpen(false);
 
       if (result) {
-        await refetchBalance();
         const outcome = result.won;
 
         const postWalletBalanceUnformatted = await getBalance(config, {
@@ -363,15 +362,16 @@ export default function Home() {
         )
           .then((response) => response.json())
           .then(() => {
-            setTimeout(() => {
+            setTimeout(async () => {
               if (outcome) {
-                toast.success("Congratulations you won!");
+                toast.success("Congratulations, you won!");
                 if (!isMuted) {
                   if (audioCount % 2 == 1) {
                     winaudio.play();
                   } else if (audioCount === 2) {
                     winaudio2.play();
                   }
+                  await refetchBalance();
                 }
                 createConfetti();
               } else {
@@ -393,6 +393,7 @@ export default function Home() {
                   }
                 }
                 toast.error("You lost.");
+                await refetchBalance();
               }
             }, 150 * coinsAmount);
           });

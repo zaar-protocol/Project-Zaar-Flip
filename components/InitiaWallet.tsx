@@ -6,6 +6,8 @@ import { useMuteState } from "./MuteContext";
 import { formatEther } from "viem";
 import { OctagonAlert, AlertOctagon } from "lucide-react";
 import { bech32 } from "bech32";
+import { convertInitiaAddress } from "@/utils/convertInitiaAddress";
+import { useBalanceContext } from "@/contexts/BalanceContext";
 
 const NetworkModal = ({ onClose }: { onClose: () => void }) => {
   const { switchChain } = useSwitchChain();
@@ -28,11 +30,11 @@ const NetworkModal = ({ onClose }: { onClose: () => void }) => {
         </button>
         <div className="text-center text-gray-300 my-4">
           This app doesn&apos;t support your current network. Please switch to
-          <span className="text-white"> zaar-test-3</span>.
+          <span className="text-white"> zaar-test-4</span>.
         </div>
         <button
           onClick={() => {
-            switchChain({ chainId: 3710952917853191 });
+            switchChain({ chainId: 2285582334439122 });
             onClose();
           }}
           className="w-full gradient-button text-black py-2 px-4 rounded-sm hover:opacity-90 transition duration-300"
@@ -51,26 +53,11 @@ export const InitiaWallet = () => {
   const [isNetworkModalOpen, setIsNetworkModalOpen] = useState(false);
 
   const { wallet, onboard, disconnect: initiaDisconnect, view } = useWallet();
-  const initiaAddress = useAddress();
   const { address: wagmiAddress, isConnected, chainId } = useAccount();
-  console.log(initiaAddress);
-  //console.log(chainId);
-  //console.log(wallet?.address);
   const { disconnect: wagmiDisconnect } = useDisconnect();
   const { isMuted } = useMuteState();
 
-  const convertInitiaAddress = () => {
-    if (initiaAddress?.match(/^init[a-zA-Z0-9]{38,39}$/)) {
-      const { words: decodedWords } = bech32.decode(initiaAddress);
-      return "0x" + Buffer.from(bech32.fromWords(decodedWords)).toString("hex");
-    }
-    return initiaAddress;
-  };
-
-  const balance = useBalance({
-    address: wagmiAddress || convertInitiaAddress(),
-  });
-  console.log(balance);
+  const { balance } = useBalanceContext();
 
   const playSound = () => {
     if (isMuted) return;
@@ -102,16 +89,6 @@ export const InitiaWallet = () => {
       });
   }, [wagmiAddress, isConnected]);
 
-  const handleLogout = async () => {
-    try {
-      await wagmiDisconnect();
-      await initiaDisconnect();
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error("Logout error:", error);
-    }
-  };
-
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -130,44 +107,6 @@ export const InitiaWallet = () => {
     };
   }, []);
 
-  const Modal = () => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div
-        ref={modalRef}
-        className="bg-dark-gray p-6 rounded-lg shadow-xl relative"
-      >
-        <button
-          onClick={() => setIsModalOpen(false)}
-          className="absolute top-2 right-2 hover:text-white"
-        >
-          <FaTimes />
-        </button>
-        <div className="w-24 h-16 rounded-full mx-16 bg-gray-700 flex items-center justify-center">
-          {currentProfileImage ? (
-            <img
-              src={currentProfileImage}
-              alt="Profile"
-              className="w-full h-full rounded-full object-cover"
-            />
-          ) : (
-            <FaWallet className="text-4xl" />
-          )}
-        </div>
-        <div className="text-xl font-bold text-center mb-8 text-gray-300">
-          {currentVanity || displayAddr(wagmiAddress || "")}
-        </div>
-        <button
-          onClick={handleLogout}
-          className="w-full bg-blue-500 text-gray-300 py-2 px-4 rounded hover:bg-blue-600 transition duration-300 text-white"
-          style={{ backgroundColor: "#3b82f6" }}
-        >
-          <FaSignOutAlt className="inline mr-2" />
-          Disconnect
-        </button>
-      </div>
-    </div>
-  );
-
   return (
     <>
       {!wallet ? (
@@ -183,11 +122,9 @@ export const InitiaWallet = () => {
         </button>
       ) : (
         <div className="flex items-center gap-2 md:gap-6">
-          {chainId === 3710952917853191 ||
-          initiaAddress?.startsWith("init1") ? (
+          {chainId === 2285582334439122 ? (
             <div className="flex items-center justify-center px-4 py-2 text-sm rounded-sm font-bold uppercase text-black gradient-button transition duration-500 whitespace-nowrap">
-              {Number(formatEther(balance.data?.value || BigInt(0))).toFixed(2)}{" "}
-              fZAAR
+              {balance?.toFixed(2)} fZAAR
             </div>
           ) : (
             <button
@@ -205,13 +142,13 @@ export const InitiaWallet = () => {
           <button
             // onClick={() => setIsModalOpen(true)}
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              console.log("viewing wallet");
               view(e);
             }}
             className="flex items-center justify-center rounded cursor-pointer px-2 py-2 text-sm font-medium text-gray-300 border border-dark-gray-all md:flex w-full gap-2 min-w-[100px] hover:bg-gray-700 transition duration-300"
           >
-            {currentVanity || displayAddr(wagmiAddress || initiaAddress || "")}
+            {currentVanity || displayAddr(wagmiAddress || "")}
           </button>
-          {isModalOpen && <Modal />}
           {isNetworkModalOpen && (
             <NetworkModal onClose={() => setIsNetworkModalOpen(false)} />
           )}

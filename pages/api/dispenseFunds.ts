@@ -2,13 +2,13 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { createWalletClient, getContract, http, parseEther } from 'viem';
 import { mnemonicToAccount } from 'viem/accounts';
 import { initia } from '@/config';
-import { initiaTokenAbi } from '@/generated';
+import { initiaTokenAbi, initiaTokenAddress } from '@/generated';
 import { publicClient } from '@/client';
 import { bech32 } from 'bech32';
 
 
 
-const zaarTokenAddress = "0x6ed1637781269560b204c27Cd42d95e057C4BE44";
+const zaarTokenAddress = initiaTokenAddress;
 const allowCors = (fn: (req: NextApiRequest, res: NextApiResponse) => Promise<void>) => async (req: NextApiRequest, res: NextApiResponse) => {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
