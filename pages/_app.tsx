@@ -5,17 +5,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 import { WalletWidgetProvider } from "@initia/react-wallet-widget";
 import { config } from "../config";
-import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import Head from "next/head";
 import type { Metadata } from "next";
 import RootLayout from "./layout";
-import { createWeb3Modal } from "@web3modal/wagmi/react";
-import { ThirdwebProvider } from "thirdweb/react";
 import { MuteProvider } from "./../components/MuteContext";
-import { MuteButton } from "./../components/MuteButton";
 import { BalanceContext, BalanceProvider } from "@/contexts/BalanceContext";
-import { useBalance } from "wagmi";
-import { initiaTokenAddress } from "@/generated";
 
 export const metadata: Metadata = {
   title: {
