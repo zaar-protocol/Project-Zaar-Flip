@@ -110,6 +110,7 @@ export default function Home() {
       ],
       chainId: initia.id,
     });
+
   //for regular wallets
   const { address: addr } = useAccount();
   //for initia wallets

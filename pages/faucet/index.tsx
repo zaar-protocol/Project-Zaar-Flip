@@ -75,6 +75,7 @@ const Faucet = () => {
       toast.dismiss();
 
       if (!response.ok) {
+        console.log("Response not ok: ", data);
         toast.error(data.error || "Failed to dispense funds");
         return;
       }
@@ -82,7 +83,8 @@ const Faucet = () => {
       toast.success("Funds dispensed!");
       await refetchBalance();
     } catch (error) {
-      console.error(error);
+      toast.dismiss();
+      console.error("Error within try block: ", error);
       toast.error(
         error instanceof Error ? error.message : "Failed to dispense funds"
       );
