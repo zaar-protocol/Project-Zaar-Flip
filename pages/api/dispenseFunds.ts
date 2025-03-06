@@ -45,7 +45,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const currentBlock = await publicClient.getBlockNumber();
     
     // Look back ~24 hours worth of blocks (assuming 1 minute block time)
-    const fromBlock = currentBlock - BigInt(30) > BigInt(0) ? currentBlock - BigInt(30) : BigInt(0); // 24 * 60
+    const fromBlock = currentBlock - BigInt(60) > BigInt(0) ? currentBlock - BigInt(60) : BigInt(0); // 24 * 60
 
     const logs = await publicClient.getLogs({
       address: zaarTokenAddress,
@@ -68,7 +68,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     if (logs.length > 0) {
       console.log("logs: ", logs);
-      return res.status(400).json({ error: 'Please wait 24 hours between claims.' });
+      return res.status(400).json({ error: 'Please wait a minute between claims.' });
     }
 
     // Create wallet from mnemonic
