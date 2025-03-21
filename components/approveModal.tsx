@@ -7,12 +7,8 @@ import React, { useEffect, useState } from "react";
 import { erc20Abi, parseEther } from "viem";
 import { zaarflipAddress } from "@/generated";
 import { useAccount, useBalance } from "wagmi";
-import { erc20ContractInterface } from "@/utils/contractInterface";
 import { useAddress, useWallet } from "@initia/react-wallet-widget";
-import { ethers } from "ethers";
-import { JsonRpcProvider } from "ethers";
 import { useBalanceContext } from "@/contexts/BalanceContext";
-import { convertInitiaAddress } from "@/utils/convertInitiaAddress";
 
 interface ApproveModalProps {
   isOpen: boolean;
@@ -36,10 +32,7 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
   const { requestEthereumTx } = useWallet();
   const initiaAddress = useAddress();
 
-  const balance = useBalance({
-    address: wagmiAddress || convertInitiaAddress(initiaAddress || ""),
-    token: "0x6ed1637781269560b204c27Cd42d95e057C4BE44",
-  });
+  const { balance } = useBalanceContext();
 
   const presetAmounts = [10, 50, 100, 1000, 10000, 100000] as const;
   type PresetAmount = (typeof presetAmounts)[number];
@@ -70,7 +63,7 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
 
   const handleApproveClick = async () => {
     if (approve || initiaAddress?.startsWith("init")) {
-      if (balance.data?.value && approveAmount > balance.data?.value) {
+      if (approveAmount > balance) {
         toast.error("Insufficient balance.");
         return;
       }

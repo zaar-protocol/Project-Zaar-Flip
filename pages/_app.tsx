@@ -4,7 +4,7 @@ import type { AppProps } from "next/app";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 import { WalletWidgetProvider } from "@initia/react-wallet-widget";
-import { config } from "../config";
+import { config, initia } from "@/config";
 import Head from "next/head";
 import type { Metadata } from "next";
 import RootLayout from "./layout";
@@ -32,7 +32,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           <QueryClientProvider client={client}>
             <BalanceProvider>
               <WalletWidgetProvider
-                chainId="zaar-testnet-4"
+                chainId={initia.name}
                 filterWallet={(wallet) => {
                   return wallet.type === "evm";
                 }}

@@ -10,7 +10,6 @@ import {
   WinChanceType,
   randomFlip,
 } from "../../components/zaarFlipUtils";
-import { ConnectWallet } from "../../components/ConnectWallet";
 import toast, { Toaster } from "react-hot-toast";
 import { StarField } from "@/components/star-field";
 import { Header } from "@/components/header"; // Fixed casing issue
@@ -21,10 +20,7 @@ import { Tooltip } from "@/components/tooltip";
 import { FaChevronUp, FaChevronDown } from "react-icons/fa6";
 import {
   useSimulateZaarflipFlip,
-  useWriteZaarflipFlip,
-  useSimulateInitiaTokenApprove,
   useReadInitiaTokenAllowance,
-  useSimulateZaarflipAddAcceptedToken,
 } from "@/generated";
 import { writeContract } from "@wagmi/core";
 import { waitForTransactionReceipt } from "@wagmi/core";
@@ -37,23 +33,13 @@ import { initiaTokenAddress } from "@/generated";
 import { zaarflipAddress } from "@/generated";
 import { MuteButton } from "@/components/MuteButton";
 import { useMuteState } from "@/components/MuteContext";
-import { bech32 } from "bech32";
-import { useAddress, useWallet } from "@initia/react-wallet-widget";
 import { useWatchContractEvent } from "wagmi";
-import { abi } from "@/abis/abi";
-import { MsgSend } from "cosmjs-types/cosmos/bank/v1beta1/tx";
-import {
-  MsgExecute,
-  Wallet,
-  LCDClient,
-  MnemonicKey,
-  bcs,
-} from "@initia/initia.js";
 
 // import useSound from "use-sound";
 import Footer from "@/components/Footer";
 import { FlipAbi } from "@/abis/Flip-abi";
 import { useBalanceContext } from "@/contexts/BalanceContext";
+import { getFutureTimestamp } from "@/utils/timestamps";
 
 interface GameResultEvent {
   eventName: "GameResult";
@@ -98,8 +84,19 @@ export default function Home() {
   const [audioCount, setAudioCount] = useState(1);
   const { isMuted, toggleMute } = useMuteState();
   const wagerInputRef = useRef<HTMLInputElement>(null);
-  const [testWinCounter, setTestWinCounter] = useState(0);
   const { chainId } = useAccount();
+
+  const testFlipper = useSimulateZaarflipFlip({
+    args: [
+      parseEther(BigInt(wager ? wager : 0).toString()),
+      BigInt(coinsAmount),
+      BigInt(minHeadsTails),
+      initiaTokenAddress,
+      getFutureTimestamp(15),
+    ],
+  });
+  console.log("testFlipper", testFlipper);
+
   const { data: flip, refetch: refetchFlip }: { data: any; refetch: any } =
     useSimulateZaarflipFlip({
       args: [
@@ -107,28 +104,19 @@ export default function Home() {
         BigInt(coinsAmount),
         BigInt(minHeadsTails),
         initiaTokenAddress,
+        getFutureTimestamp(15),
       ],
       chainId: initia.id,
     });
 
   //for regular wallets
   const { address: addr } = useAccount();
-  //for initia wallets
-  const initiaAddress = useAddress();
-  const convertInitiaAddress = () => {
-    if (initiaAddress?.match(/^init[a-zA-Z0-9]{38,39}$/)) {
-      const { words: decodedWords } = bech32.decode(initiaAddress);
-      return "0x" + Buffer.from(bech32.fromWords(decodedWords)).toString("hex");
-    }
-    return initiaAddress;
-  };
-  const { wallet } = useWallet();
   const { refetchBalance } = useBalanceContext();
 
   const { data: allowance, refetch: refetchAllowance } =
     useReadInitiaTokenAllowance({
       args: [
-        addr ? addr : convertInitiaAddress() || "0x00000000000000000",
+        addr ? addr : "0x0000000000000000000000000000000000000000",
         zaarflipAddress,
       ],
     });
@@ -295,7 +283,7 @@ export default function Home() {
       return;
     }
 
-    if (chainId !== 2285582334439122 && !initiaAddress?.startsWith("init")) {
+    if (chainId !== initia.id) {
       toast.error("Unsupported network. Please switch to zaar-test-3.");
       if (!isMuted) {
         erroraudio.play();
@@ -314,9 +302,9 @@ export default function Home() {
     }
 
     const addr = getAccount(config).address;
-    if (addr || convertInitiaAddress()) {
+    if (addr) {
       const walletBalanceUnformatted = await getBalance(config, {
-        address: addr || convertInitiaAddress() || "0x00000000000000000",
+        address: addr,
         token: initiaTokenAddress,
       });
       const walletBalance = Number(walletBalanceUnformatted.value);
@@ -352,14 +340,14 @@ export default function Home() {
         const outcome = result.won;
 
         const postWalletBalanceUnformatted = await getBalance(config, {
-          address: addr || convertInitiaAddress(),
+          address: addr,
           token: initiaTokenAddress,
         });
 
         const winnings = Number(formatEther(result.payout));
 
         fetch(
-          `./api/addCoinEvent?ownerAddress=${addr || convertInitiaAddress()}&wager=${wager}&winnings=${winnings}&outcome=${outcome}&side=${currentSide}`
+          `./api/addCoinEvent?ownerAddress=${addr}&wager=${wager}&winnings=${winnings}&outcome=${outcome}&side=${currentSide}`
         )
           .then((response) => response.json())
           .then(() => {

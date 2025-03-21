@@ -208,7 +208,7 @@ export const initiaTokenAbi = [
 ] as const
 
 export const initiaTokenAddress =
-  '0x6f3790E91caf7B020f178aaB4482a2B1B5E9f45C' as const
+  '0xBdb128Cf29d40738875297E90aa42772D354c137' as const
 
 export const initiaTokenConfig = {
   address: initiaTokenAddress,
@@ -475,58 +475,6 @@ export const plinkoAddress =
 export const plinkoConfig = { address: plinkoAddress, abi: plinkoAbi } as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// staking
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-export const stakingAbi = [
-  {
-    type: 'function',
-    inputs: [
-      { name: 'token', type: 'address' },
-      { name: 'user', type: 'address' },
-    ],
-    name: 'stakedBalances',
-    outputs: [{ name: '', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'user', type: 'address' },
-      { name: 'token', type: 'address' },
-    ],
-    name: 'earned',
-    outputs: [{ name: '', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'token', type: 'address' }],
-    name: 'totalStaked',
-    outputs: [{ name: '', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'user', type: 'address' },
-      { name: 'token', type: 'address' },
-    ],
-    name: 'timeUntilUnstake',
-    outputs: [{ name: '', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-] as const
-
-export const stakingAddress =
-  '0x78856b40369957A22b01e83a3727e6871Cc11539' as const
-
-export const stakingConfig = {
-  address: stakingAddress,
-  abi: stakingAbi,
-} as const
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // zaarflip
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -534,37 +482,111 @@ export const zaarflipAbi = [
   {
     type: 'constructor',
     inputs: [
-      { name: '_maxCoins', type: 'uint256' },
-      { name: '_feePercentage', type: 'uint256' },
-      { name: '_vrfProvider', type: 'address' },
-      { name: '_stakingContract', type: 'address' },
+      { name: '_maxCoins', internalType: 'uint256', type: 'uint256' },
+      { name: '_feePercentage', internalType: 'uint256', type: 'uint256' },
+      { name: '_stakingContract', internalType: 'address', type: 'address' },
+      { name: '_useVRF', internalType: 'bool', type: 'bool' },
+      { name: '_liquidityEdge', internalType: 'uint256', type: 'uint256' },
+      { name: '_manager', internalType: 'address', type: 'address' },
+      {
+        name: '_managerWinFeePercentage',
+        internalType: 'uint256',
+        type: 'uint256',
+      },
+      { name: '_randomnessProvider', internalType: 'address', type: 'address' },
     ],
     stateMutability: 'nonpayable',
   },
   {
     type: 'function',
-    inputs: [{ name: '_maxCoins', type: 'uint256' }],
-    name: 'setMaxCoins',
+    inputs: [],
+    name: 'MAX_FEE_PERCENTAGE',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'MAX_LIQUIDITY_EDGE',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'MAX_MANAGER_WIN_FEE_PERCENTAGE',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'RETRY_DELAY',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'betAmount', internalType: 'uint256', type: 'uint256' },
+      { name: 'numberOfCoins', internalType: 'uint256', type: 'uint256' },
+      { name: 'headsRequired', internalType: 'uint256', type: 'uint256' },
+      { name: 'token', internalType: 'address', type: 'address' },
+      { name: 'deadline', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'flip',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'gameId', internalType: 'string', type: 'string' },
+      { name: 'randomNumber', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'completeGame',
     outputs: [],
     stateMutability: 'nonpayable',
   },
   {
     type: 'function',
-    inputs: [{ name: '_feePercentage', type: 'uint256' }],
-    name: 'setFeePercentage',
+    inputs: [
+      { name: 'betAmount', internalType: 'uint256', type: 'uint256' },
+      { name: 'numberOfCoins', internalType: 'uint256', type: 'uint256' },
+      { name: 'headsRequired', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'calculatePayout',
+    outputs: [
+      { name: 'grossPayout', internalType: 'uint256', type: 'uint256' },
+      { name: 'netPayout', internalType: 'uint256', type: 'uint256' },
+      { name: 'fee', internalType: 'uint256', type: 'uint256' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'gameId', internalType: 'string', type: 'string' }],
+    name: 'cancelGame',
     outputs: [],
     stateMutability: 'nonpayable',
   },
   {
     type: 'function',
-    inputs: [{ name: 'token', type: 'address' }],
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'acceptedTokens',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'token', internalType: 'address', type: 'address' }],
     name: 'addAcceptedToken',
     outputs: [],
     stateMutability: 'nonpayable',
   },
   {
     type: 'function',
-    inputs: [{ name: 'token', type: 'address' }],
+    inputs: [{ name: 'token', internalType: 'address', type: 'address' }],
     name: 'removeAcceptedToken',
     outputs: [],
     stateMutability: 'nonpayable',
@@ -572,163 +594,569 @@ export const zaarflipAbi = [
   {
     type: 'function',
     inputs: [
-      { name: 'betAmount', type: 'uint256' },
-      { name: 'numberOfCoins', type: 'uint256' },
-      { name: 'headsRequired', type: 'uint256' },
-      { name: 'token', type: 'address' },
+      { name: 'token', internalType: 'address', type: 'address' },
+      { name: 'receiver', internalType: 'address', type: 'address' },
     ],
-    name: 'flip',
-    outputs: [{ name: '', type: 'bytes32' }],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'seed', type: 'string' },
-      { name: 'time', type: 'uint64' },
-      { name: 'result', type: 'bytes32' },
-    ],
-    name: 'consume',
+    name: 'claimPendingWithdrawal',
     outputs: [],
     stateMutability: 'nonpayable',
   },
   {
     type: 'function',
-    inputs: [],
-    name: 'maxCoins',
-    outputs: [{ name: '', type: 'uint256' }],
+    inputs: [{ name: '', internalType: 'string', type: 'string' }],
+    name: 'isGamePending',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'string', type: 'string' }],
+    name: 'pendingGames',
+    outputs: [
+      { name: 'player', internalType: 'address', type: 'address' },
+      { name: 'betAmount', internalType: 'uint256', type: 'uint256' },
+      { name: 'numberOfCoins', internalType: 'uint256', type: 'uint256' },
+      { name: 'headsRequired', internalType: 'uint256', type: 'uint256' },
+      { name: 'netPayout', internalType: 'uint256', type: 'uint256' },
+      { name: 'fee', internalType: 'uint256', type: 'uint256' },
+      { name: 'token', internalType: 'address', type: 'address' },
+      { name: 'gameStartTime', internalType: 'uint256', type: 'uint256' },
+      {
+        name: 'gameStakingContract',
+        internalType: 'contract Staking',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'address', type: 'address' },
+      { name: '', internalType: 'address', type: 'address' },
+    ],
+    name: 'pendingWithdrawals',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     inputs: [],
     name: 'feePercentage',
-    outputs: [{ name: '', type: 'uint256' }],
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     inputs: [],
-    name: 'COOLDOWN_PERIOD',
-    outputs: [{ name: '', type: 'uint256' }],
+    name: 'gameTimeout',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     inputs: [],
-    name: 'MAX_RETRIES',
-    outputs: [{ name: '', type: 'uint256' }],
+    name: 'liquidityEdge',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     inputs: [],
-    name: 'RETRY_DELAY',
-    outputs: [{ name: '', type: 'uint256' }],
+    name: 'manager',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     inputs: [],
-    name: 'vrfProvider',
-    outputs: [{ name: '', type: 'address' }],
+    name: 'managerWinFeePercentage',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'maxCoins',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'randomnessProvider',
+    outputs: [
+      {
+        name: '',
+        internalType: 'contract IRandomnessProvider',
+        type: 'address',
+      },
+    ],
     stateMutability: 'view',
   },
   {
     type: 'function',
     inputs: [],
     name: 'stakingContract',
-    outputs: [{ name: '', type: 'address' }],
+    outputs: [{ name: '', internalType: 'contract Staking', type: 'address' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     inputs: [],
-    name: 'latestRandomness',
-    outputs: [{ name: '', type: 'uint256' }],
+    name: 'useVRF',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
-    inputs: [],
-    name: 'resultReceived',
-    outputs: [{ name: '', type: 'bool' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '', type: 'address' }],
-    name: 'acceptedTokens',
-    outputs: [{ name: '', type: 'bool' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '', type: 'address' }],
-    name: 'lastFlipTimestamp',
-    outputs: [{ name: '', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '', type: 'bytes32' }],
-    name: 'pendingGames',
-    outputs: [
-      { name: 'player', type: 'address' },
-      { name: 'betAmount', type: 'uint256' },
-      { name: 'numberOfCoins', type: 'uint256' },
-      { name: 'headsRequired', type: 'uint256' },
-      { name: 'token', type: 'address' },
+    inputs: [
+      { name: '_feePercentage', internalType: 'uint256', type: 'uint256' },
     ],
+    name: 'setFeePercentage',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_gameTimeout', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'setGameTimeout',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_liquidityEdge', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'setLiquidityEdge',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_manager', internalType: 'address', type: 'address' }],
+    name: 'setManager',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: '_managerWinFeePercentage',
+        internalType: 'uint256',
+        type: 'uint256',
+      },
+    ],
+    name: 'setManagerWinFeePercentage',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_maxCoins', internalType: 'uint256', type: 'uint256' }],
+    name: 'setMaxCoins',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_randomnessProvider', internalType: 'address', type: 'address' },
+    ],
+    name: 'setRandomnessProvider',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_stakingContract', internalType: 'address', type: 'address' },
+    ],
+    name: 'setStakingContract',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_useVRF', internalType: 'bool', type: 'bool' }],
+    name: 'toggleRandomness',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'owner',
+    outputs: [{ name: 'result', internalType: 'address', type: 'address' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
-    inputs: [{ name: '', type: 'bytes32' }],
-    name: 'isGamePending',
-    outputs: [{ name: '', type: 'bool' }],
+    inputs: [
+      { name: 'pendingOwner', internalType: 'address', type: 'address' },
+    ],
+    name: 'ownershipHandoverExpiresAt',
+    outputs: [{ name: 'result', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'cancelOwnershipHandover',
+    outputs: [],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'pendingOwner', internalType: 'address', type: 'address' },
+    ],
+    name: 'completeOwnershipHandover',
+    outputs: [],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'renounceOwnership',
+    outputs: [],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'requestOwnershipHandover',
+    outputs: [],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'newOwner', internalType: 'address', type: 'address' }],
+    name: 'transferOwnership',
+    outputs: [],
+    stateMutability: 'payable',
   },
   {
     type: 'event',
     anonymous: false,
     inputs: [
-      { name: 'player', type: 'address', indexed: true },
-      { name: 'won', type: 'bool', indexed: false },
-      { name: 'payout', type: 'uint256', indexed: false },
+      {
+        name: 'newFeePercentage',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'FeePercentageUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'player',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'betAmount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'GameCancelled',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'gameId', internalType: 'string', type: 'string', indexed: true },
+      {
+        name: 'player',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'betAmount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'numberOfCoins',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'headsRequired',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'token',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'GameCreated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'player',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'won', internalType: 'bool', type: 'bool', indexed: false },
+      {
+        name: 'payout',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
     ],
     name: 'GameResult',
   },
-  { type: 'event', anonymous: false, inputs: [], name: 'Blah' },
   {
     type: 'event',
     anonymous: false,
-    inputs: [{ name: '', type: 'uint256', indexed: false }],
-    name: 'Bloop',
+    inputs: [
+      {
+        name: 'newTimeout',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'GameTimeoutUpdated',
   },
   {
     type: 'event',
     anonymous: false,
-    inputs: [{ name: 'seed', type: 'string', indexed: false }],
+    inputs: [
+      {
+        name: 'newLiquidityEdge',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'LiquidityEdgeUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'newManager',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'ManagerUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'newPercentage',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'ManagerWinFeePercentageUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'newMaxCoins',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'MaxCoinsUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'pendingOwner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'OwnershipHandoverCanceled',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'pendingOwner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'OwnershipHandoverRequested',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'oldOwner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'newOwner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'OwnershipTransferred',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'newProvider',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'RandomnessProviderUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'seed', internalType: 'string', type: 'string', indexed: false },
+    ],
     name: 'RandomnessRequested',
   },
   {
     type: 'event',
     anonymous: false,
     inputs: [
-      { name: 'gameId', type: 'bytes32', indexed: true },
-      { name: 'player', type: 'address', indexed: true },
-      { name: 'betAmount', type: 'uint256', indexed: false },
-      { name: 'numberOfCoins', type: 'uint256', indexed: false },
-      { name: 'headsRequired', type: 'uint256', indexed: false },
-      { name: 'token', type: 'address', indexed: false },
+      { name: 'useVRF', internalType: 'bool', type: 'bool', indexed: false },
     ],
-    name: 'GameCreated',
+    name: 'RandomnessToggled',
   },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'newStakingContract',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'StakingContractUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'token',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'TokenAdded',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'token',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'TokenRemoved',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'token',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'to', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'TransferFailed',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'token',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'to', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'TransferSucceeded',
+  },
+  { type: 'error', inputs: [], name: 'AlreadyInitialized' },
+  { type: 'error', inputs: [], name: 'NewOwnerIsZeroAddress' },
+  { type: 'error', inputs: [], name: 'NoHandoverRequest' },
+  { type: 'error', inputs: [], name: 'Reentrancy' },
+  { type: 'error', inputs: [], name: 'Unauthorized' },
 ] as const
 
 export const zaarflipAddress =
-  '0x87F5f5c39649D3B9fc35E3448b27D536Bb1bF639' as const
+  '0xA5E835BAAb3A78505dEA4369B3D862bFF90F1322' as const
 
 export const zaarflipConfig = {
   address: zaarflipAddress,
@@ -1460,49 +1888,6 @@ export const useWatchPlinkoMultipliersUpdatedEvent =
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__
- */
-export const useReadStaking = /*#__PURE__*/ createUseReadContract({
-  abi: stakingAbi,
-  address: stakingAddress,
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"stakedBalances"`
- */
-export const useReadStakingStakedBalances = /*#__PURE__*/ createUseReadContract(
-  { abi: stakingAbi, address: stakingAddress, functionName: 'stakedBalances' },
-)
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"earned"`
- */
-export const useReadStakingEarned = /*#__PURE__*/ createUseReadContract({
-  abi: stakingAbi,
-  address: stakingAddress,
-  functionName: 'earned',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"totalStaked"`
- */
-export const useReadStakingTotalStaked = /*#__PURE__*/ createUseReadContract({
-  abi: stakingAbi,
-  address: stakingAddress,
-  functionName: 'totalStaked',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"timeUntilUnstake"`
- */
-export const useReadStakingTimeUntilUnstake =
-  /*#__PURE__*/ createUseReadContract({
-    abi: stakingAbi,
-    address: stakingAddress,
-    functionName: 'timeUntilUnstake',
-  })
-
-/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__
  */
 export const useReadZaarflip = /*#__PURE__*/ createUseReadContract({
@@ -1511,39 +1896,34 @@ export const useReadZaarflip = /*#__PURE__*/ createUseReadContract({
 })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"maxCoins"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"MAX_FEE_PERCENTAGE"`
  */
-export const useReadZaarflipMaxCoins = /*#__PURE__*/ createUseReadContract({
-  abi: zaarflipAbi,
-  address: zaarflipAddress,
-  functionName: 'maxCoins',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"feePercentage"`
- */
-export const useReadZaarflipFeePercentage = /*#__PURE__*/ createUseReadContract(
-  { abi: zaarflipAbi, address: zaarflipAddress, functionName: 'feePercentage' },
-)
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"COOLDOWN_PERIOD"`
- */
-export const useReadZaarflipCooldownPeriod =
+export const useReadZaarflipMaxFeePercentage =
   /*#__PURE__*/ createUseReadContract({
     abi: zaarflipAbi,
     address: zaarflipAddress,
-    functionName: 'COOLDOWN_PERIOD',
+    functionName: 'MAX_FEE_PERCENTAGE',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"MAX_RETRIES"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"MAX_LIQUIDITY_EDGE"`
  */
-export const useReadZaarflipMaxRetries = /*#__PURE__*/ createUseReadContract({
-  abi: zaarflipAbi,
-  address: zaarflipAddress,
-  functionName: 'MAX_RETRIES',
-})
+export const useReadZaarflipMaxLiquidityEdge =
+  /*#__PURE__*/ createUseReadContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'MAX_LIQUIDITY_EDGE',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"MAX_MANAGER_WIN_FEE_PERCENTAGE"`
+ */
+export const useReadZaarflipMaxManagerWinFeePercentage =
+  /*#__PURE__*/ createUseReadContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'MAX_MANAGER_WIN_FEE_PERCENTAGE',
+  })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"RETRY_DELAY"`
@@ -1555,42 +1935,13 @@ export const useReadZaarflipRetryDelay = /*#__PURE__*/ createUseReadContract({
 })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"vrfProvider"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"calculatePayout"`
  */
-export const useReadZaarflipVrfProvider = /*#__PURE__*/ createUseReadContract({
-  abi: zaarflipAbi,
-  address: zaarflipAddress,
-  functionName: 'vrfProvider',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"stakingContract"`
- */
-export const useReadZaarflipStakingContract =
+export const useReadZaarflipCalculatePayout =
   /*#__PURE__*/ createUseReadContract({
     abi: zaarflipAbi,
     address: zaarflipAddress,
-    functionName: 'stakingContract',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"latestRandomness"`
- */
-export const useReadZaarflipLatestRandomness =
-  /*#__PURE__*/ createUseReadContract({
-    abi: zaarflipAbi,
-    address: zaarflipAddress,
-    functionName: 'latestRandomness',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"resultReceived"`
- */
-export const useReadZaarflipResultReceived =
-  /*#__PURE__*/ createUseReadContract({
-    abi: zaarflipAbi,
-    address: zaarflipAddress,
-    functionName: 'resultReceived',
+    functionName: 'calculatePayout',
   })
 
 /**
@@ -1604,14 +1955,11 @@ export const useReadZaarflipAcceptedTokens =
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"lastFlipTimestamp"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"isGamePending"`
  */
-export const useReadZaarflipLastFlipTimestamp =
-  /*#__PURE__*/ createUseReadContract({
-    abi: zaarflipAbi,
-    address: zaarflipAddress,
-    functionName: 'lastFlipTimestamp',
-  })
+export const useReadZaarflipIsGamePending = /*#__PURE__*/ createUseReadContract(
+  { abi: zaarflipAbi, address: zaarflipAddress, functionName: 'isGamePending' },
+)
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"pendingGames"`
@@ -1623,11 +1971,113 @@ export const useReadZaarflipPendingGames = /*#__PURE__*/ createUseReadContract({
 })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"isGamePending"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"pendingWithdrawals"`
  */
-export const useReadZaarflipIsGamePending = /*#__PURE__*/ createUseReadContract(
-  { abi: zaarflipAbi, address: zaarflipAddress, functionName: 'isGamePending' },
+export const useReadZaarflipPendingWithdrawals =
+  /*#__PURE__*/ createUseReadContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'pendingWithdrawals',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"feePercentage"`
+ */
+export const useReadZaarflipFeePercentage = /*#__PURE__*/ createUseReadContract(
+  { abi: zaarflipAbi, address: zaarflipAddress, functionName: 'feePercentage' },
 )
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"gameTimeout"`
+ */
+export const useReadZaarflipGameTimeout = /*#__PURE__*/ createUseReadContract({
+  abi: zaarflipAbi,
+  address: zaarflipAddress,
+  functionName: 'gameTimeout',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"liquidityEdge"`
+ */
+export const useReadZaarflipLiquidityEdge = /*#__PURE__*/ createUseReadContract(
+  { abi: zaarflipAbi, address: zaarflipAddress, functionName: 'liquidityEdge' },
+)
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"manager"`
+ */
+export const useReadZaarflipManager = /*#__PURE__*/ createUseReadContract({
+  abi: zaarflipAbi,
+  address: zaarflipAddress,
+  functionName: 'manager',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"managerWinFeePercentage"`
+ */
+export const useReadZaarflipManagerWinFeePercentage =
+  /*#__PURE__*/ createUseReadContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'managerWinFeePercentage',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"maxCoins"`
+ */
+export const useReadZaarflipMaxCoins = /*#__PURE__*/ createUseReadContract({
+  abi: zaarflipAbi,
+  address: zaarflipAddress,
+  functionName: 'maxCoins',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"randomnessProvider"`
+ */
+export const useReadZaarflipRandomnessProvider =
+  /*#__PURE__*/ createUseReadContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'randomnessProvider',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"stakingContract"`
+ */
+export const useReadZaarflipStakingContract =
+  /*#__PURE__*/ createUseReadContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'stakingContract',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"useVRF"`
+ */
+export const useReadZaarflipUseVrf = /*#__PURE__*/ createUseReadContract({
+  abi: zaarflipAbi,
+  address: zaarflipAddress,
+  functionName: 'useVRF',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"owner"`
+ */
+export const useReadZaarflipOwner = /*#__PURE__*/ createUseReadContract({
+  abi: zaarflipAbi,
+  address: zaarflipAddress,
+  functionName: 'owner',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"ownershipHandoverExpiresAt"`
+ */
+export const useReadZaarflipOwnershipHandoverExpiresAt =
+  /*#__PURE__*/ createUseReadContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'ownershipHandoverExpiresAt',
+  })
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__
@@ -1638,21 +2088,32 @@ export const useWriteZaarflip = /*#__PURE__*/ createUseWriteContract({
 })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"setMaxCoins"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"flip"`
  */
-export const useWriteZaarflipSetMaxCoins = /*#__PURE__*/ createUseWriteContract(
-  { abi: zaarflipAbi, address: zaarflipAddress, functionName: 'setMaxCoins' },
-)
+export const useWriteZaarflipFlip = /*#__PURE__*/ createUseWriteContract({
+  abi: zaarflipAbi,
+  address: zaarflipAddress,
+  functionName: 'flip',
+})
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"setFeePercentage"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"completeGame"`
  */
-export const useWriteZaarflipSetFeePercentage =
+export const useWriteZaarflipCompleteGame =
   /*#__PURE__*/ createUseWriteContract({
     abi: zaarflipAbi,
     address: zaarflipAddress,
-    functionName: 'setFeePercentage',
+    functionName: 'completeGame',
   })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"cancelGame"`
+ */
+export const useWriteZaarflipCancelGame = /*#__PURE__*/ createUseWriteContract({
+  abi: zaarflipAbi,
+  address: zaarflipAddress,
+  functionName: 'cancelGame',
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"addAcceptedToken"`
@@ -1675,22 +2136,150 @@ export const useWriteZaarflipRemoveAcceptedToken =
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"flip"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"claimPendingWithdrawal"`
  */
-export const useWriteZaarflipFlip = /*#__PURE__*/ createUseWriteContract({
+export const useWriteZaarflipClaimPendingWithdrawal =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'claimPendingWithdrawal',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"setFeePercentage"`
+ */
+export const useWriteZaarflipSetFeePercentage =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'setFeePercentage',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"setGameTimeout"`
+ */
+export const useWriteZaarflipSetGameTimeout =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'setGameTimeout',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"setLiquidityEdge"`
+ */
+export const useWriteZaarflipSetLiquidityEdge =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'setLiquidityEdge',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"setManager"`
+ */
+export const useWriteZaarflipSetManager = /*#__PURE__*/ createUseWriteContract({
   abi: zaarflipAbi,
   address: zaarflipAddress,
-  functionName: 'flip',
+  functionName: 'setManager',
 })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"consume"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"setManagerWinFeePercentage"`
  */
-export const useWriteZaarflipConsume = /*#__PURE__*/ createUseWriteContract({
-  abi: zaarflipAbi,
-  address: zaarflipAddress,
-  functionName: 'consume',
-})
+export const useWriteZaarflipSetManagerWinFeePercentage =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'setManagerWinFeePercentage',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"setMaxCoins"`
+ */
+export const useWriteZaarflipSetMaxCoins = /*#__PURE__*/ createUseWriteContract(
+  { abi: zaarflipAbi, address: zaarflipAddress, functionName: 'setMaxCoins' },
+)
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"setRandomnessProvider"`
+ */
+export const useWriteZaarflipSetRandomnessProvider =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'setRandomnessProvider',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"setStakingContract"`
+ */
+export const useWriteZaarflipSetStakingContract =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'setStakingContract',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"toggleRandomness"`
+ */
+export const useWriteZaarflipToggleRandomness =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'toggleRandomness',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"cancelOwnershipHandover"`
+ */
+export const useWriteZaarflipCancelOwnershipHandover =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'cancelOwnershipHandover',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"completeOwnershipHandover"`
+ */
+export const useWriteZaarflipCompleteOwnershipHandover =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'completeOwnershipHandover',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"renounceOwnership"`
+ */
+export const useWriteZaarflipRenounceOwnership =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'renounceOwnership',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"requestOwnershipHandover"`
+ */
+export const useWriteZaarflipRequestOwnershipHandover =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'requestOwnershipHandover',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"transferOwnership"`
+ */
+export const useWriteZaarflipTransferOwnership =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'transferOwnership',
+  })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__
@@ -1701,23 +2290,32 @@ export const useSimulateZaarflip = /*#__PURE__*/ createUseSimulateContract({
 })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"setMaxCoins"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"flip"`
  */
-export const useSimulateZaarflipSetMaxCoins =
+export const useSimulateZaarflipFlip = /*#__PURE__*/ createUseSimulateContract({
+  abi: zaarflipAbi,
+  address: zaarflipAddress,
+  functionName: 'flip',
+})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"completeGame"`
+ */
+export const useSimulateZaarflipCompleteGame =
   /*#__PURE__*/ createUseSimulateContract({
     abi: zaarflipAbi,
     address: zaarflipAddress,
-    functionName: 'setMaxCoins',
+    functionName: 'completeGame',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"setFeePercentage"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"cancelGame"`
  */
-export const useSimulateZaarflipSetFeePercentage =
+export const useSimulateZaarflipCancelGame =
   /*#__PURE__*/ createUseSimulateContract({
     abi: zaarflipAbi,
     address: zaarflipAddress,
-    functionName: 'setFeePercentage',
+    functionName: 'cancelGame',
   })
 
 /**
@@ -1741,22 +2339,153 @@ export const useSimulateZaarflipRemoveAcceptedToken =
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"flip"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"claimPendingWithdrawal"`
  */
-export const useSimulateZaarflipFlip = /*#__PURE__*/ createUseSimulateContract({
-  abi: zaarflipAbi,
-  address: zaarflipAddress,
-  functionName: 'flip',
-})
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"consume"`
- */
-export const useSimulateZaarflipConsume =
+export const useSimulateZaarflipClaimPendingWithdrawal =
   /*#__PURE__*/ createUseSimulateContract({
     abi: zaarflipAbi,
     address: zaarflipAddress,
-    functionName: 'consume',
+    functionName: 'claimPendingWithdrawal',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"setFeePercentage"`
+ */
+export const useSimulateZaarflipSetFeePercentage =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'setFeePercentage',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"setGameTimeout"`
+ */
+export const useSimulateZaarflipSetGameTimeout =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'setGameTimeout',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"setLiquidityEdge"`
+ */
+export const useSimulateZaarflipSetLiquidityEdge =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'setLiquidityEdge',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"setManager"`
+ */
+export const useSimulateZaarflipSetManager =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'setManager',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"setManagerWinFeePercentage"`
+ */
+export const useSimulateZaarflipSetManagerWinFeePercentage =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'setManagerWinFeePercentage',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"setMaxCoins"`
+ */
+export const useSimulateZaarflipSetMaxCoins =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'setMaxCoins',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"setRandomnessProvider"`
+ */
+export const useSimulateZaarflipSetRandomnessProvider =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'setRandomnessProvider',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"setStakingContract"`
+ */
+export const useSimulateZaarflipSetStakingContract =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'setStakingContract',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"toggleRandomness"`
+ */
+export const useSimulateZaarflipToggleRandomness =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'toggleRandomness',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"cancelOwnershipHandover"`
+ */
+export const useSimulateZaarflipCancelOwnershipHandover =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'cancelOwnershipHandover',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"completeOwnershipHandover"`
+ */
+export const useSimulateZaarflipCompleteOwnershipHandover =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'completeOwnershipHandover',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"renounceOwnership"`
+ */
+export const useSimulateZaarflipRenounceOwnership =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'renounceOwnership',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"requestOwnershipHandover"`
+ */
+export const useSimulateZaarflipRequestOwnershipHandover =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'requestOwnershipHandover',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link zaarflipAbi}__ and `functionName` set to `"transferOwnership"`
+ */
+export const useSimulateZaarflipTransferOwnership =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    functionName: 'transferOwnership',
   })
 
 /**
@@ -1766,6 +2495,36 @@ export const useWatchZaarflipEvent = /*#__PURE__*/ createUseWatchContractEvent({
   abi: zaarflipAbi,
   address: zaarflipAddress,
 })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link zaarflipAbi}__ and `eventName` set to `"FeePercentageUpdated"`
+ */
+export const useWatchZaarflipFeePercentageUpdatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    eventName: 'FeePercentageUpdated',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link zaarflipAbi}__ and `eventName` set to `"GameCancelled"`
+ */
+export const useWatchZaarflipGameCancelledEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    eventName: 'GameCancelled',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link zaarflipAbi}__ and `eventName` set to `"GameCreated"`
+ */
+export const useWatchZaarflipGameCreatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    eventName: 'GameCreated',
+  })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link zaarflipAbi}__ and `eventName` set to `"GameResult"`
@@ -1778,23 +2537,93 @@ export const useWatchZaarflipGameResultEvent =
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link zaarflipAbi}__ and `eventName` set to `"Blah"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link zaarflipAbi}__ and `eventName` set to `"GameTimeoutUpdated"`
  */
-export const useWatchZaarflipBlahEvent =
+export const useWatchZaarflipGameTimeoutUpdatedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: zaarflipAbi,
     address: zaarflipAddress,
-    eventName: 'Blah',
+    eventName: 'GameTimeoutUpdated',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link zaarflipAbi}__ and `eventName` set to `"Bloop"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link zaarflipAbi}__ and `eventName` set to `"LiquidityEdgeUpdated"`
  */
-export const useWatchZaarflipBloopEvent =
+export const useWatchZaarflipLiquidityEdgeUpdatedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: zaarflipAbi,
     address: zaarflipAddress,
-    eventName: 'Bloop',
+    eventName: 'LiquidityEdgeUpdated',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link zaarflipAbi}__ and `eventName` set to `"ManagerUpdated"`
+ */
+export const useWatchZaarflipManagerUpdatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    eventName: 'ManagerUpdated',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link zaarflipAbi}__ and `eventName` set to `"ManagerWinFeePercentageUpdated"`
+ */
+export const useWatchZaarflipManagerWinFeePercentageUpdatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    eventName: 'ManagerWinFeePercentageUpdated',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link zaarflipAbi}__ and `eventName` set to `"MaxCoinsUpdated"`
+ */
+export const useWatchZaarflipMaxCoinsUpdatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    eventName: 'MaxCoinsUpdated',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link zaarflipAbi}__ and `eventName` set to `"OwnershipHandoverCanceled"`
+ */
+export const useWatchZaarflipOwnershipHandoverCanceledEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    eventName: 'OwnershipHandoverCanceled',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link zaarflipAbi}__ and `eventName` set to `"OwnershipHandoverRequested"`
+ */
+export const useWatchZaarflipOwnershipHandoverRequestedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    eventName: 'OwnershipHandoverRequested',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link zaarflipAbi}__ and `eventName` set to `"OwnershipTransferred"`
+ */
+export const useWatchZaarflipOwnershipTransferredEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    eventName: 'OwnershipTransferred',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link zaarflipAbi}__ and `eventName` set to `"RandomnessProviderUpdated"`
+ */
+export const useWatchZaarflipRandomnessProviderUpdatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    eventName: 'RandomnessProviderUpdated',
   })
 
 /**
@@ -1808,11 +2637,61 @@ export const useWatchZaarflipRandomnessRequestedEvent =
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link zaarflipAbi}__ and `eventName` set to `"GameCreated"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link zaarflipAbi}__ and `eventName` set to `"RandomnessToggled"`
  */
-export const useWatchZaarflipGameCreatedEvent =
+export const useWatchZaarflipRandomnessToggledEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: zaarflipAbi,
     address: zaarflipAddress,
-    eventName: 'GameCreated',
+    eventName: 'RandomnessToggled',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link zaarflipAbi}__ and `eventName` set to `"StakingContractUpdated"`
+ */
+export const useWatchZaarflipStakingContractUpdatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    eventName: 'StakingContractUpdated',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link zaarflipAbi}__ and `eventName` set to `"TokenAdded"`
+ */
+export const useWatchZaarflipTokenAddedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    eventName: 'TokenAdded',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link zaarflipAbi}__ and `eventName` set to `"TokenRemoved"`
+ */
+export const useWatchZaarflipTokenRemovedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    eventName: 'TokenRemoved',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link zaarflipAbi}__ and `eventName` set to `"TransferFailed"`
+ */
+export const useWatchZaarflipTransferFailedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    eventName: 'TransferFailed',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link zaarflipAbi}__ and `eventName` set to `"TransferSucceeded"`
+ */
+export const useWatchZaarflipTransferSucceededEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: zaarflipAbi,
+    address: zaarflipAddress,
+    eventName: 'TransferSucceeded',
   })

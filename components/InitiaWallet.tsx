@@ -8,6 +8,7 @@ import { OctagonAlert, AlertOctagon } from "lucide-react";
 import { bech32 } from "bech32";
 import { convertInitiaAddress } from "@/utils/convertInitiaAddress";
 import { useBalanceContext } from "@/contexts/BalanceContext";
+import { initia } from "@/config";
 
 const NetworkModal = ({ onClose }: { onClose: () => void }) => {
   const { switchChain } = useSwitchChain();
@@ -30,11 +31,11 @@ const NetworkModal = ({ onClose }: { onClose: () => void }) => {
         </button>
         <div className="text-center text-gray-300 my-4">
           This app doesn&apos;t support your current network. Please switch to
-          <span className="text-white"> zaar-test-4</span>.
+          <span className="text-white"> {initia.name}</span>.
         </div>
         <button
           onClick={() => {
-            switchChain({ chainId: 2285582334439122 });
+            switchChain({ chainId: initia.id });
             onClose();
           }}
           className="w-full gradient-button text-black py-2 px-4 rounded-sm hover:opacity-90 transition duration-300"
@@ -122,7 +123,7 @@ export const InitiaWallet = () => {
         </button>
       ) : (
         <div className="flex items-center gap-2 md:gap-6">
-          {chainId === 2285582334439122 ? (
+          {chainId === initia.id ? (
             <div className="flex items-center justify-center px-4 py-2 text-sm rounded-sm font-bold uppercase text-black gradient-button transition duration-500 whitespace-nowrap">
               {balance?.toFixed(2)} fZAAR
             </div>

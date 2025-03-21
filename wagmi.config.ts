@@ -4,26 +4,27 @@ import { erc20Abi } from "viem";
 import {mainnet } from "wagmi/chains";
 // import {abi} from "@/abis/abi.json";
 import {abi, plinkoAbi, zaarStakingAbi} from "@/abis/abi"
-import { zaarflipAbi } from "./generated";
+import { FlipAbi } from "@/abis/Flip-abi";
+import { StakingAbi } from "@/abis/Staking-abi";
 
 export default defineConfig({
     out: "generated.ts",
     contracts: [
         {
             name: "zaarflip",
-            abi:abi,
-            address: "0x87F5f5c39649D3B9fc35E3448b27D536Bb1bF639",
+            abi:FlipAbi,
+            address: "0xA5E835BAAb3A78505dEA4369B3D862bFF90F1322",
         },
         {
             name:"initiaToken",
             abi:erc20Abi,
-            address:"0x6f3790E91caf7B020f178aaB4482a2B1B5E9f45C",
+            address:"0xBdb128Cf29d40738875297E90aa42772D354c137",
         },
-        {
-            name:"staking", 
-            abi:zaarStakingAbi,
-            address:"0x78856b40369957A22b01e83a3727e6871Cc11539",
-        },
+        // {
+        //     name:"staking", 
+        //     abi:StakingAbi,
+        //     address:"0xb8909721F7D2b79C757B435e8cB1a9CF53aCf618",
+        // },
         {
             name:"plinko",
             abi:plinkoAbi,
