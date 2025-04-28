@@ -86,17 +86,6 @@ export default function Home() {
   const wagerInputRef = useRef<HTMLInputElement>(null);
   const { chainId } = useAccount();
 
-  const testFlipper = useSimulateZaarflipFlip({
-    args: [
-      parseEther(BigInt(wager ? wager : 0).toString()),
-      BigInt(coinsAmount),
-      BigInt(minHeadsTails),
-      initiaTokenAddress,
-      getFutureTimestamp(15),
-    ],
-  });
-  console.log("testFlipper", testFlipper);
-
   const { data: flip, refetch: refetchFlip }: { data: any; refetch: any } =
     useSimulateZaarflipFlip({
       args: [
@@ -109,6 +98,18 @@ export default function Home() {
       chainId: initia.id,
     });
 
+  const testFlipper = useSimulateZaarflipFlip({
+    args: [
+      BigInt(1),
+      BigInt(1),
+      BigInt(1),
+      initiaTokenAddress,
+      getFutureTimestamp(15),
+    ],
+    chainId: initia.id,
+  });
+
+  console.log("testFlipper", testFlipper);
   //for regular wallets
   const { address: addr } = useAccount();
   const { refetchBalance } = useBalanceContext();
@@ -238,36 +239,40 @@ export default function Home() {
 
       let receipt = await waitForTransactionReceipt(config, { hash: myhash });
 
-      const resultLogs = parseEventLogs({
-        abi: FlipAbi,
-        eventName: "GameResult",
-        logs: receipt.logs,
-      }) as unknown as GameResultEvent[];
+      console.log("receipt", receipt);
 
-      // const result: GameResult = await new Promise((resolve) => {
-      //   const unwatch = watchContractEvent(config, {
-      //     address: zaarflipAddress,
-      //     abi: FlipAbi,
-      //     eventName: "GameResult",
-      //     onLogs: (logs: Array<Log>) => {
-      //       const gameLogs = logs as unknown as GameResultEvent[];
-      //       console.log("Game Logs: ", gameLogs);
-      //       for (const log of gameLogs) {
-      //         if (log.args.player.toLowerCase() === addr?.toLowerCase()) {
-      //           unwatch();
-      //           console.log("Logs: ", logs);
-      //           resolve({
-      //             won: gameLogs[0]?.args.won,
-      //             payout: gameLogs[0]?.args.payout,
-      //           });
-      //         }
-      //       }
-      //     },
-      //     poll: true,
-      //   });
-      // });
+      // const resultLogs = parseEventLogs({
+      //   abi: FlipAbi,
+      //   eventName: "GameResult",
+      //   logs: receipt.logs,
+      // }) as unknown as GameResultEvent[];
 
-      return resultLogs[0].args;
+      // console.log("resultLogs", resultLogs);
+
+      const result: GameResult = await new Promise((resolve) => {
+        const unwatch = watchContractEvent(config, {
+          address: zaarflipAddress,
+          abi: FlipAbi,
+          eventName: "GameResult",
+          onLogs: (logs: Array<Log>) => {
+            const gameLogs = logs as unknown as GameResultEvent[];
+            console.log("Game Logs: ", gameLogs);
+            for (const log of gameLogs) {
+              if (log.args.player.toLowerCase() === addr?.toLowerCase()) {
+                unwatch();
+                console.log("Logs: ", logs);
+                resolve({
+                  won: gameLogs[0]?.args.won,
+                  payout: gameLogs[0]?.args.payout,
+                });
+              }
+            }
+          },
+          poll: true,
+        });
+      });
+
+      return result;
     } catch (error) {
       console.log(error);
       return false;
@@ -284,7 +289,7 @@ export default function Home() {
     }
 
     if (chainId !== initia.id) {
-      toast.error("Unsupported network. Please switch to zaar-test-3.");
+      toast.error("Unsupported network. Please switch to zaar-test-5.");
       if (!isMuted) {
         erroraudio.play();
       }
@@ -293,7 +298,7 @@ export default function Home() {
 
     if (wager > wagerPresets[wagerPresets.length - 1]) {
       toast.error(
-        `The current max wager is ${wagerPresets[wagerPresets.length - 1]} fZAAR.`
+        `The current max wager is ${wagerPresets[wagerPresets.length - 1]} INIT.`
       );
       if (!isMuted) {
         erroraudio.play();
@@ -307,6 +312,7 @@ export default function Home() {
         address: addr,
         token: initiaTokenAddress,
       });
+      console.log(walletBalanceUnformatted);
       const walletBalance = Number(walletBalanceUnformatted.value);
 
       if (walletBalance <= wager) {
@@ -516,7 +522,7 @@ export default function Home() {
                   }}
                   className="gradient-button text-black px-6 py-2  hover:-translate-y-1 transition duration-700 ease-in-out rounded-sm font-bold mt-3 mx-auto block text-sm uppercase transition duration-700 ease-in-out"
                 >
-                  FLIP COIN - {wager} fZAAR
+                  FLIP COIN - {wager} INIT
                 </button>
               </div>
             </div>
@@ -606,7 +612,7 @@ export default function Home() {
                   <div className="" ref={inputRefMobile}>
                     <input
                       type="text"
-                      value={wager === 0 ? "" : `${wager} fZAAR`}
+                      value={wager === 0 ? "" : `${wager} INIT`}
                       className="wager-input bg-transparent w-24 text-left pl-2 h-8 text-sm focus:outline-none"
                       onChange={handleWagerChange}
                       onFocus={() => setWagerDropdown(true)}
@@ -629,7 +635,7 @@ export default function Home() {
                                   height={15}
                                   className="mr-2"
                                 />
-                                ${value.toFixed(2)} fZAAR
+                                ${value.toFixed(2)} INIT
                               </div>
                             ))}
                       </div>
@@ -657,7 +663,7 @@ export default function Home() {
                 POTENTIAL TO WIN
               </div>
               <div className="bg-gray rounded-sm p-2 text-lime-green h-10 flex items-center text-sm">
-                {potentialWin} {" fZAAR"}
+                {potentialWin} {" INIT"}
               </div>
             </div>
             <div className="flex justify-between">
@@ -805,7 +811,7 @@ export default function Home() {
                             onChange={handleWagerChange}
                             onFocus={() => setWagerDropdown(true)}
                           />
-                          <span>fZAAR</span>
+                          <span>INIT</span>
                         </div>
 
                         {wagerDropdown && (
@@ -826,7 +832,7 @@ export default function Home() {
                                   height={15}
                                   className="mr-2"
                                 />
-                                {value} fZAAR
+                                {value} INIT
                               </div>
                             ))}
                           </div>
@@ -855,7 +861,7 @@ export default function Home() {
                   POTENTIAL TO WIN
                 </div>
                 <div className="bg-gray rounded-sm p-2 pl-4 text-lime-green h-10 flex items-center text-lg">
-                  {potentialWin} {" fZAAR"}
+                  {potentialWin} {" INIT"}
                 </div>
               </div>
             </div>
@@ -996,7 +1002,7 @@ export default function Home() {
             }}
             className="hidden md:block gradient-button hover:-translate-y-1 transition duration-700 ease-in-out text-black px-6 py-2 rounded-sm font-bold mt-3 mx-auto block text-sm uppercase"
           >
-            FLIP COIN - {wager} {"fZAAR"}
+            FLIP COIN - {wager} {"INIT"}
           </button>
         </main>
       </div>

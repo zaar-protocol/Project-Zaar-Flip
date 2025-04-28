@@ -13,7 +13,7 @@ import { StarField } from "@/components/star-field";
 import { type PutBlobResult } from "@vercel/blob";
 import Head from "next/head";
 import { Metadata } from "next";
-import { useWallet } from "@initia/react-wallet-widget";
+import { useWallet } from "@initia/react-wallet-widget/ssr";
 
 export const metadata: Metadata = {
   title: "Settings",

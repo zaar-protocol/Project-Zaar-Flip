@@ -51,7 +51,12 @@ const Home: React.FC = () => {
           }
         );
         const data = await response.json();
-        setZaarPrice(data["protectorate-protocol"].usd.toFixed(4));
+        if (data["protectorate-protocol"]) {
+          console.log(data["protectorate-protocol"]);
+          setZaarPrice(data["protectorate-protocol"].usd.toFixed(4));
+        } else {
+          setZaarPrice("...");
+        }
       } catch (error) {
         console.error("Error fetching Zaar price:", error);
       }
@@ -86,24 +91,12 @@ const Home: React.FC = () => {
             </span>
           </div>
         </Link>
-        <Image
-          width={1125}
-          height={414}
-          alt="Zaar Coin Reflection"
-          src="/zaar_coin_reflection.png"
-          className=" absolute -z-10 top-[180px] w-full left-0 md:top-[290px]   mix-blend-plus-lighter"
-        />
-        <Image
-          width={1125}
-          height={414}
-          alt="Zaar Coin Reflection"
-          src="/zaar_coin_reflection.png"
-          className="absolute -z-10 top-[180px] md:top-[290px] w-full left-0 mix-blend-color-dodge"
-        />
-        <div className={`mt-24 zaar-coin zaar-loading-coin ${size}`}>
+        {/* <div className={`mt-24 zaar-coin zaar-loading-coin ${size}`}>
           <div className={`zaar-coin-heads ${size}`}></div>
           <div className={`zaar-coin-tails ${size}`}></div>
-        </div>
+        </div> */}
+
+        <div className={`mt-24 coin-sprite landing-page-coin`}></div>
 
         {/* <Image
           height={800}
@@ -112,8 +105,26 @@ const Home: React.FC = () => {
           alt="Zaar-flip coin"
           className="w-[430px] mt-24"
         /> */}
-        <div className="text-[40px] lg:text-[60px] mt-8 font-bold text-white text-center mix-blend-overlay">
-          THE FUN NETWORK
+        <div className="relative flex flex-col items-center justify-center">
+          <div className="absolute w-[600px] h-[150px] lg:w-[1000px] lg:h-[270px]">
+            <Image
+              width={1125}
+              height={414}
+              alt="Zaar Coin Reflection"
+              src="/zaar_coin_reflection.png"
+              className="absolute opacity-80 -z-10 w-full mix-blend-plus-lighter"
+            />
+            <Image
+              width={1125}
+              height={414}
+              alt="Zaar Coin Reflection"
+              src="/zaar_coin_reflection.png"
+              className="absolute -z-10 opacity-90 w-full mix-blend-color-dodge"
+            />
+          </div>
+          <div className="text-[40px] lg:text-[60px] mt-8 font-bold text-white text-center mix-blend-overlay">
+            THE FUN NETWORK
+          </div>
         </div>
       </div>
       <div className="flex flex-col w-full items-center text-white text-lg mt-10">

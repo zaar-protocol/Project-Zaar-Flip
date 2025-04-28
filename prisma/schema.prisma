@@ -54,6 +54,7 @@ model Profile {
   challengeWins   ChallengeWinner[]
   startingBalance Decimal @db.Decimal(50, 2)
   lastFaucetUse   DateTime?
+  createdAt       DateTime   @default(now())
 }
 
 model ChallengeWinner {

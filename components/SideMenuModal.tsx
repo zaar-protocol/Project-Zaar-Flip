@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { useMuteState } from "./MuteContext";
 import { ConnectWallet } from "@/components/ConnectWallet";
 import { InitiaWallet } from "@/components/InitiaWallet";
-import { useWallet } from "@initia/react-wallet-widget";
+import { useWallet } from "@initia/react-wallet-widget/ssr";
 import { Web3ModalButton } from "./Web3ModalButton";
 import { ThirdWebWallet } from "./ThirdWebWallet";
 import { ConnectButton } from "thirdweb/react";

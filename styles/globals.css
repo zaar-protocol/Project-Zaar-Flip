@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+@import './coinAnimations.css';
+
+
 /* Add any custom styles here */
 @font-face {
   font-family: 'W95FA';
@@ -959,4 +962,55 @@ input:checked + .toggle:before {
 
 .ticket::after {
   bottom: 0;
+}
+
+.coin-sprite {
+  width: 250px;
+  height: 250px;
+  background-image: url('/zaar-sprite-sheet.png');
+  background-size: 1250px 4500px; /* 5 * 250px, 17 * 250px */
+}
+
+.heads{
+    background-position: 0 0;
+}
+
+.tails{
+    background-position: 0 -2250px;
+}
+
+.slow-heads-to-tails {
+    animation: headsToTails 1s steps(1) 1 forwards;
+}
+
+.slow-tails-to-heads {
+    animation: tailsToHeads 1s steps(1) 1 forwards;
+}
+
+.heads-to-tails {
+    animation: headsToHeads 0.4s steps(1) 4 forwards;
+}
+
+.heads-to-tails-2 {
+    animation: headsToTails 0.2s steps(1) 1 forwards;
+}
+
+.tails-to-heads {
+    animation: tailsToTails 0.4s steps(1) 4 forwards;
+}
+
+.tails-to-heads-2 {
+    animation: tailsToHeads 0.2s steps(1) 1 forwards;
+}
+
+.heads-to-heads {
+    animation: headsToHeads 0.4s steps(1) 4 forwards;
+}
+
+.tails-to-tails {
+    animation: tailsToTails 0.4s steps(1) 4 forwards;
+}
+
+.landing-page-coin {
+  animation: headsToHeads 5s steps(1) infinite forwards;
 }

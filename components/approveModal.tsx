@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 import { erc20Abi, parseEther } from "viem";
 import { zaarflipAddress } from "@/generated";
 import { useAccount, useBalance } from "wagmi";
-import { useAddress, useWallet } from "@initia/react-wallet-widget";
+import { useAddress, useWallet } from "@initia/react-wallet-widget/ssr";
 import { useBalanceContext } from "@/contexts/BalanceContext";
 
 interface ApproveModalProps {
@@ -123,7 +123,7 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
                   border border-gray-700 hover:border-gray-600
                 `}
               >
-                {`${amount} fZAAR`}
+                {`${amount} INIT`}
               </button>
             ))}
           </div>

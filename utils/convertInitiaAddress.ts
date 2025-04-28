@@ -7,3 +7,11 @@ export const convertInitiaAddress = (initiaAddress: string) => {
     }
     return initiaAddress;
   };
+
+  export const convertToInitiaAddress = (evmAddress: string) => {
+    if (evmAddress?.match(/^0x[a-fA-F0-9]{40}$/)) {
+      const words = bech32.toWords(Buffer.from(evmAddress.slice(2), 'hex'));
+      return bech32.encode('init', words);
+    }
+    return evmAddress;
+  };

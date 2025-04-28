@@ -208,7 +208,7 @@ export const initiaTokenAbi = [
 ] as const
 
 export const initiaTokenAddress =
-  '0xBdb128Cf29d40738875297E90aa42772D354c137' as const
+  '0x65979f996590ce34E698A28684A53168e3222828' as const
 
 export const initiaTokenConfig = {
   address: initiaTokenAddress,
@@ -1156,7 +1156,7 @@ export const zaarflipAbi = [
 ] as const
 
 export const zaarflipAddress =
-  '0xA5E835BAAb3A78505dEA4369B3D862bFF90F1322' as const
+  '0x9be15f31aC9043dca395958C7531Bd6EF0b6dEf0' as const
 
 export const zaarflipConfig = {
   address: zaarflipAddress,

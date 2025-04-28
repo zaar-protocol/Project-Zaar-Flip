@@ -3,7 +3,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 import type { AppProps } from "next/app";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
-import { WalletWidgetProvider } from "@initia/react-wallet-widget";
+import WalletWidgetProvider from "@/components/WalletWidgetProvider";
 import { config, initia } from "@/config";
 import Head from "next/head";
 import type { Metadata } from "next";
