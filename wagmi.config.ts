@@ -18,13 +18,13 @@ export default defineConfig({
         {
             name:"initiaToken",
             abi:erc20Abi,
-            address:"0x65979f996590ce34E698A28684A53168e3222828",
+            address:"0x7Fb2A94A13186E3C338f0DA9728B4835D86b1a7B",
         },
-        // {
-        //     name:"staking", 
-        //     abi:StakingAbi,
-        //     address:"0x292CBeEc7108C5e214eF7365C68cc8B875980Ef4",
-        // },
+        {
+            name:"staking", 
+            abi:StakingAbi,
+            address:"0x292CBeEc7108C5e214eF7365C68cc8B875980Ef4",
+        },
         {
             name:"plinko",
             abi:plinkoAbi,

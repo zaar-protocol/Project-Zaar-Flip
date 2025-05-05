@@ -177,7 +177,7 @@ export const SideMenuModal = () => {
           >
             EARN XP
           </Link> */}
-          {/* <div className="group hover:cursor-pointer text-gray opacity-80 hover:opacity-100 transition duration-300 hover:scale-105 relative z-50">
+          <div className="group hover:cursor-pointer text-gray opacity-80 hover:opacity-100 transition duration-300 hover:scale-105 relative z-50">
             <Link
             href="/staking"
             className="hover:cursor-pointer transition duration-300 hover:text-white"
@@ -188,7 +188,7 @@ export const SideMenuModal = () => {
             <div className="min-w-[100px] absolute -left-4 text-center text-base text-gray transition duration-300 opacity-0 group-hover:opacity-100">
               Coming soon
             </div>
-          </div> */}
+          </div>
 
           {/* <Link
             href="/bridge"

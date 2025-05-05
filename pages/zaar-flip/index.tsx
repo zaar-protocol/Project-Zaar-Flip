@@ -22,7 +22,7 @@ import {
   useSimulateZaarflipFlip,
   useReadInitiaTokenAllowance,
 } from "@/generated";
-import { writeContract } from "@wagmi/core";
+import { writeContract, readContract } from "@wagmi/core";
 import { waitForTransactionReceipt } from "@wagmi/core";
 import { formatEther, Log, parseEventLogs } from "viem";
 import { parseEther } from "viem";
@@ -97,7 +97,12 @@ export default function Home() {
       ],
       chainId: initia.id,
     });
-
+    console.log(parseEther(BigInt(wager ? wager : 0).toString()));
+    console.log(coinsAmount);
+    console.log(minHeadsTails);
+    console.log(initiaTokenAddress);
+    console.log(getFutureTimestamp(15));
+    console.log("flip", flip);
   const testFlipper = useSimulateZaarflipFlip({
     args: [
       BigInt(1),
@@ -109,7 +114,7 @@ export default function Home() {
     chainId: initia.id,
   });
 
-  console.log("testFlipper", testFlipper);
+  //console.log("testFlipper", testFlipper);
   //for regular wallets
   const { address: addr } = useAccount();
   const { refetchBalance } = useBalanceContext();
@@ -312,7 +317,7 @@ export default function Home() {
         address: addr,
         token: initiaTokenAddress,
       });
-      console.log(walletBalanceUnformatted);
+      console.log(walletBalanceUnformatted, initiaTokenAddress);
       const walletBalance = Number(walletBalanceUnformatted.value);
 
       if (walletBalance <= wager) {
@@ -338,73 +343,74 @@ export default function Home() {
 
       setLoadingModalIsOpen(true);
 
-      const result = await flipContract();
+    const result = await flipContract();
 
-      setLoadingModalIsOpen(false);
+    setLoadingModalIsOpen(false);
+    
 
-      if (result) {
-        const outcome = result.won;
+    if (result) {
+      const outcome = result.won;
 
-        const postWalletBalanceUnformatted = await getBalance(config, {
-          address: addr,
-          token: initiaTokenAddress,
-        });
+      const postWalletBalanceUnformatted = await getBalance(config, {
+        address: addr || "0x0000000000000000000000000000000000000000",
+        token: initiaTokenAddress,
+      });
 
-        const winnings = Number(formatEther(result.payout));
+      const winnings = Number(formatEther(result.payout));
 
-        fetch(
-          `./api/addCoinEvent?ownerAddress=${addr}&wager=${wager}&winnings=${winnings}&outcome=${outcome}&side=${currentSide}`
-        )
-          .then((response) => response.json())
-          .then(() => {
-            setTimeout(async () => {
-              if (outcome) {
-                toast.success("Congratulations, you won!");
-                if (!isMuted) {
-                  if (audioCount % 2 == 1) {
-                    winaudio.play();
-                  } else if (audioCount === 2) {
-                    winaudio2.play();
-                  }
-                  await refetchBalance();
+      fetch(
+        `./api/addCoinEvent?ownerAddress=${addr}&wager=${wager}&winnings=${winnings}&outcome=${outcome}&side=${currentSide}`
+      )
+        .then((response) => response.json())
+        .then(() => {
+          setTimeout(async () => {
+            if (outcome) {
+              toast.success("Congratulations, you won!");
+              if (!isMuted) {
+                if (audioCount % 2 == 1) {
+                  winaudio.play();
+                } else if (audioCount === 2) {
+                  winaudio2.play();
                 }
-                createConfetti();
-              } else {
-                if (!isMuted) {
-                  if (audioCount === 1) {
-                    loseaudio.play();
-                    setAudioCount(2);
-                  } else if (audioCount === 2) {
-                    setAudioCount(3);
-                  } else if (audioCount === 3) {
-                    setAudioCount(4);
-                  } else if (audioCount === 4) {
-                    loseAudio2.play();
-                    setAudioCount(5);
-                  } else if (audioCount === 5) {
-                    setAudioCount(6);
-                  } else if (audioCount === 6) {
-                    setAudioCount(1);
-                  }
-                }
-                toast.error("You lost.");
                 await refetchBalance();
               }
-            }, 150 * coinsAmount);
-          });
+              createConfetti();
+            } else {
+              if (!isMuted) {
+                if (audioCount === 1) {
+                  loseaudio.play();
+                  setAudioCount(2);
+                } else if (audioCount === 2) {
+                  setAudioCount(3);
+                } else if (audioCount === 3) {
+                  setAudioCount(4);
+                } else if (audioCount === 4) {
+                  loseAudio2.play();
+                  setAudioCount(5);
+                } else if (audioCount === 5) {
+                  setAudioCount(6);
+                } else if (audioCount === 6) {
+                  setAudioCount(1);
+                }
+              }
+              toast.error("You lost.");
+              await refetchBalance();
+            }
+          }, 150 * coinsAmount);
+        });
 
-        if (coinsDisplayRef.current) {
-          randomFlip(
-            coinsDisplayRef.current,
-            minHeadsTails,
-            currentSide,
-            outcome
-          );
-        }
-      } else {
-        toast.error("Error with flip. Transaction did not complete.");
+      if (coinsDisplayRef.current) {
+        randomFlip(
+          coinsDisplayRef.current,
+          minHeadsTails,
+          currentSide,
+          outcome
+        );
       }
     } else {
+      toast.error("Error with flip. Transaction did not complete.");
+    }
+  }else {
       if (!isMuted) {
         erroraudio.play();
       }
