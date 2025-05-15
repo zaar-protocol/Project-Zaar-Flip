@@ -1,21 +1,19 @@
-
-import {mainnet} from 'wagmi/chains';
 import { type Chain } from 'viem'
 import { Config, createConfig, http } from 'wagmi';
 
 export const initia = {
-  id: 1330587941640993,
-  name: 'zaar-testnet-5',
-  nativeCurrency: { name: 'fZAAR', symbol: 'fZAAR', decimals: 18 },
+  id: 1335097526422335,
+  name: 'zaar-mainnet-1',
+  nativeCurrency: { name: 'INIT', symbol: 'INIT', decimals: 18 },
   blockExplorers: {
     default: {
       name: 'Initia Scan',
-      url: 'https://scan.testnet.initia.xyz/zaar-testnet-5',
+      url: 'https://scan.initia.xyz/zaar-mainnet-1',
     },
   },
   rpcUrls: {
     default: {
-      http: ['https://sequencer-jsonrpc-zaar-testnet-5.anvil.asia-southeast.initia.xyz/'], // Use array of URLs
+      http: ['https://jsonrpc-zaar-mainnet-1.anvil.asia-southeast.initia.xyz/'], // Use array of URLs
     },
   },
 } as const satisfies Chain
@@ -23,7 +21,7 @@ export const initia = {
 export const config: Config = createConfig({
   chains: [initia],
   transports: {
-    [initia.id]: http('https://sequencer-jsonrpc-zaar-testnet-5.anvil.asia-southeast.initia.xyz/'),
+    [initia.id]: http('https://jsonrpc-zaar-mainnet-1.anvil.asia-southeast.initia.xyz/'),
   },
   ssr: true,
 })

@@ -208,7 +208,7 @@ export const initiaTokenAbi = [
 ] as const
 
 export const initiaTokenAddress =
-  '0xBdb128Cf29d40738875297E90aa42772D354c137' as const
+  '0x7Fb2A94A13186E3C338f0DA9728B4835D86b1a7B' as const
 
 export const initiaTokenConfig = {
   address: initiaTokenAddress,
@@ -473,6 +473,761 @@ export const plinkoAddress =
   '0x6283dA52Bce2D01C885d6977A5746fF7eA2e555D' as const
 
 export const plinkoConfig = { address: plinkoAddress, abi: plinkoAbi } as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// staking
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const stakingAbi = [
+  {
+    type: 'constructor',
+    inputs: [{ name: '_manager', internalType: 'address', type: 'address' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'MAX_LIQUIDITY_PERCENTAGE',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'acceptedTokens',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'token', internalType: 'address', type: 'address' }],
+    name: 'addAcceptedToken',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'token', internalType: 'address', type: 'address' }],
+    name: 'removeAcceptedToken',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    name: 'supportedTokens',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'game', internalType: 'address', type: 'address' }],
+    name: 'addAuthorizedGame',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'authorizedGames',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'game', internalType: 'address', type: 'address' }],
+    name: 'removeAuthorizedGame',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'game', internalType: 'address', type: 'address' }],
+    name: 'finalizeRemoveAuthorizedGame',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'removalInProgress',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'token', internalType: 'address', type: 'address' },
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+      { name: 'minSharesOut', internalType: 'uint256', type: 'uint256' },
+      { name: 'finalizeDeadline', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'requestStake',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'token', internalType: 'address', type: 'address' },
+      { name: 'user', internalType: 'address', type: 'address' },
+    ],
+    name: 'finalizeStake',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'token', internalType: 'address', type: 'address' }],
+    name: 'cancelExpiredStakeRequest',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'address', type: 'address' },
+      { name: '', internalType: 'address', type: 'address' },
+    ],
+    name: 'stakeRequests',
+    outputs: [
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+      { name: 'requestTime', internalType: 'uint256', type: 'uint256' },
+      { name: 'minSharesOut', internalType: 'uint256', type: 'uint256' },
+      { name: 'finalizeDeadline', internalType: 'uint256', type: 'uint256' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'token', internalType: 'address', type: 'address' },
+      { name: 'shares', internalType: 'uint256', type: 'uint256' },
+      { name: 'minAmountOut', internalType: 'uint256', type: 'uint256' },
+      { name: 'finalizeDeadline', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'requestUnstake',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'token', internalType: 'address', type: 'address' },
+      { name: 'user', internalType: 'address', type: 'address' },
+      { name: 'minAmountOut', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'finalizeUnstake',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'token', internalType: 'address', type: 'address' }],
+    name: 'cancelExpiredUnstakeRequest',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'address', type: 'address' },
+      { name: '', internalType: 'address', type: 'address' },
+    ],
+    name: 'unstakeRequests',
+    outputs: [
+      { name: 'shares', internalType: 'uint256', type: 'uint256' },
+      { name: 'requestTime', internalType: 'uint256', type: 'uint256' },
+      { name: 'minAmountOut', internalType: 'uint256', type: 'uint256' },
+      { name: 'finalizeDeadline', internalType: 'uint256', type: 'uint256' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'token', internalType: 'address', type: 'address' },
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'lockLiquidity',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'token', internalType: 'address', type: 'address' },
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'unlockLiquidity',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'game', internalType: 'address', type: 'address' },
+      { name: 'token', internalType: 'address', type: 'address' },
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'forceUnlockLiquidity',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'lockedLiquidity',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'address', type: 'address' },
+      { name: '', internalType: 'address', type: 'address' },
+    ],
+    name: 'gameLockedLiquidity',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'token', internalType: 'address', type: 'address' },
+      { name: 'receiver', internalType: 'address', type: 'address' },
+    ],
+    name: 'claimPendingPayout',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'token', internalType: 'address', type: 'address' },
+      { name: 'recipient', internalType: 'address', type: 'address' },
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'transferPayout',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'address', type: 'address' },
+      { name: '', internalType: 'address', type: 'address' },
+    ],
+    name: 'pendingPayouts',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'token', internalType: 'address', type: 'address' }],
+    name: 'getAvailableBalance',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'address', type: 'address' },
+      { name: '', internalType: 'address', type: 'address' },
+    ],
+    name: 'shareBalances',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'tokenAccounting',
+    outputs: [
+      { name: 'totalPendingPayouts', internalType: 'uint256', type: 'uint256' },
+      { name: 'totalPendingStakes', internalType: 'uint256', type: 'uint256' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'tokenInfo',
+    outputs: [
+      { name: 'totalShares', internalType: 'uint256', type: 'uint256' },
+      { name: 'lastUpdateTime', internalType: 'uint256', type: 'uint256' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'user', internalType: 'address', type: 'address' },
+      { name: 'token', internalType: 'address', type: 'address' },
+    ],
+    name: 'totalOwed',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'depositDelay',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'manager',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'unstakeDelay',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'newCooldownPeriod', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'setCooldownPeriod',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'newDepositDelay', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'setDepositDelay',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'newManager', internalType: 'address', type: 'address' }],
+    name: 'setManager',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'newMaxLiquidityPercentage',
+        internalType: 'uint256',
+        type: 'uint256',
+      },
+    ],
+    name: 'setMaxLiquidityPercentage',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'owner',
+    outputs: [{ name: 'result', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'pendingOwner', internalType: 'address', type: 'address' },
+    ],
+    name: 'ownershipHandoverExpiresAt',
+    outputs: [{ name: 'result', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'cancelOwnershipHandover',
+    outputs: [],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'pendingOwner', internalType: 'address', type: 'address' },
+    ],
+    name: 'completeOwnershipHandover',
+    outputs: [],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'renounceOwnership',
+    outputs: [],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'requestOwnershipHandover',
+    outputs: [],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'newOwner', internalType: 'address', type: 'address' }],
+    name: 'transferOwnership',
+    outputs: [],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'newCooldown',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'CooldownPeriodUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'newDepositDelay',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'DepositDelayUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'game', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'token',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'ForcedLiquidityUnlocked',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'game', internalType: 'address', type: 'address', indexed: true },
+    ],
+    name: 'GameAuthorized',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'game', internalType: 'address', type: 'address', indexed: true },
+    ],
+    name: 'GameRemovalInitiated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'game', internalType: 'address', type: 'address', indexed: true },
+    ],
+    name: 'GameUnauthorized',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'oldManager',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'newManager',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'ManagerUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'newPercentage',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'MaxLiquidityPercentageUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'pendingOwner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'OwnershipHandoverCanceled',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'pendingOwner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'OwnershipHandoverRequested',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'oldOwner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'newOwner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'OwnershipTransferred',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'token',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'to', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'PayoutTransferred',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'user', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'token',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'RewardClaimed',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'user', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'token',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'StakeRefunded',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'user', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'token',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'StakeRequested',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'user', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'token',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'Staked',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'token',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'TokenAdded',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'token',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'TokenRemoved',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'token',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'to', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'TransferFailed',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'user', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'token',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'shares',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'UnstakeRequested',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'user', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'token',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'Unstaked',
+  },
+  { type: 'error', inputs: [], name: 'AlreadyInitialized' },
+  { type: 'error', inputs: [], name: 'NewOwnerIsZeroAddress' },
+  { type: 'error', inputs: [], name: 'NoHandoverRequest' },
+  { type: 'error', inputs: [], name: 'Reentrancy' },
+  { type: 'error', inputs: [], name: 'Unauthorized' },
+] as const
+
+export const stakingAddress =
+  '0x292CBeEc7108C5e214eF7365C68cc8B875980Ef4' as const
+
+export const stakingConfig = {
+  address: stakingAddress,
+  abi: stakingAbi,
+} as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // zaarflip
@@ -1156,7 +1911,7 @@ export const zaarflipAbi = [
 ] as const
 
 export const zaarflipAddress =
-  '0xA5E835BAAb3A78505dEA4369B3D862bFF90F1322' as const
+  '0x9be15f31aC9043dca395958C7531Bd6EF0b6dEf0' as const
 
 export const zaarflipConfig = {
   address: zaarflipAddress,
@@ -1885,6 +2640,930 @@ export const useWatchPlinkoMultipliersUpdatedEvent =
     abi: plinkoAbi,
     address: plinkoAddress,
     eventName: 'MultipliersUpdated',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__
+ */
+export const useReadStaking = /*#__PURE__*/ createUseReadContract({
+  abi: stakingAbi,
+  address: stakingAddress,
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"MAX_LIQUIDITY_PERCENTAGE"`
+ */
+export const useReadStakingMaxLiquidityPercentage =
+  /*#__PURE__*/ createUseReadContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'MAX_LIQUIDITY_PERCENTAGE',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"acceptedTokens"`
+ */
+export const useReadStakingAcceptedTokens = /*#__PURE__*/ createUseReadContract(
+  { abi: stakingAbi, address: stakingAddress, functionName: 'acceptedTokens' },
+)
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"supportedTokens"`
+ */
+export const useReadStakingSupportedTokens =
+  /*#__PURE__*/ createUseReadContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'supportedTokens',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"authorizedGames"`
+ */
+export const useReadStakingAuthorizedGames =
+  /*#__PURE__*/ createUseReadContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'authorizedGames',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"removalInProgress"`
+ */
+export const useReadStakingRemovalInProgress =
+  /*#__PURE__*/ createUseReadContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'removalInProgress',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"stakeRequests"`
+ */
+export const useReadStakingStakeRequests = /*#__PURE__*/ createUseReadContract({
+  abi: stakingAbi,
+  address: stakingAddress,
+  functionName: 'stakeRequests',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"unstakeRequests"`
+ */
+export const useReadStakingUnstakeRequests =
+  /*#__PURE__*/ createUseReadContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'unstakeRequests',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"lockedLiquidity"`
+ */
+export const useReadStakingLockedLiquidity =
+  /*#__PURE__*/ createUseReadContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'lockedLiquidity',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"gameLockedLiquidity"`
+ */
+export const useReadStakingGameLockedLiquidity =
+  /*#__PURE__*/ createUseReadContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'gameLockedLiquidity',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"pendingPayouts"`
+ */
+export const useReadStakingPendingPayouts = /*#__PURE__*/ createUseReadContract(
+  { abi: stakingAbi, address: stakingAddress, functionName: 'pendingPayouts' },
+)
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"getAvailableBalance"`
+ */
+export const useReadStakingGetAvailableBalance =
+  /*#__PURE__*/ createUseReadContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'getAvailableBalance',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"shareBalances"`
+ */
+export const useReadStakingShareBalances = /*#__PURE__*/ createUseReadContract({
+  abi: stakingAbi,
+  address: stakingAddress,
+  functionName: 'shareBalances',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"tokenAccounting"`
+ */
+export const useReadStakingTokenAccounting =
+  /*#__PURE__*/ createUseReadContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'tokenAccounting',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"tokenInfo"`
+ */
+export const useReadStakingTokenInfo = /*#__PURE__*/ createUseReadContract({
+  abi: stakingAbi,
+  address: stakingAddress,
+  functionName: 'tokenInfo',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"totalOwed"`
+ */
+export const useReadStakingTotalOwed = /*#__PURE__*/ createUseReadContract({
+  abi: stakingAbi,
+  address: stakingAddress,
+  functionName: 'totalOwed',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"depositDelay"`
+ */
+export const useReadStakingDepositDelay = /*#__PURE__*/ createUseReadContract({
+  abi: stakingAbi,
+  address: stakingAddress,
+  functionName: 'depositDelay',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"manager"`
+ */
+export const useReadStakingManager = /*#__PURE__*/ createUseReadContract({
+  abi: stakingAbi,
+  address: stakingAddress,
+  functionName: 'manager',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"unstakeDelay"`
+ */
+export const useReadStakingUnstakeDelay = /*#__PURE__*/ createUseReadContract({
+  abi: stakingAbi,
+  address: stakingAddress,
+  functionName: 'unstakeDelay',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"owner"`
+ */
+export const useReadStakingOwner = /*#__PURE__*/ createUseReadContract({
+  abi: stakingAbi,
+  address: stakingAddress,
+  functionName: 'owner',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"ownershipHandoverExpiresAt"`
+ */
+export const useReadStakingOwnershipHandoverExpiresAt =
+  /*#__PURE__*/ createUseReadContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'ownershipHandoverExpiresAt',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingAbi}__
+ */
+export const useWriteStaking = /*#__PURE__*/ createUseWriteContract({
+  abi: stakingAbi,
+  address: stakingAddress,
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"addAcceptedToken"`
+ */
+export const useWriteStakingAddAcceptedToken =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'addAcceptedToken',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"removeAcceptedToken"`
+ */
+export const useWriteStakingRemoveAcceptedToken =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'removeAcceptedToken',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"addAuthorizedGame"`
+ */
+export const useWriteStakingAddAuthorizedGame =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'addAuthorizedGame',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"removeAuthorizedGame"`
+ */
+export const useWriteStakingRemoveAuthorizedGame =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'removeAuthorizedGame',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"finalizeRemoveAuthorizedGame"`
+ */
+export const useWriteStakingFinalizeRemoveAuthorizedGame =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'finalizeRemoveAuthorizedGame',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"requestStake"`
+ */
+export const useWriteStakingRequestStake = /*#__PURE__*/ createUseWriteContract(
+  { abi: stakingAbi, address: stakingAddress, functionName: 'requestStake' },
+)
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"finalizeStake"`
+ */
+export const useWriteStakingFinalizeStake =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'finalizeStake',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"cancelExpiredStakeRequest"`
+ */
+export const useWriteStakingCancelExpiredStakeRequest =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'cancelExpiredStakeRequest',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"requestUnstake"`
+ */
+export const useWriteStakingRequestUnstake =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'requestUnstake',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"finalizeUnstake"`
+ */
+export const useWriteStakingFinalizeUnstake =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'finalizeUnstake',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"cancelExpiredUnstakeRequest"`
+ */
+export const useWriteStakingCancelExpiredUnstakeRequest =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'cancelExpiredUnstakeRequest',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"lockLiquidity"`
+ */
+export const useWriteStakingLockLiquidity =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'lockLiquidity',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"unlockLiquidity"`
+ */
+export const useWriteStakingUnlockLiquidity =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'unlockLiquidity',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"forceUnlockLiquidity"`
+ */
+export const useWriteStakingForceUnlockLiquidity =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'forceUnlockLiquidity',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"claimPendingPayout"`
+ */
+export const useWriteStakingClaimPendingPayout =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'claimPendingPayout',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"transferPayout"`
+ */
+export const useWriteStakingTransferPayout =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'transferPayout',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"setCooldownPeriod"`
+ */
+export const useWriteStakingSetCooldownPeriod =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'setCooldownPeriod',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"setDepositDelay"`
+ */
+export const useWriteStakingSetDepositDelay =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'setDepositDelay',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"setManager"`
+ */
+export const useWriteStakingSetManager = /*#__PURE__*/ createUseWriteContract({
+  abi: stakingAbi,
+  address: stakingAddress,
+  functionName: 'setManager',
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"setMaxLiquidityPercentage"`
+ */
+export const useWriteStakingSetMaxLiquidityPercentage =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'setMaxLiquidityPercentage',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"cancelOwnershipHandover"`
+ */
+export const useWriteStakingCancelOwnershipHandover =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'cancelOwnershipHandover',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"completeOwnershipHandover"`
+ */
+export const useWriteStakingCompleteOwnershipHandover =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'completeOwnershipHandover',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"renounceOwnership"`
+ */
+export const useWriteStakingRenounceOwnership =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'renounceOwnership',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"requestOwnershipHandover"`
+ */
+export const useWriteStakingRequestOwnershipHandover =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'requestOwnershipHandover',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"transferOwnership"`
+ */
+export const useWriteStakingTransferOwnership =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'transferOwnership',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingAbi}__
+ */
+export const useSimulateStaking = /*#__PURE__*/ createUseSimulateContract({
+  abi: stakingAbi,
+  address: stakingAddress,
+})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"addAcceptedToken"`
+ */
+export const useSimulateStakingAddAcceptedToken =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'addAcceptedToken',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"removeAcceptedToken"`
+ */
+export const useSimulateStakingRemoveAcceptedToken =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'removeAcceptedToken',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"addAuthorizedGame"`
+ */
+export const useSimulateStakingAddAuthorizedGame =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'addAuthorizedGame',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"removeAuthorizedGame"`
+ */
+export const useSimulateStakingRemoveAuthorizedGame =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'removeAuthorizedGame',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"finalizeRemoveAuthorizedGame"`
+ */
+export const useSimulateStakingFinalizeRemoveAuthorizedGame =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'finalizeRemoveAuthorizedGame',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"requestStake"`
+ */
+export const useSimulateStakingRequestStake =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'requestStake',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"finalizeStake"`
+ */
+export const useSimulateStakingFinalizeStake =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'finalizeStake',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"cancelExpiredStakeRequest"`
+ */
+export const useSimulateStakingCancelExpiredStakeRequest =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'cancelExpiredStakeRequest',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"requestUnstake"`
+ */
+export const useSimulateStakingRequestUnstake =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'requestUnstake',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"finalizeUnstake"`
+ */
+export const useSimulateStakingFinalizeUnstake =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'finalizeUnstake',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"cancelExpiredUnstakeRequest"`
+ */
+export const useSimulateStakingCancelExpiredUnstakeRequest =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'cancelExpiredUnstakeRequest',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"lockLiquidity"`
+ */
+export const useSimulateStakingLockLiquidity =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'lockLiquidity',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"unlockLiquidity"`
+ */
+export const useSimulateStakingUnlockLiquidity =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'unlockLiquidity',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"forceUnlockLiquidity"`
+ */
+export const useSimulateStakingForceUnlockLiquidity =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'forceUnlockLiquidity',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"claimPendingPayout"`
+ */
+export const useSimulateStakingClaimPendingPayout =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'claimPendingPayout',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"transferPayout"`
+ */
+export const useSimulateStakingTransferPayout =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'transferPayout',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"setCooldownPeriod"`
+ */
+export const useSimulateStakingSetCooldownPeriod =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'setCooldownPeriod',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"setDepositDelay"`
+ */
+export const useSimulateStakingSetDepositDelay =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'setDepositDelay',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"setManager"`
+ */
+export const useSimulateStakingSetManager =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'setManager',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"setMaxLiquidityPercentage"`
+ */
+export const useSimulateStakingSetMaxLiquidityPercentage =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'setMaxLiquidityPercentage',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"cancelOwnershipHandover"`
+ */
+export const useSimulateStakingCancelOwnershipHandover =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'cancelOwnershipHandover',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"completeOwnershipHandover"`
+ */
+export const useSimulateStakingCompleteOwnershipHandover =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'completeOwnershipHandover',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"renounceOwnership"`
+ */
+export const useSimulateStakingRenounceOwnership =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'renounceOwnership',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"requestOwnershipHandover"`
+ */
+export const useSimulateStakingRequestOwnershipHandover =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'requestOwnershipHandover',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingAbi}__ and `functionName` set to `"transferOwnership"`
+ */
+export const useSimulateStakingTransferOwnership =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: stakingAbi,
+    address: stakingAddress,
+    functionName: 'transferOwnership',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingAbi}__
+ */
+export const useWatchStakingEvent = /*#__PURE__*/ createUseWatchContractEvent({
+  abi: stakingAbi,
+  address: stakingAddress,
+})
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingAbi}__ and `eventName` set to `"CooldownPeriodUpdated"`
+ */
+export const useWatchStakingCooldownPeriodUpdatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: stakingAbi,
+    address: stakingAddress,
+    eventName: 'CooldownPeriodUpdated',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingAbi}__ and `eventName` set to `"DepositDelayUpdated"`
+ */
+export const useWatchStakingDepositDelayUpdatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: stakingAbi,
+    address: stakingAddress,
+    eventName: 'DepositDelayUpdated',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingAbi}__ and `eventName` set to `"ForcedLiquidityUnlocked"`
+ */
+export const useWatchStakingForcedLiquidityUnlockedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: stakingAbi,
+    address: stakingAddress,
+    eventName: 'ForcedLiquidityUnlocked',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingAbi}__ and `eventName` set to `"GameAuthorized"`
+ */
+export const useWatchStakingGameAuthorizedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: stakingAbi,
+    address: stakingAddress,
+    eventName: 'GameAuthorized',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingAbi}__ and `eventName` set to `"GameRemovalInitiated"`
+ */
+export const useWatchStakingGameRemovalInitiatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: stakingAbi,
+    address: stakingAddress,
+    eventName: 'GameRemovalInitiated',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingAbi}__ and `eventName` set to `"GameUnauthorized"`
+ */
+export const useWatchStakingGameUnauthorizedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: stakingAbi,
+    address: stakingAddress,
+    eventName: 'GameUnauthorized',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingAbi}__ and `eventName` set to `"ManagerUpdated"`
+ */
+export const useWatchStakingManagerUpdatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: stakingAbi,
+    address: stakingAddress,
+    eventName: 'ManagerUpdated',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingAbi}__ and `eventName` set to `"MaxLiquidityPercentageUpdated"`
+ */
+export const useWatchStakingMaxLiquidityPercentageUpdatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: stakingAbi,
+    address: stakingAddress,
+    eventName: 'MaxLiquidityPercentageUpdated',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingAbi}__ and `eventName` set to `"OwnershipHandoverCanceled"`
+ */
+export const useWatchStakingOwnershipHandoverCanceledEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: stakingAbi,
+    address: stakingAddress,
+    eventName: 'OwnershipHandoverCanceled',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingAbi}__ and `eventName` set to `"OwnershipHandoverRequested"`
+ */
+export const useWatchStakingOwnershipHandoverRequestedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: stakingAbi,
+    address: stakingAddress,
+    eventName: 'OwnershipHandoverRequested',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingAbi}__ and `eventName` set to `"OwnershipTransferred"`
+ */
+export const useWatchStakingOwnershipTransferredEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: stakingAbi,
+    address: stakingAddress,
+    eventName: 'OwnershipTransferred',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingAbi}__ and `eventName` set to `"PayoutTransferred"`
+ */
+export const useWatchStakingPayoutTransferredEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: stakingAbi,
+    address: stakingAddress,
+    eventName: 'PayoutTransferred',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingAbi}__ and `eventName` set to `"RewardClaimed"`
+ */
+export const useWatchStakingRewardClaimedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: stakingAbi,
+    address: stakingAddress,
+    eventName: 'RewardClaimed',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingAbi}__ and `eventName` set to `"StakeRefunded"`
+ */
+export const useWatchStakingStakeRefundedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: stakingAbi,
+    address: stakingAddress,
+    eventName: 'StakeRefunded',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingAbi}__ and `eventName` set to `"StakeRequested"`
+ */
+export const useWatchStakingStakeRequestedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: stakingAbi,
+    address: stakingAddress,
+    eventName: 'StakeRequested',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingAbi}__ and `eventName` set to `"Staked"`
+ */
+export const useWatchStakingStakedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: stakingAbi,
+    address: stakingAddress,
+    eventName: 'Staked',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingAbi}__ and `eventName` set to `"TokenAdded"`
+ */
+export const useWatchStakingTokenAddedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: stakingAbi,
+    address: stakingAddress,
+    eventName: 'TokenAdded',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingAbi}__ and `eventName` set to `"TokenRemoved"`
+ */
+export const useWatchStakingTokenRemovedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: stakingAbi,
+    address: stakingAddress,
+    eventName: 'TokenRemoved',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingAbi}__ and `eventName` set to `"TransferFailed"`
+ */
+export const useWatchStakingTransferFailedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: stakingAbi,
+    address: stakingAddress,
+    eventName: 'TransferFailed',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingAbi}__ and `eventName` set to `"UnstakeRequested"`
+ */
+export const useWatchStakingUnstakeRequestedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: stakingAbi,
+    address: stakingAddress,
+    eventName: 'UnstakeRequested',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingAbi}__ and `eventName` set to `"Unstaked"`
+ */
+export const useWatchStakingUnstakedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: stakingAbi,
+    address: stakingAddress,
+    eventName: 'Unstaked',
   })
 
 /**

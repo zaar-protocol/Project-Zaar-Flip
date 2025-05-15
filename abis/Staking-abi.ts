@@ -322,13 +322,13 @@ export const StakingAbi = [
       "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
       "stateMutability": "view"
     },
-    {
-      "type": "function",
-      "name": "maxLiquidityPercentage",
-      "inputs": [],
-      "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
-      "stateMutability": "view"
-    },
+    // {
+    //   "type": "function",
+    //   "name": "maxLiquidityPercentage",
+    //   "inputs": [],
+    //   "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+    //   "stateMutability": "view"
+    // },
     {
       "type": "function",
       "name": "unstakeDelay",

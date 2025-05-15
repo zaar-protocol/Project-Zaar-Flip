@@ -13,18 +13,18 @@ export default defineConfig({
         {
             name: "zaarflip",
             abi:FlipAbi,
-            address: "0xA5E835BAAb3A78505dEA4369B3D862bFF90F1322",
+            address: "0x9be15f31aC9043dca395958C7531Bd6EF0b6dEf0",
         },
         {
             name:"initiaToken",
             abi:erc20Abi,
-            address:"0xBdb128Cf29d40738875297E90aa42772D354c137",
+            address:"0x7Fb2A94A13186E3C338f0DA9728B4835D86b1a7B",
         },
-        // {
-        //     name:"staking", 
-        //     abi:StakingAbi,
-        //     address:"0xb8909721F7D2b79C757B435e8cB1a9CF53aCf618",
-        // },
+        {
+            name:"staking", 
+            abi:StakingAbi,
+            address:"0x292CBeEc7108C5e214eF7365C68cc8B875980Ef4",
+        },
         {
             name:"plinko",
             abi:plinkoAbi,

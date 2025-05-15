@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaWallet, FaSignOutAlt, FaTimes } from "react-icons/fa";
-import { useAddress, useWallet } from "@initia/react-wallet-widget";
+import { useAddress, useWallet } from "@initia/react-wallet-widget/ssr";
 import { useAccount, useBalance, useDisconnect, useSwitchChain } from "wagmi";
 import { useMuteState } from "./MuteContext";
 import { formatEther } from "viem";
@@ -125,7 +125,7 @@ export const InitiaWallet = () => {
         <div className="flex items-center gap-2 md:gap-6">
           {chainId === initia.id ? (
             <div className="flex items-center justify-center px-4 py-2 text-sm rounded-sm font-bold uppercase text-black gradient-button transition duration-500 whitespace-nowrap">
-              {balance?.toFixed(2)} fZAAR
+              {balance?.toFixed(2)} INIT
             </div>
           ) : (
             <button

@@ -22,7 +22,7 @@ import {
   useSimulateZaarflipFlip,
   useReadInitiaTokenAllowance,
 } from "@/generated";
-import { writeContract } from "@wagmi/core";
+import { writeContract, readContract } from "@wagmi/core";
 import { waitForTransactionReceipt } from "@wagmi/core";
 import { formatEther, Log, parseEventLogs } from "viem";
 import { parseEther } from "viem";
@@ -86,17 +86,6 @@ export default function Home() {
   const wagerInputRef = useRef<HTMLInputElement>(null);
   const { chainId } = useAccount();
 
-  const testFlipper = useSimulateZaarflipFlip({
-    args: [
-      parseEther(BigInt(wager ? wager : 0).toString()),
-      BigInt(coinsAmount),
-      BigInt(minHeadsTails),
-      initiaTokenAddress,
-      getFutureTimestamp(15),
-    ],
-  });
-  console.log("testFlipper", testFlipper);
-
   const { data: flip, refetch: refetchFlip }: { data: any; refetch: any } =
     useSimulateZaarflipFlip({
       args: [
@@ -108,7 +97,24 @@ export default function Home() {
       ],
       chainId: initia.id,
     });
+    console.log(parseEther(BigInt(wager ? wager : 0).toString()));
+    console.log(coinsAmount);
+    console.log(minHeadsTails);
+    console.log(initiaTokenAddress);
+    console.log(getFutureTimestamp(15));
+    console.log("flip", flip);
+  const testFlipper = useSimulateZaarflipFlip({
+    args: [
+      BigInt(1),
+      BigInt(1),
+      BigInt(1),
+      initiaTokenAddress,
+      getFutureTimestamp(15),
+    ],
+    chainId: initia.id,
+  });
 
+  //console.log("testFlipper", testFlipper);
   //for regular wallets
   const { address: addr } = useAccount();
   const { refetchBalance } = useBalanceContext();
@@ -238,36 +244,40 @@ export default function Home() {
 
       let receipt = await waitForTransactionReceipt(config, { hash: myhash });
 
-      const resultLogs = parseEventLogs({
-        abi: FlipAbi,
-        eventName: "GameResult",
-        logs: receipt.logs,
-      }) as unknown as GameResultEvent[];
+      console.log("receipt", receipt);
 
-      // const result: GameResult = await new Promise((resolve) => {
-      //   const unwatch = watchContractEvent(config, {
-      //     address: zaarflipAddress,
-      //     abi: FlipAbi,
-      //     eventName: "GameResult",
-      //     onLogs: (logs: Array<Log>) => {
-      //       const gameLogs = logs as unknown as GameResultEvent[];
-      //       console.log("Game Logs: ", gameLogs);
-      //       for (const log of gameLogs) {
-      //         if (log.args.player.toLowerCase() === addr?.toLowerCase()) {
-      //           unwatch();
-      //           console.log("Logs: ", logs);
-      //           resolve({
-      //             won: gameLogs[0]?.args.won,
-      //             payout: gameLogs[0]?.args.payout,
-      //           });
-      //         }
-      //       }
-      //     },
-      //     poll: true,
-      //   });
-      // });
+      // const resultLogs = parseEventLogs({
+      //   abi: FlipAbi,
+      //   eventName: "GameResult",
+      //   logs: receipt.logs,
+      // }) as unknown as GameResultEvent[];
 
-      return resultLogs[0].args;
+      // console.log("resultLogs", resultLogs);
+
+      const result: GameResult = await new Promise((resolve) => {
+        const unwatch = watchContractEvent(config, {
+          address: zaarflipAddress,
+          abi: FlipAbi,
+          eventName: "GameResult",
+          onLogs: (logs: Array<Log>) => {
+            const gameLogs = logs as unknown as GameResultEvent[];
+            console.log("Game Logs: ", gameLogs);
+            for (const log of gameLogs) {
+              if (log.args.player.toLowerCase() === addr?.toLowerCase()) {
+                unwatch();
+                console.log("Logs: ", logs);
+                resolve({
+                  won: gameLogs[0]?.args.won,
+                  payout: gameLogs[0]?.args.payout,
+                });
+              }
+            }
+          },
+          poll: true,
+        });
+      });
+
+      return result;
     } catch (error) {
       console.log(error);
       return false;
@@ -284,7 +294,7 @@ export default function Home() {
     }
 
     if (chainId !== initia.id) {
-      toast.error("Unsupported network. Please switch to zaar-test-3.");
+      toast.error("Unsupported network. Please switch to zaar-test-5.");
       if (!isMuted) {
         erroraudio.play();
       }
@@ -293,7 +303,7 @@ export default function Home() {
 
     if (wager > wagerPresets[wagerPresets.length - 1]) {
       toast.error(
-        `The current max wager is ${wagerPresets[wagerPresets.length - 1]} fZAAR.`
+        `The current max wager is ${wagerPresets[wagerPresets.length - 1]} INIT.`
       );
       if (!isMuted) {
         erroraudio.play();
@@ -307,6 +317,7 @@ export default function Home() {
         address: addr,
         token: initiaTokenAddress,
       });
+      console.log(walletBalanceUnformatted, initiaTokenAddress);
       const walletBalance = Number(walletBalanceUnformatted.value);
 
       if (walletBalance <= wager) {
@@ -332,73 +343,74 @@ export default function Home() {
 
       setLoadingModalIsOpen(true);
 
-      const result = await flipContract();
+    const result = await flipContract();
 
-      setLoadingModalIsOpen(false);
+    setLoadingModalIsOpen(false);
+    
 
-      if (result) {
-        const outcome = result.won;
+    if (result) {
+      const outcome = result.won;
 
-        const postWalletBalanceUnformatted = await getBalance(config, {
-          address: addr,
-          token: initiaTokenAddress,
-        });
+      const postWalletBalanceUnformatted = await getBalance(config, {
+        address: addr || "0x0000000000000000000000000000000000000000",
+        token: initiaTokenAddress,
+      });
 
-        const winnings = Number(formatEther(result.payout));
+      const winnings = Number(formatEther(result.payout));
 
-        fetch(
-          `./api/addCoinEvent?ownerAddress=${addr}&wager=${wager}&winnings=${winnings}&outcome=${outcome}&side=${currentSide}`
-        )
-          .then((response) => response.json())
-          .then(() => {
-            setTimeout(async () => {
-              if (outcome) {
-                toast.success("Congratulations, you won!");
-                if (!isMuted) {
-                  if (audioCount % 2 == 1) {
-                    winaudio.play();
-                  } else if (audioCount === 2) {
-                    winaudio2.play();
-                  }
-                  await refetchBalance();
+      fetch(
+        `./api/addCoinEvent?ownerAddress=${addr}&wager=${wager}&winnings=${winnings}&outcome=${outcome}&side=${currentSide}`
+      )
+        .then((response) => response.json())
+        .then(() => {
+          setTimeout(async () => {
+            if (outcome) {
+              toast.success("Congratulations, you won!");
+              if (!isMuted) {
+                if (audioCount % 2 == 1) {
+                  winaudio.play();
+                } else if (audioCount === 2) {
+                  winaudio2.play();
                 }
-                createConfetti();
-              } else {
-                if (!isMuted) {
-                  if (audioCount === 1) {
-                    loseaudio.play();
-                    setAudioCount(2);
-                  } else if (audioCount === 2) {
-                    setAudioCount(3);
-                  } else if (audioCount === 3) {
-                    setAudioCount(4);
-                  } else if (audioCount === 4) {
-                    loseAudio2.play();
-                    setAudioCount(5);
-                  } else if (audioCount === 5) {
-                    setAudioCount(6);
-                  } else if (audioCount === 6) {
-                    setAudioCount(1);
-                  }
-                }
-                toast.error("You lost.");
                 await refetchBalance();
               }
-            }, 150 * coinsAmount);
-          });
+              createConfetti();
+            } else {
+              if (!isMuted) {
+                if (audioCount === 1) {
+                  loseaudio.play();
+                  setAudioCount(2);
+                } else if (audioCount === 2) {
+                  setAudioCount(3);
+                } else if (audioCount === 3) {
+                  setAudioCount(4);
+                } else if (audioCount === 4) {
+                  loseAudio2.play();
+                  setAudioCount(5);
+                } else if (audioCount === 5) {
+                  setAudioCount(6);
+                } else if (audioCount === 6) {
+                  setAudioCount(1);
+                }
+              }
+              toast.error("You lost.");
+              await refetchBalance();
+            }
+          }, 150 * coinsAmount);
+        });
 
-        if (coinsDisplayRef.current) {
-          randomFlip(
-            coinsDisplayRef.current,
-            minHeadsTails,
-            currentSide,
-            outcome
-          );
-        }
-      } else {
-        toast.error("Error with flip. Transaction did not complete.");
+      if (coinsDisplayRef.current) {
+        randomFlip(
+          coinsDisplayRef.current,
+          minHeadsTails,
+          currentSide,
+          outcome
+        );
       }
     } else {
+      toast.error("Error with flip. Transaction did not complete.");
+    }
+  }else {
       if (!isMuted) {
         erroraudio.play();
       }
@@ -516,7 +528,7 @@ export default function Home() {
                   }}
                   className="gradient-button text-black px-6 py-2  hover:-translate-y-1 transition duration-700 ease-in-out rounded-sm font-bold mt-3 mx-auto block text-sm uppercase transition duration-700 ease-in-out"
                 >
-                  FLIP COIN - {wager} fZAAR
+                  FLIP COIN - {wager} INIT
                 </button>
               </div>
             </div>
@@ -606,7 +618,7 @@ export default function Home() {
                   <div className="" ref={inputRefMobile}>
                     <input
                       type="text"
-                      value={wager === 0 ? "" : `${wager} fZAAR`}
+                      value={wager === 0 ? "" : `${wager} INIT`}
                       className="wager-input bg-transparent w-24 text-left pl-2 h-8 text-sm focus:outline-none"
                       onChange={handleWagerChange}
                       onFocus={() => setWagerDropdown(true)}
@@ -629,7 +641,7 @@ export default function Home() {
                                   height={15}
                                   className="mr-2"
                                 />
-                                ${value.toFixed(2)} fZAAR
+                                ${value.toFixed(2)} INIT
                               </div>
                             ))}
                       </div>
@@ -657,7 +669,7 @@ export default function Home() {
                 POTENTIAL TO WIN
               </div>
               <div className="bg-gray rounded-sm p-2 text-lime-green h-10 flex items-center text-sm">
-                {potentialWin} {" fZAAR"}
+                {potentialWin} {" INIT"}
               </div>
             </div>
             <div className="flex justify-between">
@@ -805,7 +817,7 @@ export default function Home() {
                             onChange={handleWagerChange}
                             onFocus={() => setWagerDropdown(true)}
                           />
-                          <span>fZAAR</span>
+                          <span>INIT</span>
                         </div>
 
                         {wagerDropdown && (
@@ -826,7 +838,7 @@ export default function Home() {
                                   height={15}
                                   className="mr-2"
                                 />
-                                {value} fZAAR
+                                {value} INIT
                               </div>
                             ))}
                           </div>
@@ -855,7 +867,7 @@ export default function Home() {
                   POTENTIAL TO WIN
                 </div>
                 <div className="bg-gray rounded-sm p-2 pl-4 text-lime-green h-10 flex items-center text-lg">
-                  {potentialWin} {" fZAAR"}
+                  {potentialWin} {" INIT"}
                 </div>
               </div>
             </div>
@@ -996,7 +1008,7 @@ export default function Home() {
             }}
             className="hidden md:block gradient-button hover:-translate-y-1 transition duration-700 ease-in-out text-black px-6 py-2 rounded-sm font-bold mt-3 mx-auto block text-sm uppercase"
           >
-            FLIP COIN - {wager} {"fZAAR"}
+            FLIP COIN - {wager} {"INIT"}
           </button>
         </main>
       </div>

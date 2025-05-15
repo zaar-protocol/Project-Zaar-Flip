@@ -14,7 +14,7 @@ import { FaEthereum } from "react-icons/fa";
 import { encode } from "base64-arraybuffer";
 import { EventBox } from "@/components/profileComponents/event-box";
 import { Metadata } from "next";
-import { useWallet } from "@initia/react-wallet-widget";
+import { useWallet } from "@initia/react-wallet-widget/ssr";
 
 export const metadata: Metadata = {
   title: "Profile",
