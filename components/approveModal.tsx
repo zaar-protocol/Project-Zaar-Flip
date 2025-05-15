@@ -63,10 +63,10 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
 
   const handleApproveClick = async () => {
     if (approve || initiaAddress?.startsWith("init")) {
-      if (approveAmount > balance) {
-        toast.error("Insufficient balance.");
-        return;
-      }
+      // if (approveAmount > balance) {
+      //   toast.error("Insufficient balance.");
+      //   return;
+      // }
       await approver();
       onClose();
     }

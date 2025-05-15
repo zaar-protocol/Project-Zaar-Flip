@@ -1,519 +1,1051 @@
 export const FlipAbi = [
-  // Constructor
   {
-    "type": "constructor",
-    "inputs": [
-      { "name": "_maxCoins", "type": "uint256", "internalType": "uint256" },
-      { "name": "_feePercentage", "type": "uint256", "internalType": "uint256" },
-      { "name": "_stakingContract", "type": "address", "internalType": "address" },
-      { "name": "_useVRF", "type": "bool", "internalType": "bool" },
-      { "name": "_liquidityEdge", "type": "uint256", "internalType": "uint256" },
-      { "name": "_manager", "type": "address", "internalType": "address" },
-      { "name": "_managerWinFeePercentage", "type": "uint256", "internalType": "uint256" },
-      { "name": "_randomnessProvider", "type": "address", "internalType": "address" }
+    type: 'constructor',
+    inputs: [
+      {
+        name: '_maxCoins',
+        type: 'uint256',
+        internalType: 'uint256'
+      },
+      {
+        name: '_feePercentage',
+        type: 'uint256',
+        internalType: 'uint256'
+      },
+      {
+        name: '_stakingContract',
+        type: 'address',
+        internalType: 'address'
+      },
+      {
+        name: '_useVRF',
+        type: 'bool',
+        internalType: 'bool'
+      },
+      {
+        name: '_liquidityEdge',
+        type: 'uint256',
+        internalType: 'uint256'
+      },
+      {
+        name: '_manager',
+        type: 'address',
+        internalType: 'address'
+      },
+      {
+        name: '_managerWinFeePercentage',
+        type: 'uint256',
+        internalType: 'uint256'
+      },
+      {
+        name: '_randomnessProvider',
+        type: 'address',
+        internalType: 'address'
+      }
     ],
-    "stateMutability": "nonpayable"
-  },
-  
-  // Constants
-  {
-    "type": "function",
-    "name": "MAX_FEE_PERCENTAGE",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
-    "stateMutability": "view"
+    stateMutability: 'nonpayable'
   },
   {
-    "type": "function",
-    "name": "MAX_LIQUIDITY_EDGE",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "MAX_MANAGER_WIN_FEE_PERCENTAGE",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "RETRY_DELAY",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
-    "stateMutability": "view"
-  },
-  
-  // Core Game Functions
-  {
-    "type": "function",
-    "name": "flip",
-    "inputs": [
-      { "name": "betAmount", "type": "uint256", "internalType": "uint256" },
-      { "name": "numberOfCoins", "type": "uint256", "internalType": "uint256" },
-      { "name": "headsRequired", "type": "uint256", "internalType": "uint256" },
-      { "name": "token", "type": "address", "internalType": "address" },
-      { "name": "deadline", "type": "uint256", "internalType": "uint256" }
+    type: 'function',
+    name: 'MAX_FEE_PERCENTAGE',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256'
+      }
     ],
-    "outputs": [{ "name": "", "type": "string", "internalType": "string" }],
-    "stateMutability": "payable"
+    stateMutability: 'view'
   },
   {
-    "type": "function",
-    "name": "completeGame",
-    "inputs": [
-      { "name": "gameId", "type": "string", "internalType": "string" },
-      { "name": "randomNumber", "type": "uint256", "internalType": "uint256" }
+    type: 'function',
+    name: 'MAX_LIQUIDITY_EDGE',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256'
+      }
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    stateMutability: 'view'
   },
   {
-    "type": "function",
-    "name": "calculatePayout",
-    "inputs": [
-      { "name": "betAmount", "type": "uint256", "internalType": "uint256" },
-      { "name": "numberOfCoins", "type": "uint256", "internalType": "uint256" },
-      { "name": "headsRequired", "type": "uint256", "internalType": "uint256" }
+    type: 'function',
+    name: 'MAX_MANAGER_WIN_FEE_PERCENTAGE',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256'
+      }
     ],
-    "outputs": [
-      { "name": "grossPayout", "type": "uint256", "internalType": "uint256" },
-      { "name": "netPayout", "type": "uint256", "internalType": "uint256" },
-      { "name": "fee", "type": "uint256", "internalType": "uint256" }
+    stateMutability: 'view'
+  },
+  {
+    type: 'function',
+    name: 'RETRY_DELAY',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256'
+      }
     ],
-    "stateMutability": "view"
+    stateMutability: 'view'
   },
   {
-    "type": "function",
-    "name": "cancelGame",
-    "inputs": [{ "name": "gameId", "type": "string", "internalType": "string" }],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  
-  // Token Management
-  {
-    "type": "function",
-    "name": "acceptedTokens",
-    "inputs": [{ "name": "", "type": "address", "internalType": "address" }],
-    "outputs": [{ "name": "", "type": "bool", "internalType": "bool" }],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "addAcceptedToken",
-    "inputs": [{ "name": "token", "type": "address", "internalType": "address" }],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "removeAcceptedToken",
-    "inputs": [{ "name": "token", "type": "address", "internalType": "address" }],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "claimPendingWithdrawal",
-    "inputs": [
-      { "name": "token", "type": "address", "internalType": "address" },
-      { "name": "receiver", "type": "address", "internalType": "address" }
+    type: 'function',
+    name: 'acceptedTokens',
+    inputs: [
+      {
+        name: '',
+        type: 'address',
+        internalType: 'address'
+      }
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  
-  // Game State
-  {
-    "type": "function",
-    "name": "isGamePending",
-    "inputs": [{ "name": "", "type": "string", "internalType": "string" }],
-    "outputs": [{ "name": "", "type": "bool", "internalType": "bool" }],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "pendingGames",
-    "inputs": [{ "name": "", "type": "string", "internalType": "string" }],
-    "outputs": [
-      { "name": "player", "type": "address", "internalType": "address" },
-      { "name": "betAmount", "type": "uint256", "internalType": "uint256" },
-      { "name": "numberOfCoins", "type": "uint256", "internalType": "uint256" },
-      { "name": "headsRequired", "type": "uint256", "internalType": "uint256" },
-      { "name": "netPayout", "type": "uint256", "internalType": "uint256" },
-      { "name": "fee", "type": "uint256", "internalType": "uint256" },
-      { "name": "token", "type": "address", "internalType": "address" },
-      { "name": "gameStartTime", "type": "uint256", "internalType": "uint256" },
-      { "name": "gameStakingContract", "type": "address", "internalType": "contract Staking" }
+    outputs: [
+      {
+        name: '',
+        type: 'bool',
+        internalType: 'bool'
+      }
     ],
-    "stateMutability": "view"
+    stateMutability: 'view'
   },
   {
-    "type": "function",
-    "name": "pendingWithdrawals",
-    "inputs": [
-      { "name": "", "type": "address", "internalType": "address" },
-      { "name": "", "type": "address", "internalType": "address" }
+    type: 'function',
+    name: 'addAcceptedToken',
+    inputs: [
+      {
+        name: 'token',
+        type: 'address',
+        internalType: 'address'
+      }
     ],
-    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
-    "stateMutability": "view"
-  },
-  
-  // Configuration Getters
-  {
-    "type": "function",
-    "name": "feePercentage",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
-    "stateMutability": "view"
+    outputs: [],
+    stateMutability: 'nonpayable'
   },
   {
-    "type": "function",
-    "name": "gameTimeout",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "liquidityEdge",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "manager",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "managerWinFeePercentage",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "maxCoins",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "randomnessProvider",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "address", "internalType": "contract IRandomnessProvider" }],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "stakingContract",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "address", "internalType": "contract Staking" }],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "useVRF",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "bool", "internalType": "bool" }],
-    "stateMutability": "view"
-  },
-  
-  // Configuration Setters
-  {
-    "type": "function",
-    "name": "setFeePercentage",
-    "inputs": [{ "name": "_feePercentage", "type": "uint256", "internalType": "uint256" }],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "setGameTimeout",
-    "inputs": [{ "name": "_gameTimeout", "type": "uint256", "internalType": "uint256" }],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "setLiquidityEdge",
-    "inputs": [{ "name": "_liquidityEdge", "type": "uint256", "internalType": "uint256" }],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "setManager",
-    "inputs": [{ "name": "_manager", "type": "address", "internalType": "address" }],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "setManagerWinFeePercentage",
-    "inputs": [{ "name": "_managerWinFeePercentage", "type": "uint256", "internalType": "uint256" }],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "setMaxCoins",
-    "inputs": [{ "name": "_maxCoins", "type": "uint256", "internalType": "uint256" }],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "setRandomnessProvider",
-    "inputs": [{ "name": "_randomnessProvider", "type": "address", "internalType": "address" }],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "setStakingContract",
-    "inputs": [{ "name": "_stakingContract", "type": "address", "internalType": "address" }],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "toggleRandomness",
-    "inputs": [{ "name": "_useVRF", "type": "bool", "internalType": "bool" }],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  
-  // Ownership Functions
-  {
-    "type": "function",
-    "name": "owner",
-    "inputs": [],
-    "outputs": [{ "name": "result", "type": "address", "internalType": "address" }],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "ownershipHandoverExpiresAt",
-    "inputs": [{ "name": "pendingOwner", "type": "address", "internalType": "address" }],
-    "outputs": [{ "name": "result", "type": "uint256", "internalType": "uint256" }],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "cancelOwnershipHandover",
-    "inputs": [],
-    "outputs": [],
-    "stateMutability": "payable"
-  },
-  {
-    "type": "function",
-    "name": "completeOwnershipHandover",
-    "inputs": [{ "name": "pendingOwner", "type": "address", "internalType": "address" }],
-    "outputs": [],
-    "stateMutability": "payable"
-  },
-  {
-    "type": "function",
-    "name": "renounceOwnership",
-    "inputs": [],
-    "outputs": [],
-    "stateMutability": "payable"
-  },
-  {
-    "type": "function",
-    "name": "requestOwnershipHandover",
-    "inputs": [],
-    "outputs": [],
-    "stateMutability": "payable"
-  },
-  {
-    "type": "function",
-    "name": "transferOwnership",
-    "inputs": [{ "name": "newOwner", "type": "address", "internalType": "address" }],
-    "outputs": [],
-    "stateMutability": "payable"
-  },
-  
-  // Events
-  {
-    "type": "event",
-    "name": "FeePercentageUpdated",
-    "inputs": [{ "name": "newFeePercentage", "type": "uint256", "indexed": false, "internalType": "uint256" }],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "GameCancelled",
-    "inputs": [
-      { "name": "player", "type": "address", "indexed": true, "internalType": "address" },
-      { "name": "betAmount", "type": "uint256", "indexed": false, "internalType": "uint256" }
+    type: 'function',
+    name: 'calculatePayout',
+    inputs: [
+      {
+        name: 'betAmount',
+        type: 'uint256',
+        internalType: 'uint256'
+      },
+      {
+        name: 'numberOfCoins',
+        type: 'uint256',
+        internalType: 'uint256'
+      },
+      {
+        name: 'headsRequired',
+        type: 'uint256',
+        internalType: 'uint256'
+      }
     ],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "GameCreated",
-    "inputs": [
-      { "name": "gameId", "type": "string", "indexed": true, "internalType": "string" },
-      { "name": "player", "type": "address", "indexed": true, "internalType": "address" },
-      { "name": "betAmount", "type": "uint256", "indexed": false, "internalType": "uint256" },
-      { "name": "numberOfCoins", "type": "uint256", "indexed": false, "internalType": "uint256" },
-      { "name": "headsRequired", "type": "uint256", "indexed": false, "internalType": "uint256" },
-      { "name": "token", "type": "address", "indexed": false, "internalType": "address" }
+    outputs: [
+      {
+        name: 'grossPayout',
+        type: 'uint256',
+        internalType: 'uint256'
+      },
+      {
+        name: 'netPayout',
+        type: 'uint256',
+        internalType: 'uint256'
+      },
+      {
+        name: 'fee',
+        type: 'uint256',
+        internalType: 'uint256'
+      }
     ],
-    "anonymous": false
+    stateMutability: 'view'
   },
   {
-    "type": "event",
-    "name": "GameResult",
-    "inputs": [
-      { "name": "player", "type": "address", "indexed": true, "internalType": "address" },
-      { "name": "won", "type": "bool", "indexed": false, "internalType": "bool" },
-      { "name": "payout", "type": "uint256", "indexed": false, "internalType": "uint256" }
+    type: 'function',
+    name: 'cancelGame',
+    inputs: [
+      {
+        name: 'gameId',
+        type: 'string',
+        internalType: 'string'
+      }
     ],
-    "anonymous": false
+    outputs: [],
+    stateMutability: 'nonpayable'
   },
   {
-    "type": "event",
-    "name": "GameTimeoutUpdated",
-    "inputs": [{ "name": "newTimeout", "type": "uint256", "indexed": false, "internalType": "uint256" }],
-    "anonymous": false
+    type: 'function',
+    name: 'cancelOwnershipHandover',
+    inputs: [],
+    outputs: [],
+    stateMutability: 'payable'
   },
   {
-    "type": "event",
-    "name": "LiquidityEdgeUpdated",
-    "inputs": [{ "name": "newLiquidityEdge", "type": "uint256", "indexed": false, "internalType": "uint256" }],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "ManagerUpdated",
-    "inputs": [{ "name": "newManager", "type": "address", "indexed": false, "internalType": "address" }],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "ManagerWinFeePercentageUpdated",
-    "inputs": [{ "name": "newPercentage", "type": "uint256", "indexed": false, "internalType": "uint256" }],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "MaxCoinsUpdated",
-    "inputs": [{ "name": "newMaxCoins", "type": "uint256", "indexed": false, "internalType": "uint256" }],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "OwnershipHandoverCanceled",
-    "inputs": [{ "name": "pendingOwner", "type": "address", "indexed": true, "internalType": "address" }],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "OwnershipHandoverRequested",
-    "inputs": [{ "name": "pendingOwner", "type": "address", "indexed": true, "internalType": "address" }],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "OwnershipTransferred",
-    "inputs": [
-      { "name": "oldOwner", "type": "address", "indexed": true, "internalType": "address" },
-      { "name": "newOwner", "type": "address", "indexed": true, "internalType": "address" }
+    type: 'function',
+    name: 'claimPendingWithdrawal',
+    inputs: [
+      {
+        name: 'token',
+        type: 'address',
+        internalType: 'address'
+      },
+      {
+        name: 'receiver',
+        type: 'address',
+        internalType: 'address'
+      }
     ],
-    "anonymous": false
+    outputs: [],
+    stateMutability: 'nonpayable'
   },
   {
-    "type": "event",
-    "name": "RandomnessProviderUpdated",
-    "inputs": [{ "name": "newProvider", "type": "address", "indexed": false, "internalType": "address" }],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "RandomnessRequested",
-    "inputs": [{ "name": "seed", "type": "string", "indexed": false, "internalType": "string" }],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "RandomnessToggled",
-    "inputs": [{ "name": "useVRF", "type": "bool", "indexed": false, "internalType": "bool" }],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "StakingContractUpdated",
-    "inputs": [{ "name": "newStakingContract", "type": "address", "indexed": false, "internalType": "address" }],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "TokenAdded",
-    "inputs": [{ "name": "token", "type": "address", "indexed": true, "internalType": "address" }],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "TokenRemoved",
-    "inputs": [{ "name": "token", "type": "address", "indexed": true, "internalType": "address" }],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "TransferFailed",
-    "inputs": [
-      { "name": "token", "type": "address", "indexed": true, "internalType": "address" },
-      { "name": "to", "type": "address", "indexed": true, "internalType": "address" },
-      { "name": "amount", "type": "uint256", "indexed": false, "internalType": "uint256" }
+    type: 'function',
+    name: 'completeGame',
+    inputs: [
+      {
+        name: 'gameId',
+        type: 'string',
+        internalType: 'string'
+      },
+      {
+        name: 'randomNumber',
+        type: 'uint256',
+        internalType: 'uint256'
+      }
     ],
-    "anonymous": false
+    outputs: [],
+    stateMutability: 'nonpayable'
   },
   {
-    "type": "event",
-    "name": "TransferSucceeded",
-    "inputs": [
-      { "name": "token", "type": "address", "indexed": true, "internalType": "address" },
-      { "name": "to", "type": "address", "indexed": true, "internalType": "address" },
-      { "name": "amount", "type": "uint256", "indexed": false, "internalType": "uint256" }
+    type: 'function',
+    name: 'completeOwnershipHandover',
+    inputs: [
+      {
+        name: 'pendingOwner',
+        type: 'address',
+        internalType: 'address'
+      }
     ],
-    "anonymous": false
-  },
-  
-  // Errors
-  {
-    "type": "error",
-    "name": "AlreadyInitialized",
-    "inputs": []
+    outputs: [],
+    stateMutability: 'payable'
   },
   {
-    "type": "error",
-    "name": "NewOwnerIsZeroAddress",
-    "inputs": []
+    type: 'function',
+    name: 'feePercentage',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256'
+      }
+    ],
+    stateMutability: 'view'
   },
   {
-    "type": "error",
-    "name": "NoHandoverRequest",
-    "inputs": []
+    type: 'function',
+    name: 'flip',
+    inputs: [
+      {
+        name: 'betAmount',
+        type: 'uint256',
+        internalType: 'uint256'
+      },
+      {
+        name: 'numberOfCoins',
+        type: 'uint256',
+        internalType: 'uint256'
+      },
+      {
+        name: 'headsRequired',
+        type: 'uint256',
+        internalType: 'uint256'
+      },
+      {
+        name: 'token',
+        type: 'address',
+        internalType: 'address'
+      },
+      {
+        name: 'deadline',
+        type: 'uint256',
+        internalType: 'uint256'
+      }
+    ],
+    outputs: [
+      {
+        name: '',
+        type: 'string',
+        internalType: 'string'
+      }
+    ],
+    stateMutability: 'payable'
   },
   {
-    "type": "error",
-    "name": "Reentrancy",
-    "inputs": []
+    type: 'function',
+    name: 'gameTimeout',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256'
+      }
+    ],
+    stateMutability: 'view'
   },
   {
-    "type": "error",
-    "name": "Unauthorized",
-    "inputs": []
+    type: 'function',
+    name: 'isGamePending',
+    inputs: [
+      {
+        name: '',
+        type: 'string',
+        internalType: 'string'
+      }
+    ],
+    outputs: [
+      {
+        name: '',
+        type: 'bool',
+        internalType: 'bool'
+      }
+    ],
+    stateMutability: 'view'
+  },
+  {
+    type: 'function',
+    name: 'liquidityEdge',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256'
+      }
+    ],
+    stateMutability: 'view'
+  },
+  {
+    type: 'function',
+    name: 'manager',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'address',
+        internalType: 'address'
+      }
+    ],
+    stateMutability: 'view'
+  },
+  {
+    type: 'function',
+    name: 'managerWinFeePercentage',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256'
+      }
+    ],
+    stateMutability: 'view'
+  },
+  {
+    type: 'function',
+    name: 'maxCoins',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256'
+      }
+    ],
+    stateMutability: 'view'
+  },
+  {
+    type: 'function',
+    name: 'owner',
+    inputs: [],
+    outputs: [
+      {
+        name: 'result',
+        type: 'address',
+        internalType: 'address'
+      }
+    ],
+    stateMutability: 'view'
+  },
+  {
+    type: 'function',
+    name: 'ownershipHandoverExpiresAt',
+    inputs: [
+      {
+        name: 'pendingOwner',
+        type: 'address',
+        internalType: 'address'
+      }
+    ],
+    outputs: [
+      {
+        name: 'result',
+        type: 'uint256',
+        internalType: 'uint256'
+      }
+    ],
+    stateMutability: 'view'
+  },
+  {
+    type: 'function',
+    name: 'pendingGames',
+    inputs: [
+      {
+        name: '',
+        type: 'string',
+        internalType: 'string'
+      }
+    ],
+    outputs: [
+      {
+        name: 'player',
+        type: 'address',
+        internalType: 'address'
+      },
+      {
+        name: 'betAmount',
+        type: 'uint256',
+        internalType: 'uint256'
+      },
+      {
+        name: 'numberOfCoins',
+        type: 'uint256',
+        internalType: 'uint256'
+      },
+      {
+        name: 'headsRequired',
+        type: 'uint256',
+        internalType: 'uint256'
+      },
+      {
+        name: 'netPayout',
+        type: 'uint256',
+        internalType: 'uint256'
+      },
+      {
+        name: 'fee',
+        type: 'uint256',
+        internalType: 'uint256'
+      },
+      {
+        name: 'token',
+        type: 'address',
+        internalType: 'address'
+      },
+      {
+        name: 'gameStartTime',
+        type: 'uint256',
+        internalType: 'uint256'
+      },
+      {
+        name: 'gameStakingContract',
+        type: 'address',
+        internalType: 'contract Staking'
+      }
+    ],
+    stateMutability: 'view'
+  },
+  {
+    type: 'function',
+    name: 'pendingWithdrawals',
+    inputs: [
+      {
+        name: '',
+        type: 'address',
+        internalType: 'address'
+      },
+      {
+        name: '',
+        type: 'address',
+        internalType: 'address'
+      }
+    ],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256'
+      }
+    ],
+    stateMutability: 'view'
+  },
+  {
+    type: 'function',
+    name: 'randomnessProvider',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'address',
+        internalType: 'contract IRandomnessProvider'
+      }
+    ],
+    stateMutability: 'view'
+  },
+  {
+    type: 'function',
+    name: 'removeAcceptedToken',
+    inputs: [
+      {
+        name: 'token',
+        type: 'address',
+        internalType: 'address'
+      }
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable'
+  },
+  {
+    type: 'function',
+    name: 'renounceOwnership',
+    inputs: [],
+    outputs: [],
+    stateMutability: 'payable'
+  },
+  {
+    type: 'function',
+    name: 'requestOwnershipHandover',
+    inputs: [],
+    outputs: [],
+    stateMutability: 'payable'
+  },
+  {
+    type: 'function',
+    name: 'setFeePercentage',
+    inputs: [
+      {
+        name: '_feePercentage',
+        type: 'uint256',
+        internalType: 'uint256'
+      }
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable'
+  },
+  {
+    type: 'function',
+    name: 'setGameTimeout',
+    inputs: [
+      {
+        name: '_gameTimeout',
+        type: 'uint256',
+        internalType: 'uint256'
+      }
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable'
+  },
+  {
+    type: 'function',
+    name: 'setLiquidityEdge',
+    inputs: [
+      {
+        name: '_liquidityEdge',
+        type: 'uint256',
+        internalType: 'uint256'
+      }
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable'
+  },
+  {
+    type: 'function',
+    name: 'setManager',
+    inputs: [
+      {
+        name: '_manager',
+        type: 'address',
+        internalType: 'address'
+      }
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable'
+  },
+  {
+    type: 'function',
+    name: 'setManagerWinFeePercentage',
+    inputs: [
+      {
+        name: '_managerWinFeePercentage',
+        type: 'uint256',
+        internalType: 'uint256'
+      }
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable'
+  },
+  {
+    type: 'function',
+    name: 'setMaxCoins',
+    inputs: [
+      {
+        name: '_maxCoins',
+        type: 'uint256',
+        internalType: 'uint256'
+      }
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable'
+  },
+  {
+    type: 'function',
+    name: 'setRandomnessProvider',
+    inputs: [
+      {
+        name: '_randomnessProvider',
+        type: 'address',
+        internalType: 'address'
+      }
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable'
+  },
+  {
+    type: 'function',
+    name: 'setStakingContract',
+    inputs: [
+      {
+        name: '_stakingContract',
+        type: 'address',
+        internalType: 'address'
+      }
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable'
+  },
+  {
+    type: 'function',
+    name: 'stakingContract',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'address',
+        internalType: 'contract Staking'
+      }
+    ],
+    stateMutability: 'view'
+  },
+  {
+    type: 'function',
+    name: 'toggleRandomness',
+    inputs: [
+      {
+        name: '_useVRF',
+        type: 'bool',
+        internalType: 'bool'
+      }
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable'
+  },
+  {
+    type: 'function',
+    name: 'transferOwnership',
+    inputs: [
+      {
+        name: 'newOwner',
+        type: 'address',
+        internalType: 'address'
+      }
+    ],
+    outputs: [],
+    stateMutability: 'payable'
+  },
+  {
+    type: 'function',
+    name: 'useVRF',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'bool',
+        internalType: 'bool'
+      }
+    ],
+    stateMutability: 'view'
+  },
+  {
+    type: 'event',
+    name: 'FeePercentageUpdated',
+    inputs: [
+      {
+        name: 'newFeePercentage',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256'
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: 'event',
+    name: 'GameCancelled',
+    inputs: [
+      {
+        name: 'player',
+        type: 'address',
+        indexed: true,
+        internalType: 'address'
+      },
+      {
+        name: 'betAmount',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256'
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: 'event',
+    name: 'GameCreated',
+    inputs: [
+      {
+        name: 'gameId',
+        type: 'string',
+        indexed: true,
+        internalType: 'string'
+      },
+      {
+        name: 'player',
+        type: 'address',
+        indexed: true,
+        internalType: 'address'
+      },
+      {
+        name: 'betAmount',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256'
+      },
+      {
+        name: 'numberOfCoins',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256'
+      },
+      {
+        name: 'headsRequired',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256'
+      },
+      {
+        name: 'token',
+        type: 'address',
+        indexed: false,
+        internalType: 'address'
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: 'event',
+    name: 'GameResult',
+    inputs: [
+      {
+        name: 'player',
+        type: 'address',
+        indexed: true,
+        internalType: 'address'
+      },
+      {
+        name: 'won',
+        type: 'bool',
+        indexed: false,
+        internalType: 'bool'
+      },
+      {
+        name: 'payout',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256'
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: 'event',
+    name: 'GameTimeoutUpdated',
+    inputs: [
+      {
+        name: 'newTimeout',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256'
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: 'event',
+    name: 'LiquidityEdgeUpdated',
+    inputs: [
+      {
+        name: 'newLiquidityEdge',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256'
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: 'event',
+    name: 'ManagerUpdated',
+    inputs: [
+      {
+        name: 'newManager',
+        type: 'address',
+        indexed: false,
+        internalType: 'address'
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: 'event',
+    name: 'ManagerWinFeePercentageUpdated',
+    inputs: [
+      {
+        name: 'newPercentage',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256'
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: 'event',
+    name: 'MaxCoinsUpdated',
+    inputs: [
+      {
+        name: 'newMaxCoins',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256'
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: 'event',
+    name: 'OwnershipHandoverCanceled',
+    inputs: [
+      {
+        name: 'pendingOwner',
+        type: 'address',
+        indexed: true,
+        internalType: 'address'
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: 'event',
+    name: 'OwnershipHandoverRequested',
+    inputs: [
+      {
+        name: 'pendingOwner',
+        type: 'address',
+        indexed: true,
+        internalType: 'address'
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: 'event',
+    name: 'OwnershipTransferred',
+    inputs: [
+      {
+        name: 'oldOwner',
+        type: 'address',
+        indexed: true,
+        internalType: 'address'
+      },
+      {
+        name: 'newOwner',
+        type: 'address',
+        indexed: true,
+        internalType: 'address'
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: 'event',
+    name: 'RandomnessProviderUpdated',
+    inputs: [
+      {
+        name: 'newProvider',
+        type: 'address',
+        indexed: false,
+        internalType: 'address'
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: 'event',
+    name: 'RandomnessRequested',
+    inputs: [
+      {
+        name: 'seed',
+        type: 'string',
+        indexed: false,
+        internalType: 'string'
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: 'event',
+    name: 'RandomnessToggled',
+    inputs: [
+      {
+        name: 'useVRF',
+        type: 'bool',
+        indexed: false,
+        internalType: 'bool'
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: 'event',
+    name: 'StakingContractUpdated',
+    inputs: [
+      {
+        name: 'newStakingContract',
+        type: 'address',
+        indexed: false,
+        internalType: 'address'
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: 'event',
+    name: 'TokenAdded',
+    inputs: [
+      {
+        name: 'token',
+        type: 'address',
+        indexed: true,
+        internalType: 'address'
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: 'event',
+    name: 'TokenRemoved',
+    inputs: [
+      {
+        name: 'token',
+        type: 'address',
+        indexed: true,
+        internalType: 'address'
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: 'event',
+    name: 'TransferFailed',
+    inputs: [
+      {
+        name: 'token',
+        type: 'address',
+        indexed: true,
+        internalType: 'address'
+      },
+      {
+        name: 'to',
+        type: 'address',
+        indexed: true,
+        internalType: 'address'
+      },
+      {
+        name: 'amount',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256'
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: 'event',
+    name: 'TransferSucceeded',
+    inputs: [
+      {
+        name: 'token',
+        type: 'address',
+        indexed: true,
+        internalType: 'address'
+      },
+      {
+        name: 'to',
+        type: 'address',
+        indexed: true,
+        internalType: 'address'
+      },
+      {
+        name: 'amount',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256'
+      }
+    ],
+    anonymous: false
+  },
+  {
+    type: 'error',
+    name: 'AlreadyInitialized',
+    inputs: []
+  },
+  {
+    type: 'error',
+    name: 'NewOwnerIsZeroAddress',
+    inputs: []
+  },
+  {
+    type: 'error',
+    name: 'NoHandoverRequest',
+    inputs: []
+  },
+  {
+    type: 'error',
+    name: 'Reentrancy',
+    inputs: []
+  },
+  {
+    type: 'error',
+    name: 'Unauthorized',
+    inputs: []
   }
 ] as const;
   

@@ -79,7 +79,7 @@ const Home: React.FC = () => {
     <div>
       <Header />
       <div className="flex flex-col items-center justify-center w-full relative pb-10">
-        <Link
+        {/* <Link
           href="https://www.coingecko.com/en/coins/zaar"
           target="_blank"
           rel="noopener noreferrer"
@@ -90,7 +90,7 @@ const Home: React.FC = () => {
               ZAAR: ${zaarPrice || "..."}
             </span>
           </div>
-        </Link>
+        </Link> */}
         {/* <div className={`mt-24 zaar-coin zaar-loading-coin ${size}`}>
           <div className={`zaar-coin-heads ${size}`}></div>
           <div className={`zaar-coin-tails ${size}`}></div>

@@ -27,7 +27,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "ZaarFlipRandomnessProvider.mjs"  ],
   "exclude": [
     "node_modules"
   ]
