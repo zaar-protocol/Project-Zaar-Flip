@@ -2,7 +2,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
 import prisma from '@/lib/prisma';
-import initializeCors from 'nextjs-cors';
 import { FaBullseye } from 'react-icons/fa6';
 import { userAgent } from 'next/server';
 type Event = { id: number; authorAddress: string; createdAt: Date; coins: number; wager: number; winnings: number; outcome: boolean; };

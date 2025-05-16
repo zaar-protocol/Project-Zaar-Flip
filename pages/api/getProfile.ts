@@ -3,7 +3,6 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
 import prisma from '../../lib/prisma';
 import { formatEther } from 'viem';
-import initializeCors from 'nextjs-cors';
 import { getBalance } from 'wagmi/actions';
 import { initiaTokenAddress } from '@/generated';
 import { config } from '@/config';
