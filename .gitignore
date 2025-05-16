@@ -45,3 +45,5 @@ Foundry
 .Foundry
 
 backup.sql
+
+*.sol

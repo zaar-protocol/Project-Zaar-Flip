@@ -14,7 +14,8 @@ export default function RootLayout({
       pathname === "/challenges" ||
       pathname === "/" ||
       pathname === "/zaar-raffle" ||
-      pathname === "/profile"
+      pathname === "/profile" ||
+      pathname === "/staking"
     ) {
       document.body.style.overflowY = "visible";
     } else {

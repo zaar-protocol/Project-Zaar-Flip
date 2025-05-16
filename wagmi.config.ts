@@ -5,6 +5,7 @@ import {mainnet } from "wagmi/chains";
 // import {abi} from "@/abis/abi.json";
 import {abi, plinkoAbi, zaarStakingAbi} from "@/abis/abi"
 import { FlipAbi } from "@/abis/Flip-abi";
+import { ManualFlipAbi } from "@/abis/ManualFlip-abi";
 import { StakingAbi } from "@/abis/Staking-abi";
 
 export default defineConfig({
@@ -12,8 +13,8 @@ export default defineConfig({
     contracts: [
         {
             name: "zaarflip",
-            abi:FlipAbi,
-            address: "0x9be15f31aC9043dca395958C7531Bd6EF0b6dEf0",
+            abi:ManualFlipAbi,
+            address: "0xD20f99Db8127EFaD53FB1E0fa94c4FDb1d8f9bB2",
         },
         {
             name:"initiaToken",
@@ -23,7 +24,7 @@ export default defineConfig({
         {
             name:"staking", 
             abi:StakingAbi,
-            address:"0x292CBeEc7108C5e214eF7365C68cc8B875980Ef4",
+            address:"0xD738a9ce3BCdBf3d93Ab3ada72c57dE71eA1091f",
         },
         {
             name:"plinko",

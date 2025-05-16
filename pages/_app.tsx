@@ -22,7 +22,13 @@ export const metadata: Metadata = {
   },
 };
 
-const client = new QueryClient();
+const client = new QueryClient({
+  defaultOptions: {
+    queries: {
+      experimental_prefetchInRender: true,
+    },
+  },
+});
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (

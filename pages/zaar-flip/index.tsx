@@ -38,8 +38,10 @@ import { useWatchContractEvent } from "wagmi";
 // import useSound from "use-sound";
 import Footer from "@/components/Footer";
 import { FlipAbi } from "@/abis/Flip-abi";
+import { ManualFlipAbi } from "@/abis/ManualFlip-abi";
 import { useBalanceContext } from "@/contexts/BalanceContext";
 import { getFutureTimestamp } from "@/utils/timestamps";
+import { publicClient } from "@/client";
 
 interface GameResultEvent {
   eventName: "GameResult";
@@ -89,7 +91,8 @@ export default function Home() {
   const { data: flip, refetch: refetchFlip }: { data: any; refetch: any } =
     useSimulateZaarflipFlip({
       args: [
-        parseEther(BigInt(wager ? wager : 0).toString()),
+        // parseEther(BigInt(wager ? wager : 0).toString()),
+        BigInt(1),
         BigInt(coinsAmount),
         BigInt(minHeadsTails),
         initiaTokenAddress,
@@ -97,12 +100,12 @@ export default function Home() {
       ],
       chainId: initia.id,
     });
-    console.log(parseEther(BigInt(wager ? wager : 0).toString()));
-    console.log(coinsAmount);
-    console.log(minHeadsTails);
-    console.log(initiaTokenAddress);
-    console.log(getFutureTimestamp(15));
-    console.log("flip", flip);
+  console.log(parseEther(BigInt(wager ? wager : 0).toString()));
+  console.log(coinsAmount);
+  console.log(minHeadsTails);
+  console.log(initiaTokenAddress);
+  console.log(getFutureTimestamp(15));
+  console.log("flip", flip);
   const testFlipper = useSimulateZaarflipFlip({
     args: [
       BigInt(1),
@@ -113,6 +116,7 @@ export default function Home() {
     ],
     chainId: initia.id,
   });
+  console.log("testFlipper", testFlipper);
 
   //console.log("testFlipper", testFlipper);
   //for regular wallets
@@ -126,6 +130,8 @@ export default function Home() {
         zaarflipAddress,
       ],
     });
+
+  console.log("allowance", allowance);
 
   const wagerPresets = [10, 50, 100, 500, 1000, 5000];
 
@@ -246,36 +252,112 @@ export default function Home() {
 
       console.log("receipt", receipt);
 
-      // const resultLogs = parseEventLogs({
-      //   abi: FlipAbi,
-      //   eventName: "GameResult",
-      //   logs: receipt.logs,
-      // }) as unknown as GameResultEvent[];
+      type RandomnessRequestedEvent = Log & {
+        args: {
+          seed?: string;
+        };
+      };
 
-      // console.log("resultLogs", resultLogs);
+      const resultLogs = parseEventLogs({
+        abi: ManualFlipAbi,
+        eventName: "RandomnessRequested",
+        logs: receipt.logs,
+      }) as unknown as RandomnessRequestedEvent[];
+
+      console.log("resultLogs", resultLogs);
 
       const result: GameResult = await new Promise((resolve) => {
-        const unwatch = watchContractEvent(config, {
-          address: zaarflipAddress,
-          abi: FlipAbi,
-          eventName: "GameResult",
-          onLogs: (logs: Array<Log>) => {
-            const gameLogs = logs as unknown as GameResultEvent[];
-            console.log("Game Logs: ", gameLogs);
-            for (const log of gameLogs) {
-              if (log.args.player.toLowerCase() === addr?.toLowerCase()) {
-                unwatch();
-                console.log("Logs: ", logs);
-                resolve({
-                  won: gameLogs[0]?.args.won,
-                  payout: gameLogs[0]?.args.payout,
-                });
+        let lastCheckedBlock = receipt.blockNumber;
+        let isPolling = true;
+
+        async function pollForEvents() {
+          if (!isPolling) return;
+
+          try {
+            const currentBlock = await publicClient.getBlockNumber();
+
+            if (currentBlock > lastCheckedBlock) {
+              console.log(
+                `Polling blocks ${lastCheckedBlock} to ${currentBlock}`
+              );
+
+              const logs = await publicClient.getLogs({
+                address: zaarflipAddress,
+                fromBlock: lastCheckedBlock + BigInt(1),
+                toBlock: currentBlock,
+              });
+
+              if (logs.length > 0) {
+                console.log("Found events:", logs);
+
+                for (const log of logs) {
+                  try {
+                    const decodedLog = await publicClient.getContractEvents({
+                      address: zaarflipAddress,
+                      abi: FlipAbi,
+                      fromBlock: log.blockNumber,
+                      toBlock: log.blockNumber,
+                    });
+
+                    for (const event of decodedLog) {
+                      if (event.eventName === "GameResult") {
+                        const gameResult = event as unknown as GameResultEvent;
+                        if (
+                          gameResult.args.player.toLowerCase() ===
+                          addr?.toLowerCase()
+                        ) {
+                          console.log("Found game result:", gameResult);
+                          isPolling = false;
+                          resolve({
+                            won: gameResult.args.won,
+                            payout: gameResult.args.payout,
+                          });
+                          return;
+                        }
+                      }
+                    }
+                  } catch (error) {
+                    console.error("Error decoding log:", error);
+                  }
+                }
               }
+
+              lastCheckedBlock = currentBlock;
             }
-          },
-          poll: true,
-        });
+          } catch (error) {
+            console.error("Polling error:", error);
+          }
+
+          if (isPolling) {
+            setTimeout(pollForEvents, 1000);
+          }
+        }
+
+        pollForEvents();
       });
+
+      // const result: GameResult = await new Promise((resolve) => {
+      //   const unwatch = watchContractEvent(config, {
+      //     address: zaarflipAddress,
+      //     abi: ManualFlipAbi,
+      //     eventName: "GameResult",
+      //     onLogs: (logs: Array<Log>) => {
+      //       const gameLogs = logs as unknown as GameResultEvent[];
+      //       console.log("Game Logs: ", gameLogs);
+      //       for (const log of gameLogs) {
+      //         if (log.args.player.toLowerCase() === addr?.toLowerCase()) {
+      //           unwatch();
+      //           console.log("Logs: ", logs);
+      //           resolve({
+      //             won: gameLogs[0]?.args.won,
+      //             payout: gameLogs[0]?.args.payout,
+      //           });
+      //         }
+      //       }
+      //     },
+      //     poll: true,
+      //   });
+      // });
 
       return result;
     } catch (error) {
@@ -333,8 +415,10 @@ export default function Home() {
       const { data: newAllowance } = await refetchAllowance();
 
       if (
+        // !newAllowance ||
+        // newAllowance < BigInt(parseEther(wager.toString()))
         !newAllowance ||
-        newAllowance < BigInt(parseEther(wager.toString()))
+        newAllowance < BigInt(1)
       ) {
         setApproveModalIsOpen(true);
         // Modal Pop up
@@ -343,74 +427,73 @@ export default function Home() {
 
       setLoadingModalIsOpen(true);
 
-    const result = await flipContract();
+      const result = await flipContract();
 
-    setLoadingModalIsOpen(false);
-    
+      setLoadingModalIsOpen(false);
 
-    if (result) {
-      const outcome = result.won;
+      if (result) {
+        const outcome = result.won;
 
-      const postWalletBalanceUnformatted = await getBalance(config, {
-        address: addr || "0x0000000000000000000000000000000000000000",
-        token: initiaTokenAddress,
-      });
-
-      const winnings = Number(formatEther(result.payout));
-
-      fetch(
-        `./api/addCoinEvent?ownerAddress=${addr}&wager=${wager}&winnings=${winnings}&outcome=${outcome}&side=${currentSide}`
-      )
-        .then((response) => response.json())
-        .then(() => {
-          setTimeout(async () => {
-            if (outcome) {
-              toast.success("Congratulations, you won!");
-              if (!isMuted) {
-                if (audioCount % 2 == 1) {
-                  winaudio.play();
-                } else if (audioCount === 2) {
-                  winaudio2.play();
-                }
-                await refetchBalance();
-              }
-              createConfetti();
-            } else {
-              if (!isMuted) {
-                if (audioCount === 1) {
-                  loseaudio.play();
-                  setAudioCount(2);
-                } else if (audioCount === 2) {
-                  setAudioCount(3);
-                } else if (audioCount === 3) {
-                  setAudioCount(4);
-                } else if (audioCount === 4) {
-                  loseAudio2.play();
-                  setAudioCount(5);
-                } else if (audioCount === 5) {
-                  setAudioCount(6);
-                } else if (audioCount === 6) {
-                  setAudioCount(1);
-                }
-              }
-              toast.error("You lost.");
-              await refetchBalance();
-            }
-          }, 150 * coinsAmount);
+        const postWalletBalanceUnformatted = await getBalance(config, {
+          address: addr || "0x0000000000000000000000000000000000000000",
+          token: initiaTokenAddress,
         });
 
-      if (coinsDisplayRef.current) {
-        randomFlip(
-          coinsDisplayRef.current,
-          minHeadsTails,
-          currentSide,
-          outcome
-        );
+        const winnings = Number(formatEther(result.payout));
+
+        fetch(
+          `./api/addCoinEvent?ownerAddress=${addr}&wager=${wager}&winnings=${winnings}&outcome=${outcome}&side=${currentSide}`
+        )
+          .then((response) => response.json())
+          .then(() => {
+            setTimeout(async () => {
+              if (outcome) {
+                toast.success("Congratulations, you won!");
+                if (!isMuted) {
+                  if (audioCount % 2 == 1) {
+                    winaudio.play();
+                  } else if (audioCount === 2) {
+                    winaudio2.play();
+                  }
+                  await refetchBalance();
+                }
+                createConfetti();
+              } else {
+                if (!isMuted) {
+                  if (audioCount === 1) {
+                    loseaudio.play();
+                    setAudioCount(2);
+                  } else if (audioCount === 2) {
+                    setAudioCount(3);
+                  } else if (audioCount === 3) {
+                    setAudioCount(4);
+                  } else if (audioCount === 4) {
+                    loseAudio2.play();
+                    setAudioCount(5);
+                  } else if (audioCount === 5) {
+                    setAudioCount(6);
+                  } else if (audioCount === 6) {
+                    setAudioCount(1);
+                  }
+                }
+                toast.error("You lost.");
+                await refetchBalance();
+              }
+            }, 150 * coinsAmount);
+          });
+
+        if (coinsDisplayRef.current) {
+          randomFlip(
+            coinsDisplayRef.current,
+            minHeadsTails,
+            currentSide,
+            outcome
+          );
+        }
+      } else {
+        toast.error("Error with flip. Transaction did not complete.");
       }
     } else {
-      toast.error("Error with flip. Transaction did not complete.");
-    }
-  }else {
       if (!isMuted) {
         erroraudio.play();
       }
