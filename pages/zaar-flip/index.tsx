@@ -93,8 +93,8 @@ export default function Home() {
   const { data: flip, refetch: refetchFlip }: { data: any; refetch: any } =
     useSimulateZaarflipFlip({
       args: [
-        // parseEther(BigInt(wager ? wager : 0).toString()),
-        BigInt(1),
+        parseEther(BigInt(wager ? wager : 0).toString()),
+        // BigInt(1),
         BigInt(coinsAmount),
         BigInt(minHeadsTails),
         initiaTokenAddress,
@@ -426,10 +426,8 @@ export default function Home() {
       const { data: newAllowance } = await refetchAllowance();
 
       if (
-        // !newAllowance ||
-        // newAllowance < BigInt(parseEther(wager.toString()))
         !newAllowance ||
-        newAllowance < BigInt(1)
+        newAllowance < BigInt(parseEther(wager.toString()))
       ) {
         setApproveModalIsOpen(true);
         // Modal Pop up
