@@ -1675,6 +1675,12 @@ export const zaarflipAbi = [
     anonymous: false,
     inputs: [
       {
+        name: 'gameId',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: false,
+      },
+      {
         name: 'player',
         internalType: 'address',
         type: 'address',
@@ -1947,7 +1953,7 @@ export const zaarflipAbi = [
 ] as const
 
 export const zaarflipAddress =
-  '0xD20f99Db8127EFaD53FB1E0fa94c4FDb1d8f9bB2' as const
+  '0xC6011Ed45a6CC6aBaC80F9Cf17F5dcd3B83556EE' as const
 
 export const zaarflipConfig = {
   address: zaarflipAddress,

@@ -17,6 +17,8 @@ model Event {
   user          Profile    @relation(fields: [authorAddress], references: [authorAddress])
   authorAddress String
   createdAt     DateTime   @default(now())
+  gameId        String     @default("")
+  pending       Boolean    @default(false)
   wager         Int
   winnings      Int
   fee           Int        @default(0)

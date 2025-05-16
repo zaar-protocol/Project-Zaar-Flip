@@ -42,6 +42,7 @@ import { ManualFlipAbi } from "@/abis/ManualFlip-abi";
 import { useBalanceContext } from "@/contexts/BalanceContext";
 import { getFutureTimestamp } from "@/utils/timestamps";
 import { publicClient } from "@/client";
+import { manualRandomness } from "@/lib/constants/manualRandomness";
 
 interface GameResultEvent {
   eventName: "GameResult";
@@ -53,6 +54,7 @@ interface GameResultEvent {
 }
 
 interface GameResult {
+  gameId: string;
   won: boolean;
   payout: bigint;
 }
@@ -254,7 +256,7 @@ export default function Home() {
 
       type RandomnessRequestedEvent = Log & {
         args: {
-          seed?: string;
+          gameId?: string;
         };
       };
 
@@ -265,6 +267,14 @@ export default function Home() {
       }) as unknown as RandomnessRequestedEvent[];
 
       console.log("resultLogs", resultLogs);
+
+      const gameId = String(resultLogs[0].args.gameId);
+
+      if (manualRandomness) {
+        fetch(
+          `./api/addCoinEvent?ownerAddress=${addr}&wager=${wager}&winnings=${0}&outcome=${false}&side=${currentSide}&gameId=${gameId}`
+        );
+      }
 
       const result: GameResult = await new Promise((resolve) => {
         let lastCheckedBlock = receipt.blockNumber;
@@ -294,7 +304,7 @@ export default function Home() {
                   try {
                     const decodedLog = await publicClient.getContractEvents({
                       address: zaarflipAddress,
-                      abi: FlipAbi,
+                      abi: ManualFlipAbi,
                       fromBlock: log.blockNumber,
                       toBlock: log.blockNumber,
                     });
@@ -309,6 +319,7 @@ export default function Home() {
                           console.log("Found game result:", gameResult);
                           isPolling = false;
                           resolve({
+                            gameId: gameId,
                             won: gameResult.args.won,
                             payout: gameResult.args.payout,
                           });
@@ -439,48 +450,48 @@ export default function Home() {
           token: initiaTokenAddress,
         });
 
-        const winnings = Number(formatEther(result.payout));
+        if (!manualRandomness) {
+          const winnings = Number(formatEther(result.payout));
 
-        fetch(
-          `./api/addCoinEvent?ownerAddress=${addr}&wager=${wager}&winnings=${winnings}&outcome=${outcome}&side=${currentSide}`
-        )
-          .then((response) => response.json())
-          .then(() => {
-            setTimeout(async () => {
-              if (outcome) {
-                toast.success("Congratulations, you won!");
-                if (!isMuted) {
-                  if (audioCount % 2 == 1) {
-                    winaudio.play();
-                  } else if (audioCount === 2) {
-                    winaudio2.play();
-                  }
-                  await refetchBalance();
-                }
-                createConfetti();
-              } else {
-                if (!isMuted) {
-                  if (audioCount === 1) {
-                    loseaudio.play();
-                    setAudioCount(2);
-                  } else if (audioCount === 2) {
-                    setAudioCount(3);
-                  } else if (audioCount === 3) {
-                    setAudioCount(4);
-                  } else if (audioCount === 4) {
-                    loseAudio2.play();
-                    setAudioCount(5);
-                  } else if (audioCount === 5) {
-                    setAudioCount(6);
-                  } else if (audioCount === 6) {
-                    setAudioCount(1);
-                  }
-                }
-                toast.error("You lost.");
-                await refetchBalance();
+          fetch(
+            `./api/addCoinEvent?ownerAddress=${addr}&wager=${wager}&winnings=${winnings}&outcome=${outcome}&side=${currentSide}&gameId=${result.gameId}`
+          );
+        }
+
+        setTimeout(async () => {
+          if (outcome) {
+            toast.success("Congratulations, you won!");
+            if (!isMuted) {
+              if (audioCount % 2 == 1) {
+                winaudio.play();
+              } else if (audioCount === 2) {
+                winaudio2.play();
               }
-            }, 150 * coinsAmount);
-          });
+              await refetchBalance();
+            }
+            createConfetti();
+          } else {
+            if (!isMuted) {
+              if (audioCount === 1) {
+                loseaudio.play();
+                setAudioCount(2);
+              } else if (audioCount === 2) {
+                setAudioCount(3);
+              } else if (audioCount === 3) {
+                setAudioCount(4);
+              } else if (audioCount === 4) {
+                loseAudio2.play();
+                setAudioCount(5);
+              } else if (audioCount === 5) {
+                setAudioCount(6);
+              } else if (audioCount === 6) {
+                setAudioCount(1);
+              }
+            }
+            toast.error("You lost.");
+            await refetchBalance();
+          }
+        }, 150 * coinsAmount);
 
         if (coinsDisplayRef.current) {
           randomFlip(

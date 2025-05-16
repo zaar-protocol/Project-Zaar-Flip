@@ -14,7 +14,7 @@ export default defineConfig({
         {
             name: "zaarflip",
             abi:ManualFlipAbi,
-            address: "0xD20f99Db8127EFaD53FB1E0fa94c4FDb1d8f9bB2",
+            address: "0xC6011Ed45a6CC6aBaC80F9Cf17F5dcd3B83556EE",
         },
         {
             name:"initiaToken",
