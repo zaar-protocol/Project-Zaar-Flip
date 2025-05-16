@@ -57,6 +57,7 @@ export function useStakingBalance(address: string) {
     functionName: 'allowance',
     args: [address, stakingAddress],
   });
+  
   console.log('allowance', allowance);
 
   const { writeContract: writeContract, data: txData } = useWriteContract();
