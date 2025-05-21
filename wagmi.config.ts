@@ -25,6 +25,7 @@ export default defineConfig({
             name:"staking", 
             abi:StakingAbi,
             address:"0xD738a9ce3BCdBf3d93Ab3ada72c57dE71eA1091f",
+            // address:"0x292CBeEc7108C5e214eF7365C68cc8B875980Ef4",
         },
         {
             name:"plinko",

@@ -58,7 +58,7 @@ export const InitiaWallet = () => {
   const { disconnect: wagmiDisconnect } = useDisconnect();
   const { isMuted } = useMuteState();
 
-  const { balance } = useBalanceContext();
+  const { formattedBalance } = useBalanceContext();
 
   const playSound = () => {
     if (isMuted) return;
@@ -125,7 +125,7 @@ export const InitiaWallet = () => {
         <div className="flex items-center gap-2 md:gap-6">
           {chainId === initia.id ? (
             <div className="flex items-center justify-center px-4 py-2 text-sm rounded-sm font-bold uppercase text-black gradient-button transition duration-500 whitespace-nowrap">
-              {balance?.toFixed(2)} INIT
+              {formattedBalance?.toFixed(2)} INIT
             </div>
           ) : (
             <button
