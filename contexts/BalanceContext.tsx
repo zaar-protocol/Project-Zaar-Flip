@@ -6,12 +6,14 @@ import { initiaTokenAddress } from "@/generated";
 // Define the shape of our context
 type BalanceContextType = {
   balance: number;
+  formattedBalance: number;
   refetchBalance: () => Promise<any>;
 };
 
 // Create context with default values
 export const BalanceContext = createContext<BalanceContextType>({
   balance: 0,
+  formattedBalance: 0,
   refetchBalance: async () => {
     return null;
   },
@@ -24,6 +26,7 @@ export const BalanceProvider = ({
   children: React.ReactNode;
 }) => {
   const { address } = useAccount();
+  const [balance, setBalance] = useState(0);
   const [formattedBalance, setFormattedBalance] = useState(0);
 
   // Use Wagmi's useBalance hook directly
@@ -39,6 +42,7 @@ export const BalanceProvider = ({
         const rawBalance = Number(
           formatEther(balanceData.data.value || BigInt(0))
         );
+        setBalance(rawBalance);
         // Store with 2 decimal places precision (but still as a number)
         const balanceWithDecimals = Math.floor(rawBalance * 100) / 100;
         setFormattedBalance(balanceWithDecimals);
@@ -49,7 +53,8 @@ export const BalanceProvider = ({
   return (
     <BalanceContext.Provider
       value={{
-        balance: formattedBalance,
+        balance: balance,
+        formattedBalance: formattedBalance,
         refetchBalance: balanceData.refetch,
       }}
     >
