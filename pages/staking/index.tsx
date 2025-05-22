@@ -382,14 +382,14 @@ export default function Staking() {
                         className="text-black bg-light-gray p-1 px-2 text-xs hover:bg-gray-200 transition-colors"
                         onClick={() => {
                           // Add logic to set max amount
-                          setAmount(Number(formatEther(BigInt(stakedBalance))));
+                          setAmount(Number(formatEther(BigInt(totalOwed))));
                         }}
                       >
                         Max
                       </button>
                     </div>
                     <p className="text-white">
-                      ≈ ${Number(formatEther(BigInt(stakedBalance))).toFixed(2)}
+                      ≈ ${Number(formatEther(BigInt(totalOwed))).toFixed(2)}
                     </p>
                   </div>
                 </div>
