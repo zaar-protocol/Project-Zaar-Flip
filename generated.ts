@@ -1222,7 +1222,7 @@ export const stakingAbi = [
 ] as const
 
 export const stakingAddress =
-  '0xD738a9ce3BCdBf3d93Ab3ada72c57dE71eA1091f' as const
+  '0x5c1c830c3032311FAd3e5E5E764105b4Af2b0c87' as const
 
 export const stakingConfig = {
   address: stakingAddress,
@@ -1953,7 +1953,7 @@ export const zaarflipAbi = [
 ] as const
 
 export const zaarflipAddress =
-  '0xC6011Ed45a6CC6aBaC80F9Cf17F5dcd3B83556EE' as const
+  '0x2d9b949CC6Db80A63270B351fA29C9b6cc26B083' as const
 
 export const zaarflipConfig = {
   address: zaarflipAddress,

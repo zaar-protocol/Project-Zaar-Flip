@@ -14,7 +14,7 @@ export default defineConfig({
         {
             name: "zaarflip",
             abi:ManualFlipAbi,
-            address: "0xC6011Ed45a6CC6aBaC80F9Cf17F5dcd3B83556EE",
+            address: "0x2d9b949CC6Db80A63270B351fA29C9b6cc26B083",
         },
         {
             name:"initiaToken",
@@ -24,8 +24,7 @@ export default defineConfig({
         {
             name:"staking", 
             abi:StakingAbi,
-            address:"0xD738a9ce3BCdBf3d93Ab3ada72c57dE71eA1091f",
-            // address:"0x292CBeEc7108C5e214eF7365C68cc8B875980Ef4",
+            address:"0x5c1c830c3032311FAd3e5E5E764105b4Af2b0c87",
         },
         {
             name:"plinko",
