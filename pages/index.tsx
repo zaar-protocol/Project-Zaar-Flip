@@ -186,7 +186,7 @@ const Home: React.FC = () => {
           {/* </Link> */}
         </div>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

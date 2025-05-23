@@ -155,7 +155,9 @@ export default function Staking() {
             Your Shares
             <h1 className="text-3xl text-yellow">
               {stakedBalance
-                ? parseFloat(formatEther(BigInt(stakedBalance))).toFixed(2)
+                ? (
+                    parseFloat(formatEther(BigInt(stakedBalance))) / 1000000000
+                  ).toFixed(2) + "B"
                 : "0"}
             </h1>
           </div>
@@ -293,7 +295,6 @@ export default function Staking() {
                         toast.loading("approving");
                       }
                       toast.dismiss();
-                      toast.success("Approved!");
                     }}
                     disabled={isLoading}
                   >
@@ -365,8 +366,8 @@ export default function Staking() {
                     </div>
                     <p className="text-white">
                       You have{" "}
-                      {Number(formatEther(BigInt(stakedBalance))).toFixed(2)}{" "}
-                      INIT staked
+                      {Number(formatEther(BigInt(totalOwed))).toFixed(2)} INIT
+                      staked
                     </p>
                   </div>
 
@@ -377,6 +378,7 @@ export default function Staking() {
                         className="flex flex-row items-center justify-center gap-2 bg-black w-full text-white focus:outline-none"
                         placeholder="0.00"
                         value={amount}
+                        onChange={(e) => setAmount(Number(e.target.value))}
                       />
                       <button
                         className="text-black bg-light-gray p-1 px-2 text-xs hover:bg-gray-200 transition-colors"
@@ -417,6 +419,7 @@ export default function Staking() {
                         return;
                       }
                       try {
+                        console.log("requesting unstake for amount: ", amount);
                         await requestUnstake(parseEther(amount.toString()));
                       } catch (error) {
                         console.error("Error in requestUnstake:", error);
@@ -459,6 +462,10 @@ export default function Staking() {
                     <button
                       onClick={async () => {
                         try {
+                          console.log(
+                            "finalizing unstake for amount: ",
+                            amount
+                          );
                           await finalizeUnstake(parseEther(amount.toString()));
                         } catch (error) {
                           console.error("Error in finalizeUnstake:", error);

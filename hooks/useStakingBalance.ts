@@ -14,21 +14,21 @@ export function useStakingBalance(address: string) {
   const [isStaking, setIsStaking] = useState(false);
   const [stakeError, setStakeError] = useState<string | null>(null);
 
-  const { data: stakedBalance, isLoading: isStakedLoading } = useContractRead({
+  const { data: stakedBalance, isLoading: isStakedLoading, refetch: refetchStakedBalance } = useContractRead({
     address: stakingAddress,
     abi: StakingAbi,
     functionName: 'shareBalances',
     args: [initiaTokenAddress, address],
   });
 
-  const { data: tokenInfo, isLoading: isTokenInfoLoading } = useContractRead({
+  const { data: tokenInfo, isLoading: isTokenInfoLoading, refetch: refetchTokenInfo } = useContractRead({
     address: stakingAddress,
     abi: StakingAbi,
     functionName: 'tokenInfo',
     args: [initiaTokenAddress],
   });
 
-  const { data: totalOwed, isLoading: isTotalOwedLoading } = useContractRead({
+  const { data: totalOwed, isLoading: isTotalOwedLoading, refetch: refetchTotalOwed } = useContractRead({
     address: stakingAddress,
     abi: StakingAbi,
     functionName: 'totalOwed',
@@ -64,11 +64,18 @@ export function useStakingBalance(address: string) {
     token: initiaTokenAddress,
   });
 
-  const { data: allowance, isLoading: isAllowanceLoading } = useContractRead({
+  const { data: allowance, isLoading: isAllowanceLoading, refetch: refetchAllowance } = useContractRead({
     address: initiaTokenAddress,
     abi: erc20Abi,
     functionName: 'allowance',
     args: [address, stakingAddress],
+  });
+
+  const { data: availableBalance, isLoading: isAvailableBalanceLoading, refetch: refetchAvailableBalance } = useContractRead({
+    address: stakingAddress,
+    abi: StakingAbi,
+    functionName: 'getAvailableBalance',
+    args: [initiaTokenAddress],
   });
   
   console.log('allowance', allowance);
@@ -87,8 +94,10 @@ export function useStakingBalance(address: string) {
     console.log("Approve Staking Receipt: ", receipt);
     if (receipt.status === 'reverted') {
         toast.error('Error approving stake. Transaction failed.');
-        setIsStaking(false);
       }
+      toast.success('Funds approved! You can now stake.');
+      setIsStaking(false);
+      refetchAllowance();
     } catch (error) {
       console.log('Error in approveStaking:', error);
       toast.error('Error approving stake. Transaction failed.');
@@ -176,6 +185,8 @@ export function useStakingBalance(address: string) {
         return;
       }
       toast.success('Stake finalized successfully!');
+      refetchStakedBalance();
+      refetchTotalOwed();
       refetchPendingStake();
     } catch (error) {
     console.log("Error in finalizeStake:", error);
@@ -186,17 +197,31 @@ export function useStakingBalance(address: string) {
 
   const requestUnstake = async (amount: bigint) => {
     setIsStaking(true);
-    console.log('requesting unstake for amount: ', amount);
+
     if (amount <= BigInt(0)) {
       toast.error('Cannot unstake 0 amount');
       return;
     }
+
+    const scaledAmount = (amount * BigInt(99)) / BigInt(100);
+    console.log('scaledAmount: ', scaledAmount);
+
+    await refetchAvailableBalance();
+    await refetchTokenInfo();
+
+    if(!tokenInfo || !availableBalance) {
+      toast.error('Error fetching token info or available balance');
+      return;
+    }
+
+    const withdrawShares = tokenInfo[0] * amount / availableBalance;
+
     try{
       const { request } = await simulateContract(config, {
         abi: StakingAbi,
         address: stakingAddress,
         functionName: 'requestUnstake',
-        args: [initiaTokenAddress, amount, BigInt(1), BigInt(Math.floor(Date.now() / 1000) + 300)],
+        args: [initiaTokenAddress, withdrawShares, scaledAmount, BigInt(Math.floor(Date.now() / 1000) + 300)],
       });
       const hash = await writeContract(config, request);
       const receipt = await waitForTransactionReceipt(config, { hash });
@@ -243,12 +268,15 @@ export function useStakingBalance(address: string) {
 
   const finalizeUnstake = async (amount: bigint) => {
     setIsStaking(true);
+    console.log('finalizing unstake for amount: ', amount);
+    await refetchUnstakeRequests();
+    console.log('unstakeRequests: ', unstakeRequests);
     try{
       const { request } = await simulateContract(config, {
         abi: StakingAbi,
         address: stakingAddress,
         functionName: 'finalizeUnstake',
-        args: [initiaTokenAddress, address, BigInt(1)],
+        args: [initiaTokenAddress, address, unstakeRequests?.[2] || BigInt(0)],
       });
       const hash = await writeContract(config, request);
       const receipt = await waitForTransactionReceipt(config, { hash });
@@ -259,6 +287,8 @@ export function useStakingBalance(address: string) {
         toast.error('Error finalizing unstake. Transaction failed.');
       }
       toast.success('Unstake finalized successfully!');
+      refetchStakedBalance();
+      refetchTotalOwed();
       refetchUnstakeRequests();
     } catch (error) {
       console.log('Error in finalizeUnstake:', error);

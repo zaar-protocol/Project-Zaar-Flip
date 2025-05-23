@@ -1105,7 +1105,7 @@ export default function Home() {
         </main>
       </div>
       <MuteButton />
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }
