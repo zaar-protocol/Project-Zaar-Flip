@@ -115,12 +115,23 @@ export function useStakingBalance(address: string) {
     setIsStaking(true);
     setStakeError(null);
 
+    await refetchTokenInfo();
+    await refetchAvailableBalance();
+
+    if(!tokenInfo || !availableBalance) {
+      toast.error('Error fetching token info or available balance');
+      return;
+    }
+
+    const expectedShares = amount * tokenInfo?.[0] / availableBalance;
+    const minSharesOut = expectedShares * BigInt(99) / BigInt(100);
+
     try {
       const { request } = await simulateContract(config, {
         abi: StakingAbi,
         address: stakingAddress,
         functionName: 'requestStake',
-        args: [initiaTokenAddress, amount, BigInt(1), BigInt(Math.floor(Date.now() / 1000) + 300)],
+        args: [initiaTokenAddress, amount, minSharesOut, BigInt(Math.floor(Date.now() / 1000) + 300)],
       });
       const hash = await writeContract(config, request);
       const receipt = await waitForTransactionReceipt(config, { hash });
