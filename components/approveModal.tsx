@@ -46,11 +46,6 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
   });
 
   async function approver() {
-    if (approveAmount > formattedBalance) {
-      toast.error("Insufficient balance.");
-      return;
-    }
-
     const toastId = toast.loading("Waiting on confirmation from your wallet.");
 
     try {
@@ -68,10 +63,6 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
 
   const handleApproveClick = async () => {
     if (approve || initiaAddress?.startsWith("init")) {
-      if (approveAmount > formattedBalance) {
-        toast.error("Insufficient balance.");
-        return;
-      }
       await approver();
       onClose();
     }

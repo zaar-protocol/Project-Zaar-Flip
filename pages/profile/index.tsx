@@ -138,7 +138,7 @@ export default function Profile() {
                       <div className="border-r border-dark-gray-r pb-4 sm:pb-0 last:border-r-0">
                         <p className="text-gray text-sm mb-2">PROFIT</p>
                         <p className="text-light-green font-bold text-lg sm:text-2xl">
-                          {winnings - waged}
+                          {winnings - waged} INIT
                         </p>
                       </div>
                       <div>

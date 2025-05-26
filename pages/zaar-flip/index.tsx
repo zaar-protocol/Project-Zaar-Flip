@@ -89,6 +89,7 @@ export default function Home() {
   const { isMuted, toggleMute } = useMuteState();
   const wagerInputRef = useRef<HTMLInputElement>(null);
   const { chainId } = useAccount();
+  const [flipAttempts, setFlipAttempts] = useState(0);
 
   const { data: flip, refetch: refetchFlip }: { data: any; refetch: any } =
     useSimulateZaarflipFlip({
@@ -102,26 +103,8 @@ export default function Home() {
       ],
       chainId: initia.id,
     });
-  console.log(parseEther(BigInt(wager ? wager : 0).toString()));
-  console.log(coinsAmount);
-  console.log(minHeadsTails);
-  console.log(initiaTokenAddress);
-  console.log(getFutureTimestamp(15));
   console.log("flip", flip);
-  const testFlipper = useSimulateZaarflipFlip({
-    args: [
-      BigInt(1),
-      BigInt(1),
-      BigInt(1),
-      initiaTokenAddress,
-      getFutureTimestamp(15),
-    ],
-    chainId: initia.id,
-  });
-  console.log("testFlipper", testFlipper);
 
-  //console.log("testFlipper", testFlipper);
-  //for regular wallets
   const { address: addr } = useAccount();
   const { refetchBalance } = useBalanceContext();
 
@@ -243,12 +226,30 @@ export default function Home() {
   }, [coinsAmount]);
 
   async function flipContract() {
-    if (!flip || !flip.request) {
-      console.error("Error, flip contract is null.");
-      return false;
+    let attempts = 0;
+    const maxAttempts = 10;
+    let refetchedFlip = flip;
+
+    while (true) {
+      if (attempts >= maxAttempts) {
+        return false;
+      }
+
+      if (!refetchedFlip?.request) {
+        console.log("Attempt", attempts, "flip:", refetchedFlip);
+        await new Promise((resolve) => setTimeout(resolve, attempts * 100));
+        const { data: newFlip } = await refetchFlip();
+        refetchedFlip = newFlip;
+        console.log("refetchedFlip", refetchedFlip);
+        attempts++;
+        continue;
+      }
+
+      break;
     }
+
     try {
-      let myhash = await writeContract(config, flip!.request);
+      let myhash = await writeContract(config, refetchedFlip.request);
 
       let receipt = await waitForTransactionReceipt(config, { hash: myhash });
 
@@ -500,7 +501,9 @@ export default function Home() {
           );
         }
       } else {
-        toast.error("Error with flip. Transaction did not complete.");
+        if (flipAttempts > 10) {
+          toast.error("Error with flip. Transaction did not complete.");
+        }
       }
     } else {
       if (!isMuted) {
