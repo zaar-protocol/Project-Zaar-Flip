@@ -156,8 +156,9 @@ export default function Staking() {
             <h1 className="text-3xl text-yellow">
               {stakedBalance
                 ? (
-                    parseFloat(formatEther(BigInt(stakedBalance))) / 1000000000
-                  ).toFixed(2) + "B"
+                    parseFloat(formatEther(BigInt(stakedBalance))) /
+                    10000000000000000
+                  ).toFixed(2)
                 : "0"}
             </h1>
           </div>
