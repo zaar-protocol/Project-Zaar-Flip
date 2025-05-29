@@ -4,6 +4,7 @@ import prisma from '@/lib/prisma';
 import { dailyChallenges } from '@/components/challengeComponents/dailyChallenges';
 import { checkProgressFunctions } from '@/components/challengeComponents/checkProgressFunctions';
 import { ChallengeKey } from '../../components/challengeComponents/checkProgressFunctions';
+import { manualRandomness } from '@/lib/constants/manualRandomness';
 // import { challengeKeys } from '../components/challengeComponents/checkProgressFunctions';
 // import { getBalance } from 'wagmi/actions';
 // import { initiaTokenAddress } from '../../generated';
@@ -40,6 +41,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const newOutcome = Boolean(req.query.outcome === 'true') || false;
     const newGameType = String(req.query.gameType) || "";
     const fee = Number(req.query.fee) || 0; // New line to accept fee from query params
+    const newGameId = String(req.query.gameId) || "";
 
     const today = new Date();
     const todayStart = new Date();
@@ -83,7 +85,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       update: {
         winnings: { increment: newWinnings },
         waged: { increment: newWager },
-        events: { create: { winnings: newWinnings, wager: newWager, outcome: newOutcome, gameType: newGameType, fee: fee } },
+        events: { create: { winnings: newWinnings, wager: newWager, outcome: newOutcome, gameType: newGameType, fee: fee, gameId: newGameId, pending: manualRandomness } },
       },
       create: {
         authorAddress: ownerAddress,

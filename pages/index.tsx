@@ -19,7 +19,6 @@ import { useWriteZaarflipFlip } from "@/generated";
 import { config } from "@/config";
 import { abi } from "@/abis/abi";
 import { Header } from "@/components/header";
-import { HomePageBanner } from "@/components/HomePageBanner";
 import { useMuteState } from "@/components/MuteContext";
 import { MuteButton } from "@/components/MuteButton";
 import { Footer } from "@/components/Footer";
@@ -187,7 +186,7 @@ const Home: React.FC = () => {
           {/* </Link> */}
         </div>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

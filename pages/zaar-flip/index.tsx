@@ -42,6 +42,7 @@ import { ManualFlipAbi } from "@/abis/ManualFlip-abi";
 import { useBalanceContext } from "@/contexts/BalanceContext";
 import { getFutureTimestamp } from "@/utils/timestamps";
 import { publicClient } from "@/client";
+import { manualRandomness } from "@/lib/constants/manualRandomness";
 
 interface GameResultEvent {
   eventName: "GameResult";
@@ -53,6 +54,7 @@ interface GameResultEvent {
 }
 
 interface GameResult {
+  gameId: string;
   won: boolean;
   payout: bigint;
 }
@@ -87,12 +89,13 @@ export default function Home() {
   const { isMuted, toggleMute } = useMuteState();
   const wagerInputRef = useRef<HTMLInputElement>(null);
   const { chainId } = useAccount();
+  const [flipAttempts, setFlipAttempts] = useState(0);
 
   const { data: flip, refetch: refetchFlip }: { data: any; refetch: any } =
     useSimulateZaarflipFlip({
       args: [
-        // parseEther(BigInt(wager ? wager : 0).toString()),
-        BigInt(1),
+        parseEther(BigInt(wager ? wager : 0).toString()),
+        // BigInt(1),
         BigInt(coinsAmount),
         BigInt(minHeadsTails),
         initiaTokenAddress,
@@ -100,26 +103,8 @@ export default function Home() {
       ],
       chainId: initia.id,
     });
-  console.log(parseEther(BigInt(wager ? wager : 0).toString()));
-  console.log(coinsAmount);
-  console.log(minHeadsTails);
-  console.log(initiaTokenAddress);
-  console.log(getFutureTimestamp(15));
   console.log("flip", flip);
-  const testFlipper = useSimulateZaarflipFlip({
-    args: [
-      BigInt(1),
-      BigInt(1),
-      BigInt(1),
-      initiaTokenAddress,
-      getFutureTimestamp(15),
-    ],
-    chainId: initia.id,
-  });
-  console.log("testFlipper", testFlipper);
 
-  //console.log("testFlipper", testFlipper);
-  //for regular wallets
   const { address: addr } = useAccount();
   const { refetchBalance } = useBalanceContext();
 
@@ -241,12 +226,30 @@ export default function Home() {
   }, [coinsAmount]);
 
   async function flipContract() {
-    if (!flip || !flip.request) {
-      console.error("Error, flip contract is null.");
-      return false;
+    let attempts = 0;
+    const maxAttempts = 10;
+    let refetchedFlip = flip;
+
+    while (true) {
+      if (attempts >= maxAttempts) {
+        return false;
+      }
+
+      if (!refetchedFlip?.request) {
+        console.log("Attempt", attempts, "flip:", refetchedFlip);
+        await new Promise((resolve) => setTimeout(resolve, attempts * 100));
+        const { data: newFlip } = await refetchFlip();
+        refetchedFlip = newFlip;
+        console.log("refetchedFlip", refetchedFlip);
+        attempts++;
+        continue;
+      }
+
+      break;
     }
+
     try {
-      let myhash = await writeContract(config, flip!.request);
+      let myhash = await writeContract(config, refetchedFlip.request);
 
       let receipt = await waitForTransactionReceipt(config, { hash: myhash });
 
@@ -254,7 +257,7 @@ export default function Home() {
 
       type RandomnessRequestedEvent = Log & {
         args: {
-          seed?: string;
+          gameId?: string;
         };
       };
 
@@ -265,6 +268,14 @@ export default function Home() {
       }) as unknown as RandomnessRequestedEvent[];
 
       console.log("resultLogs", resultLogs);
+
+      const gameId = String(resultLogs[0].args.gameId);
+
+      if (manualRandomness) {
+        fetch(
+          `./api/addCoinEvent?ownerAddress=${addr}&wager=${wager}&winnings=${0}&outcome=${false}&side=${currentSide}&gameId=${gameId}`
+        );
+      }
 
       const result: GameResult = await new Promise((resolve) => {
         let lastCheckedBlock = receipt.blockNumber;
@@ -294,7 +305,7 @@ export default function Home() {
                   try {
                     const decodedLog = await publicClient.getContractEvents({
                       address: zaarflipAddress,
-                      abi: FlipAbi,
+                      abi: ManualFlipAbi,
                       fromBlock: log.blockNumber,
                       toBlock: log.blockNumber,
                     });
@@ -309,6 +320,7 @@ export default function Home() {
                           console.log("Found game result:", gameResult);
                           isPolling = false;
                           resolve({
+                            gameId: gameId,
                             won: gameResult.args.won,
                             payout: gameResult.args.payout,
                           });
@@ -415,10 +427,8 @@ export default function Home() {
       const { data: newAllowance } = await refetchAllowance();
 
       if (
-        // !newAllowance ||
-        // newAllowance < BigInt(parseEther(wager.toString()))
         !newAllowance ||
-        newAllowance < BigInt(1)
+        newAllowance < BigInt(parseEther(wager.toString()))
       ) {
         setApproveModalIsOpen(true);
         // Modal Pop up
@@ -439,48 +449,48 @@ export default function Home() {
           token: initiaTokenAddress,
         });
 
-        const winnings = Number(formatEther(result.payout));
+        if (!manualRandomness) {
+          const winnings = Number(formatEther(result.payout));
 
-        fetch(
-          `./api/addCoinEvent?ownerAddress=${addr}&wager=${wager}&winnings=${winnings}&outcome=${outcome}&side=${currentSide}`
-        )
-          .then((response) => response.json())
-          .then(() => {
-            setTimeout(async () => {
-              if (outcome) {
-                toast.success("Congratulations, you won!");
-                if (!isMuted) {
-                  if (audioCount % 2 == 1) {
-                    winaudio.play();
-                  } else if (audioCount === 2) {
-                    winaudio2.play();
-                  }
-                  await refetchBalance();
-                }
-                createConfetti();
-              } else {
-                if (!isMuted) {
-                  if (audioCount === 1) {
-                    loseaudio.play();
-                    setAudioCount(2);
-                  } else if (audioCount === 2) {
-                    setAudioCount(3);
-                  } else if (audioCount === 3) {
-                    setAudioCount(4);
-                  } else if (audioCount === 4) {
-                    loseAudio2.play();
-                    setAudioCount(5);
-                  } else if (audioCount === 5) {
-                    setAudioCount(6);
-                  } else if (audioCount === 6) {
-                    setAudioCount(1);
-                  }
-                }
-                toast.error("You lost.");
-                await refetchBalance();
+          fetch(
+            `./api/addCoinEvent?ownerAddress=${addr}&wager=${wager}&winnings=${winnings}&outcome=${outcome}&side=${currentSide}&gameId=${result.gameId}`
+          );
+        }
+
+        setTimeout(async () => {
+          if (outcome) {
+            toast.success("Congratulations, you won!");
+            if (!isMuted) {
+              if (audioCount % 2 == 1) {
+                winaudio.play();
+              } else if (audioCount === 2) {
+                winaudio2.play();
               }
-            }, 150 * coinsAmount);
-          });
+              await refetchBalance();
+            }
+            createConfetti();
+          } else {
+            if (!isMuted) {
+              if (audioCount === 1) {
+                loseaudio.play();
+                setAudioCount(2);
+              } else if (audioCount === 2) {
+                setAudioCount(3);
+              } else if (audioCount === 3) {
+                setAudioCount(4);
+              } else if (audioCount === 4) {
+                loseAudio2.play();
+                setAudioCount(5);
+              } else if (audioCount === 5) {
+                setAudioCount(6);
+              } else if (audioCount === 6) {
+                setAudioCount(1);
+              }
+            }
+            toast.error("You lost.");
+            await refetchBalance();
+          }
+        }, 150 * coinsAmount);
 
         if (coinsDisplayRef.current) {
           randomFlip(
@@ -491,7 +501,9 @@ export default function Home() {
           );
         }
       } else {
-        toast.error("Error with flip. Transaction did not complete.");
+        if (flipAttempts > 10) {
+          toast.error("Error with flip. Transaction did not complete.");
+        }
       }
     } else {
       if (!isMuted) {
@@ -1096,7 +1108,7 @@ export default function Home() {
         </main>
       </div>
       <MuteButton />
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

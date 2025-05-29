@@ -4,6 +4,7 @@ import prisma from '@/lib/prisma';
 import { dailyChallenges } from '@/components/challengeComponents/dailyChallenges';
 import { checkProgressFunctions } from '@/components/challengeComponents/checkProgressFunctions';
 import { ChallengeKey } from '../../components/challengeComponents/checkProgressFunctions';
+import { manualRandomness } from '@/lib/constants/manualRandomness';
 // import { challengeKeys } from '../components/challengeComponents/checkProgressFunctions';
 // import { getBalance } from 'wagmi/actions';
 // import { initiaTokenAddress } from '../../generated';
@@ -39,7 +40,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const newWager = Number(req.query.wager) || 0; 
     const newOutcome = Boolean(req.query.outcome === 'true') || false; 
     const newSide = String(req.query.side) || "";
-    
+    const newGameId = String(req.query.gameId) || "";
     const fee = Math.floor(newWager * 0.01); // Assuming 1% fee
 
     const today = new Date();
@@ -87,6 +88,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       authorAddress: ownerAddress,
       gameType: "Flip",
       fee: fee,
+      gameId: newGameId,
+      pending: manualRandomness, // If we are using manual randomness, we need to set pending to true. Provider will complete the game.
     },
   });
 

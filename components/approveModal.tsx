@@ -32,7 +32,7 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
   const { requestEthereumTx } = useWallet();
   const initiaAddress = useAddress();
 
-  const { balance } = useBalanceContext();
+  const { formattedBalance } = useBalanceContext();
 
   const presetAmounts = [10, 50, 100, 1000, 10000, 100000] as const;
   type PresetAmount = (typeof presetAmounts)[number];
@@ -63,10 +63,6 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
 
   const handleApproveClick = async () => {
     if (approve || initiaAddress?.startsWith("init")) {
-      // if (approveAmount > balance) {
-      //   toast.error("Insufficient balance.");
-      //   return;
-      // }
       await approver();
       onClose();
     }

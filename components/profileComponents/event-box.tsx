@@ -37,7 +37,7 @@ export const EventBox = ({
         </div>
       </div>
       <div className="flex justify-between mb-2 text-sm uppercase">
-        <p className="text-light-green mb-2">Wager: ${wager}</p>
+        <p className="text-light-green mb-2">Wager: {wager} INIT</p>
         <p className="text-light-green mb-2">
           Winnings: <span className="text-lime-green">{winnings}</span>
         </p>

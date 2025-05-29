@@ -4,7 +4,7 @@ import Link from "next/link";
 import { FaArrowLeft, FaChevronDown, FaExternalLinkAlt } from "react-icons/fa";
 //import {approveInitiaToken, initiaTokenAddress, } from  "@/generated";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { useContractRead } from "wagmi";
 //import { zaarStakingAbi } from '../../abis/abi';
@@ -13,27 +13,111 @@ import { stakingAddress } from "@/generated";
 import { useStakingBalance } from "@/hooks/useStakingBalance";
 import { toast, Toaster } from "react-hot-toast";
 import LoadingModal from "@/components/loadingModal";
-
+import {
+  simulateContract,
+  writeContract,
+  waitForTransactionReceipt,
+} from "@wagmi/core";
+import { StakingAbi } from "@/abis/Staking-abi";
+import { initiaTokenAddress } from "@/generated";
+import { config } from "@/config";
+import { useBalanceContext } from "@/contexts/BalanceContext";
 export default function Staking() {
   const [currentTab, setCurrentTab] = useState("deposit");
   const { address } = useAccount();
+  const { balance } = useBalanceContext();
   const {
     stakedBalance,
-    earnedBalance,
+    totalOwed,
+    unstakeRequests,
     poolPercentage,
     walletBalance,
     isLoading,
-    cooldownProgress,
-    timeRemaining,
     allowance,
     approveStaking,
     requestStake,
+    cancelStake,
+    finalizeStake,
+    requestUnstake,
+    cancelUnstake,
+    finalizeUnstake,
     isStaking,
     pendingPayouts,
+    pendingStake,
+    refetchPendingStake,
   } = useStakingBalance(
     address || "0x0000000000000000000000000000000000000000"
   );
+
+  const [stakeDeadlinePassed, setStakeDeadlinePassed] = useState<boolean>(
+    pendingStake[3] != BigInt(0) &&
+      Number(pendingStake[3]) < Math.floor(Date.now() / 1000)
+  );
+
+  const [unstakeDeadlinePassed, setUnstakeDeadlinePassed] = useState<boolean>(
+    unstakeRequests[3] != BigInt(0) &&
+      Number(unstakeRequests[3]) < Math.floor(Date.now() / 1000)
+  );
+
+  const [stakeCooldown, setStakeCooldown] = useState<number>(
+    60 - (Math.floor(Date.now() / 1000) - Number(pendingStake[1]))
+  );
+
+  const [unstakeCooldown, setUnstakeCooldown] = useState<number>(
+    60 - (Math.floor(Date.now() / 1000) - Number(unstakeRequests[1]))
+  );
+
+  const [stakeTimeRemaining, setStakeTimeRemaining] = useState<number>(
+    stakeDeadlinePassed
+      ? 0
+      : Number(pendingStake[3] - BigInt(Math.floor(Date.now() / 1000)))
+  );
+
+  const [unstakeTimeRemaining, setUnstakeTimeRemaining] = useState<number>(
+    unstakeDeadlinePassed
+      ? 0
+      : Number(unstakeRequests[3] - BigInt(Math.floor(Date.now() / 1000)))
+  );
+
   const [amount, setAmount] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (pendingStake[3] !== BigInt(0)) {
+        const newStakeDeadlinePassed =
+          Number(pendingStake[3]) < Math.floor(Date.now() / 1000);
+        setStakeDeadlinePassed(newStakeDeadlinePassed);
+        const newStakeTime = newStakeDeadlinePassed
+          ? 0
+          : Number(pendingStake[3] - BigInt(Math.floor(Date.now() / 1000)));
+        setStakeTimeRemaining(newStakeTime > 0 ? newStakeTime : 0);
+
+        const newStakeCooldown =
+          60 - (Math.floor(Date.now() / 1000) - Number(pendingStake[1]));
+        setStakeCooldown(newStakeCooldown > 0 ? newStakeCooldown : 0);
+      }
+
+      if (unstakeRequests[3] !== BigInt(0)) {
+        const newUnstakeDeadlinePassed =
+          Number(unstakeRequests[3]) < Math.floor(Date.now() / 1000);
+        setUnstakeDeadlinePassed(newUnstakeDeadlinePassed);
+        const newUnstakeTime = newUnstakeDeadlinePassed
+          ? 0
+          : Number(unstakeRequests[3] - BigInt(Math.floor(Date.now() / 1000)));
+        setUnstakeTimeRemaining(newUnstakeTime > 0 ? newUnstakeTime : 0);
+
+        const newUnstakeCooldown =
+          60 - (Math.floor(Date.now() / 1000) - Number(unstakeRequests[1]));
+        setUnstakeCooldown(newUnstakeCooldown > 0 ? newUnstakeCooldown : 0);
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [pendingStake, unstakeRequests]);
+
+  useEffect(() => {
+    console.log("balance", balance);
+  }, [balance]);
 
   return (
     <div className="w-screen min-h-screen ">
@@ -46,7 +130,7 @@ export default function Staking() {
         className="fixed left-0 top-0 w-full h-full bg-cover opacity-50 lg:opacity-100 -z-10 "
       ></div>
 
-      <div className="flex flex-col items-center justify-center min-h-screen gap-6">
+      <div className="flex flex-col items-center justify-center min-h-screen gap-6 pb-10">
         {/*Back to home button*/}
         <Link
           href="/"
@@ -68,10 +152,13 @@ export default function Staking() {
         </div>
         <div className=" flex flex-col md:flex-row items-center justify-center gap-4 bg-black bg-opacity-50 p-6 gap-4">
           <div className="flex text-sm flex-col items-center md:items-start text-hoverGray justify-center gap-2">
-            Total INIT Staked
+            Your Shares
             <h1 className="text-3xl text-yellow">
               {stakedBalance
-                ? parseFloat(formatEther(BigInt(stakedBalance))).toFixed(2)
+                ? (
+                    parseFloat(formatEther(BigInt(stakedBalance))) /
+                    10000000000000000
+                  ).toFixed(2)
                 : "0"}
             </h1>
           </div>
@@ -80,10 +167,10 @@ export default function Staking() {
             <h1 className="text-3xl text-yellow">{poolPercentage}%</h1>
           </div>
           <div className="flex text-sm flex-col items-center md:items-start text-hoverGray justify-center text-center gap-2">
-            Your Total Rewards Earned
+            Total INIT Staked
             <h1 className="text-3xl text-yellow">
-              {earnedBalance
-                ? parseFloat(formatEther(BigInt(earnedBalance))).toFixed(2)
+              {totalOwed
+                ? parseFloat(formatEther(BigInt(totalOwed))).toFixed(2)
                 : "0"}
             </h1>
           </div>
@@ -198,19 +285,23 @@ export default function Staking() {
                 ) : allowance < parseEther(amount.toString()) ? (
                   <button
                     className="bg-light-gray hover:bg-white transition duration-300 text-black w-full h-10"
-                    onClick={() => {
-                      approveStaking(parseEther(amount.toString()));
+                    onClick={async () => {
+                      try {
+                        await approveStaking(parseEther(amount.toString()));
+                      } catch (error) {
+                        console.error("Error in approveStaking:", error);
+                      }
+
                       while (isLoading) {
                         toast.loading("approving");
                       }
                       toast.dismiss();
-                      toast.success("approved");
                     }}
                     disabled={isLoading}
                   >
                     {isLoading ? "Approving..." : "Approve"}
                   </button>
-                ) : (
+                ) : pendingStake[3] === BigInt(0) ? (
                   <button
                     className="bg-light-gray hover:bg-white transition duration-300 text-black w-full h-10"
                     onClick={async () => {
@@ -220,6 +311,40 @@ export default function Staking() {
                   >
                     {isStaking ? "Processing..." : "Deposit"}
                   </button>
+                ) : stakeDeadlinePassed ? (
+                  <>
+                    <span>Stake Request Expired</span>
+                    <button
+                      className="bg-light-gray hover:bg-white transition duration-300 text-black w-full h-10"
+                      onClick={async () => {
+                        await cancelStake();
+                      }}
+                      disabled={isStaking}
+                    >
+                      Cancel Stake
+                    </button>
+                  </>
+                ) : stakeCooldown > 0 ? (
+                  <>
+                    <span>Stake Requested</span>
+                    <div className="bg-light-gray transition duration-300 text-black w-full h-10 text-center flex items-center justify-center">
+                      Finalize Stake in {stakeCooldown} seconds
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <span>
+                      Stake Request Expires in {stakeTimeRemaining} seconds
+                    </span>
+                    <button
+                      className="bg-light-gray hover:bg-white transition duration-300 text-black w-full h-10"
+                      onClick={async () => {
+                        await finalizeStake();
+                      }}
+                    >
+                      Finalize Stake
+                    </button>
+                  </>
                 )}
               </div>
             )}
@@ -242,58 +367,117 @@ export default function Staking() {
                     </div>
                     <p className="text-white">
                       You have{" "}
-                      {Number(formatEther(BigInt(stakedBalance))).toFixed(2)}{" "}
-                      INIT staked
+                      {Number(formatEther(BigInt(totalOwed))).toFixed(2)} INIT
+                      staked
                     </p>
                   </div>
 
                   <div className="flex flex-col items-start justify-center w-full md:w-1/2 gap-2">
                     <p className="text-white">Amount</p>
-                    <div className="flex flex-row items-center justify-between gap-2 bg-black border border-grey p-2">
+                    <div className="flex flex-row items-center justify-between gap-2 bg-black border border-grey p-2 w-full">
                       <input
-                        className="flex flex-row items-center justify-center gap-2 bg-black w-[70%] text-white focus:outline-none"
+                        className="flex flex-row items-center justify-center gap-2 bg-black w-full text-white focus:outline-none"
                         placeholder="0.00"
                         value={amount}
+                        onChange={(e) => setAmount(Number(e.target.value))}
                       />
                       <button
                         className="text-black bg-light-gray p-1 px-2 text-xs hover:bg-gray-200 transition-colors"
                         onClick={() => {
                           // Add logic to set max amount
-                          setAmount(Number(stakedBalance));
+                          setAmount(Number(formatEther(BigInt(totalOwed))));
                         }}
                       >
                         Max
                       </button>
                     </div>
                     <p className="text-white">
-                      ≈ ${Number(formatEther(BigInt(stakedBalance))).toFixed(2)}
+                      ≈ ${Number(formatEther(BigInt(totalOwed))).toFixed(2)}
                     </p>
                   </div>
                 </div>
-                <div className="flex flex-col w-full gap-2">
+
+                {/* <div className="flex flex-col w-full gap-2">
                   <div className="flex flex-row items-center justify-between w-full text-white text-sm">
                     <span>Cooldown Period</span>
-                    <span>48 hours</span>
+                    <span>5 minutes</span>
                   </div>
-                  <div className="w-full bg-gray-700 h-2 rounded-full">
-                    <div
-                      className="bg-yellow h-full rounded-full"
-                      style={{ width: `${cooldownProgress}%` }}
-                    ></div>
-                  </div>
-                  <div className="flex flex-row items-center justify-between w-full text-white text-sm">
-                    <span>Time Remaining</span>
-                    <span>{timeRemaining}</span>
-                  </div>
-                </div>
-                <button
-                  className="bg-light-gray hover:bg-white transition duration-300 text-black w-full h-10"
-                  disabled={Number(stakedBalance) === 0}
-                >
-                  {Number(stakedBalance) === 0
-                    ? "No Staked Balance"
-                    : "Withdraw"}
-                </button>
+                </div> */}
+                {unstakeRequests[3] === BigInt(0) ? (
+                  <button
+                    className="bg-light-gray hover:bg-white transition duration-300 text-black w-full h-10"
+                    onClick={async () => {
+                      if (amount === 0) {
+                        toast.error("Amount cannot be 0");
+                        return;
+                      }
+                      if (
+                        parseEther(amount.toString()) > BigInt(stakedBalance)
+                      ) {
+                        toast.error(
+                          "Amount cannot be greater than staked balance"
+                        );
+                        return;
+                      }
+                      try {
+                        console.log("requesting unstake for amount: ", amount);
+                        await requestUnstake(parseEther(amount.toString()));
+                      } catch (error) {
+                        console.error("Error in requestUnstake:", error);
+                      }
+                    }}
+                    disabled={Number(stakedBalance) === 0}
+                  >
+                    {Number(stakedBalance) === 0
+                      ? "No Staked Balance"
+                      : "Withdraw"}
+                  </button>
+                ) : unstakeCooldown > 0 ? (
+                  <>
+                    <span>Unstake Requested</span>
+                    <button className="bg-light-gray hover:bg-white transition duration-300 text-black w-full h-10">
+                      Finalize Unstake in {unstakeCooldown} seconds
+                    </button>
+                  </>
+                ) : unstakeDeadlinePassed ? (
+                  <>
+                    <span>Unstake Request Expired</span>
+                    <button
+                      onClick={async () => {
+                        try {
+                          await cancelUnstake();
+                        } catch (error) {
+                          console.error("Error in cancelUnstake:", error);
+                        }
+                      }}
+                      className="bg-light-gray hover:bg-white transition duration-300 text-black w-full h-10"
+                    >
+                      Cancel Unstake
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <span>
+                      Unstake Request Expires in {unstakeTimeRemaining} seconds
+                    </span>
+                    <button
+                      onClick={async () => {
+                        try {
+                          console.log(
+                            "finalizing unstake for amount: ",
+                            amount
+                          );
+                          await finalizeUnstake(parseEther(amount.toString()));
+                        } catch (error) {
+                          console.error("Error in finalizeUnstake:", error);
+                        }
+                      }}
+                      className="bg-light-gray hover:bg-white transition duration-300 text-black w-full h-10"
+                    >
+                      Finalize Unstake
+                    </button>
+                  </>
+                )}
               </div>
             )}
           </div>
