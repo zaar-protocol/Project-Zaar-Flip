@@ -5,11 +5,14 @@ import { dailyChallenges } from '@/components/challengeComponents/dailyChallenge
 import { checkProgressFunctions } from '@/components/challengeComponents/checkProgressFunctions';
 import { ChallengeKey } from '../../components/challengeComponents/checkProgressFunctions';
 import { manualRandomness } from '@/lib/constants/manualRandomness';
+import { publicClient } from '@/client';
+import { zaarflipAddress } from '@/generated';
+import { ManualFlipAbi } from '@/abis/ManualFlip-abi';
+import { formatEther, parseEther } from 'viem';
 // import { challengeKeys } from '../components/challengeComponents/checkProgressFunctions';
 // import { getBalance } from 'wagmi/actions';
 // import { initiaTokenAddress } from '../../generated';
 // import { config } from '../../config';
-// import { formatEther } from 'viem';
 // import { calculateRakebackPercentage } from '@/lib/calculateRakebackPercentage';
 
 // type Event = { id: number; authorAddress: string; createdAt: Date; coins: number; wager: number; winnings: number; outcome: boolean; };
@@ -31,16 +34,52 @@ const allowCors = (fn: (req: NextApiRequest, res: NextApiResponse) => Promise<vo
 //   return /^0x[a-fA-F0-9]{40}$/.test(address);
 // }
 
+interface GameCreatedEvent {
+  args: {
+    player: `0x${string}`;
+    gameId: string;
+    betAmount: bigint;
+    numberOfCoins: bigint;
+    headsRequired: bigint;
+    token: `0x${string}`;
+    deadline: bigint;
+  };
+}
+
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   //await initializeCors(req, res); // Initialize CORS
   try {
-
-    const ownerAddress = req.query.ownerAddress?.toString() || ""; 
-    const newWinnings = Number(req.query.winnings) || 0; 
-    const newWager = Number(req.query.wager) || 0; 
-    const newOutcome = Boolean(req.query.outcome === 'true') || false; 
+    const ownerAddress = req.query.ownerAddress?.toString() || "";
+    const newWinnings = Number(req.query.winnings) || 0;
+    const newWager = Number(req.query.wager) || 0;
+    const newOutcome = Boolean(req.query.outcome === 'true') || false;
     const newSide = String(req.query.side) || "";
     const newGameId = String(req.query.gameId) || "";
+
+    // Verify the game exists and matches the parameters
+    const gameResult = await publicClient.getContractEvents({
+      address: zaarflipAddress,
+      abi: ManualFlipAbi,
+      eventName: 'GameCreated',
+      fromBlock: BigInt(0),
+      toBlock: 'latest'
+    }) as unknown as GameCreatedEvent[];
+
+    // Filter for our specific game ID
+    const game = gameResult.find(g => g.args.gameId === newGameId);
+
+    if (!game) {
+      return res.status(400).json({ error: 'Invalid game ID' });
+    }
+    
+    // Verify the parameters match what's on-chain
+    if (
+      game.args.player.toLowerCase() !== ownerAddress.toLowerCase() ||
+      game.args.betAmount !== parseEther(newWager.toString())
+    ) {
+      return res.status(400).json({ error: 'Game parameters do not match' });
+    }
+
     const fee = Math.floor(newWager * 0.01); // Assuming 1% fee
 
     const today = new Date();
