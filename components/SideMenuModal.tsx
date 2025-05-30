@@ -13,6 +13,7 @@ export const SideMenuModal = () => {
   const [page, setPage] = useState("/");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isMuted, toggleMute } = useMuteState();
+  const { bridge } = useWallet();
 
   const playSound = () => {
     if (isMuted) return;
@@ -207,6 +208,20 @@ export const SideMenuModal = () => {
           >
             SETTINGS
           </Link>
+
+          <button
+            className="hover:cursor-pointer transition duration-300 hover:text-white flex items-center gap-2 md:hidden"
+            onClick={bridge}
+          >
+            {/* <Image
+              src="/bridge-icon.png"
+              alt="Bridge"
+              width={24}
+              height={24}
+              className="h-[24px] w-[24px]"
+            /> */}
+            BRIDGE INIT
+          </button>
 
           <div className="grow mb-5 flex flex-col justify-end items-center gap-3 text-sm text-gray z-50">
             <div className="flex items-center gap-5 mb-1">
