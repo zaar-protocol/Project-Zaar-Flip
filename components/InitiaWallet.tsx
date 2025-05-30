@@ -9,6 +9,7 @@ import { bech32 } from "bech32";
 import { convertInitiaAddress } from "@/utils/convertInitiaAddress";
 import { useBalanceContext } from "@/contexts/BalanceContext";
 import { initia } from "@/config";
+import Image from "next/image";
 
 const NetworkModal = ({ onClose }: { onClose: () => void }) => {
   const { switchChain } = useSwitchChain();
@@ -53,7 +54,13 @@ export const InitiaWallet = () => {
   const [currentProfileImage, setCurrentProfileImage] = useState<string>("");
   const [isNetworkModalOpen, setIsNetworkModalOpen] = useState(false);
 
-  const { wallet, onboard, disconnect: initiaDisconnect, view } = useWallet();
+  const {
+    wallet,
+    onboard,
+    bridge,
+    disconnect: initiaDisconnect,
+    view,
+  } = useWallet();
   const { address: wagmiAddress, isConnected, chainId } = useAccount();
   const { disconnect: wagmiDisconnect } = useDisconnect();
   const { isMuted } = useMuteState();
@@ -124,9 +131,28 @@ export const InitiaWallet = () => {
       ) : (
         <div className="flex items-center gap-2 md:gap-6">
           {chainId === initia.id ? (
-            <div className="flex items-center justify-center px-4 py-2 text-sm rounded-sm font-bold uppercase text-black gradient-button transition duration-500 whitespace-nowrap">
-              {formattedBalance?.toFixed(2)} INIT
-            </div>
+            <>
+              <button
+                className="h-[24px] min-w-[24px] flex items-center justify-center relative group hidden md:block"
+                onClick={() => {
+                  bridge();
+                }}
+              >
+                <Image
+                  src="/bridge-icon.png"
+                  alt="Bridge"
+                  width={24}
+                  height={24}
+                  className="h-[24px] w-[24px]"
+                />
+                <div className="absolute top-1/2 -translate-y-1/2 right-full mr-2 px-2 py-1 bg-gray-800 text-gray-200 text-base rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                  Bridge INIT to Zaar
+                </div>
+              </button>
+              <div className="flex items-center justify-center px-4 py-2 text-sm rounded-sm font-bold uppercase text-black gradient-button transition duration-500 whitespace-nowrap">
+                {formattedBalance?.toFixed(2)} INIT
+              </div>
+            </>
           ) : (
             <button
               onClick={() => setIsNetworkModalOpen(true)}
