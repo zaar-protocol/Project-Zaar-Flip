@@ -14,7 +14,7 @@ declare global {
 // You can specify the version of wallet-widget you want to use here.
 // While you can use "latest", we recommend explicitly specifying the latest version number and updating it manually when needed for better stability.
 // (You can check the latest available version here: https://www.npmjs.com/package/@initia/wallet-widget)
-const VERSION = "1.5.4";
+const VERSION = "1.6.20";
 
 const WalletWidgetProvider = ({
   children,
