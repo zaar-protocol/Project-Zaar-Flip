@@ -333,6 +333,7 @@ export function useStakingBalance(address: string) {
     pendingPayouts,
     isStaking,
     stakeError,
-    isLoading: isStakedLoading || isWalletLoading || isTokenInfoLoading || isTotalOwedLoading || isAllowanceLoading || isPendingStakeLoading
+    isLoading: isStakedLoading || isWalletLoading || isTokenInfoLoading || isTotalOwedLoading || isAllowanceLoading || isPendingStakeLoading,
+    totalStaked: availableBalance ? formatEther(availableBalance) : '0',
   };
 } 

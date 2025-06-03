@@ -10,8 +10,8 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
-    "@initia/react-wallet-widget": "1.6.19",
-    "@initia/utils": "1.6.19",
+    "@initia/react-wallet-widget": "^1.6.19",
+    "@initia/utils": "^1.6.19",
     "@prisma/client": "^5.16.1",
     "@rainbow-me/rainbowkit": "^2.1.2",
     "@tanstack/react-query": "^5.55.4",

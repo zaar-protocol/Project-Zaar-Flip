@@ -45,6 +45,7 @@ export default function Staking() {
     pendingPayouts,
     pendingStake,
     refetchPendingStake,
+    totalStaked,
   } = useStakingBalance(
     address || "0x0000000000000000000000000000000000000000"
   );
@@ -167,11 +168,17 @@ export default function Staking() {
             <h1 className="text-3xl text-yellow">{poolPercentage}%</h1>
           </div>
           <div className="flex text-sm flex-col items-center md:items-start text-hoverGray justify-center text-center gap-2">
-            Total INIT Staked
+            Your Staked INIT
             <h1 className="text-3xl text-yellow">
               {totalOwed
                 ? parseFloat(formatEther(BigInt(totalOwed))).toFixed(2)
                 : "0"}
+            </h1>
+          </div>
+          <div className="flex text-sm flex-col items-center md:items-start text-hoverGray justify-center text-center gap-2">
+            Total INIT Staked
+            <h1 className="text-3xl text-yellow">
+              {totalStaked ? parseFloat(totalStaked).toFixed(0) : "0"}
             </h1>
           </div>
         </div>
