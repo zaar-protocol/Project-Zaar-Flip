@@ -57,11 +57,17 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const newGameId = String(req.query.gameId) || "";
 
     // Verify the game exists and matches the parameters
+    // Get current block number and calculate a reasonable range (e.g., last ~1 day worth of blocks)
+    // Assuming ~12 second block time, ~7200 blocks per day
+    const currentBlock = await publicClient.getBlockNumber();
+    const blocksPerDay = BigInt(7200);
+    const fromBlock = currentBlock > blocksPerDay ? currentBlock - blocksPerDay : BigInt(0);
+    
     const gameResult = await publicClient.getContractEvents({
       address: zaarflipAddress,
       abi: ManualFlipAbi,
       eventName: 'GameCreated',
-      fromBlock: BigInt(0),
+      fromBlock: fromBlock,
       toBlock: 'latest'
     }) as unknown as GameCreatedEvent[];
 
